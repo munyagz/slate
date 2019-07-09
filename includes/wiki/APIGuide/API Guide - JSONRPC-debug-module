@@ -1,0 +1,50 @@
+<p>The <code>debug</code> API gives you access to several non-standard RPC methods, which will allow you to inspect, debug and set certain debugging flags during runtime.</p>
+<h2 id='json-rpc-methods'>JSON-RPC methods</h2>
+<ul>
+<li><a href="#debug_getbadblocks">debug_getBadBlocks</a></li>
+</ul>
+<h2 id='json-rpc-api-reference'>JSON-RPC API Reference</h2><h3 id='debug_getbadblocks'>debug_getBadBlocks</h3>
+<p>Returns a list of the last &quot;bad blocks&quot; that the client has seen on the network.</p>
+<h4 id='parameters'>Parameters</h4>
+<p>None</p>
+<h4 id='returns'>Returns</h4>
+<ul>
+<li><code>Array</code> - List of &quot;bad blocks&quot; seen on the network.</li>
+</ul>
+<h4 id='example'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;debug_getBadBlocks&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: [{
+    &quot;author&quot;: &quot;0x0000000000000000000000000000000000000000&quot;,
+    &quot;difficulty&quot;: &quot;0x0&quot;,
+    &quot;extraData&quot;: &quot;0x&quot;,
+    &quot;gasLimit&quot;: &quot;0x0&quot;,
+    &quot;gasUsed&quot;: &quot;0x0&quot;,
+    &quot;hash&quot;: &quot;0x27bfb37e507ce90da141307204b1c6ba24194380613590ac50ca4b1d7198ff65&quot;,
+    &quot;logsBloom&quot;: &quot;0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000&quot;,
+    &quot;miner&quot;: &quot;0x0000000000000000000000000000000000000000&quot;,
+    &quot;number&quot;: &quot;0x0&quot;,
+    &quot;parentHash&quot;: &quot;0x0000000000000000000000000000000000000000000000000000000000000000&quot;,
+    &quot;reason&quot;: &quot;Invalid block&quot;,
+    &quot;receiptsRoot&quot;: &quot;0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421&quot;,
+    &quot;rlp&quot;: &quot;0x010203&quot;,
+    &quot;sealFields&quot;: [],
+    &quot;sha3Uncles&quot;: &quot;0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347&quot;,
+    &quot;size&quot;: &quot;0x3&quot;,
+    &quot;stateRoot&quot;: &quot;0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421&quot;,
+    &quot;timestamp&quot;: &quot;0x0&quot;,
+    &quot;totalDifficulty&quot;: null,
+    &quot;transactions&quot;: [],
+    &quot;transactionsRoot&quot;: &quot;0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421&quot;,
+    &quot;uncles&quot;: []
+  }]
+}
+</code></p>

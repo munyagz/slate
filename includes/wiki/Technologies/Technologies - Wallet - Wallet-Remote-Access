@@ -1,0 +1,68 @@
+<p>Although our main focus is for the Wallet to work locally, there are a couple of ways to access your remote Parity node&#39;s Wallet. SSH tunneling is the one we recommend.</p>
+
+<p>All described methods will require to manually type Wallet Authorization Token and requires that the time on both machines is in sync. Going to http://time.is/ should render:</p>
+
+<p><img src="/images/time_is.jpg" alt="your time is exact" /></p>
+
+<p><strong>NOTE: Described options vary in the degree of security, so make sure to understand possible consequences- in case of any hesitance reach us out on <a href="https://gitter.im/ethcore/parity">Gitter</a>.</strong></p>
+<h2 id='ssh-tunneling-recommended'>SSH Tunneling - Recommended</h2>
+<ol>
+<li>Setup SSH server on the Host</li>
+<li>On the Client connect to your Host with port forwarding and keep the session running</li>
+</ol>
+<pre class="highlight plaintext"><code>   $ ssh -L 8545:127.0.0.1:8545 -L 8546:127.0.0.1:8546 &lt;user&gt;@&lt;host&gt; -vv
+</code></pre>
+<ol>
+<li>Run Parity without any flags (default <code>interface</code>/<code>port</code>/<code>cors</code>/<code>hosts</code> settings are sufficient)</li>
+<li>To access Parity Wallet on the Client open Parity UI</li>
+<li>If Parity UI requests a new token, run on the Host:</li>
+</ol>
+<pre class="highlight plaintext"><code>   $ parity signer new-token
+</code></pre>
+<p>For older Parity versions (&lt;=v1.9). Forwarding the port 8180 using <code>-L 8180:127.0.0.1:8180</code> is needed to connect via the browser.</p>
+<h2 id='exposing-using-nginx'>Exposing using Nginx</h2>
+<p>NOTE: It&#39;s recommended to setup authentication and SSL on your Nginx server.</p>
+
+<ol>
+<li>Setup Nginx server on the Host.</li>
+<li><p>Create Nginx configuration at <code>/etc/nginx/sites-enabled/parity.ui</code> (substitute <code>&lt;external-ip&gt;</code> with correct values):
+```
+server {
+  listen <external-ip>:8545;</p>
+
+<p># Uncomment for SSL Server
+   #listen <external-ip>:8545 ssl;
+   #ssl on;
+   #ssl_certificate /etc/nginx/parity.ui.crt;
+   #ssl_certificate_key /etc/nginx/parity.ui.key;</p>
+
+<p>location / {
+     proxy_pass http://127.0.0.1:8545;
+   }
+ }</p>
+
+<p>server {
+  listen <external-ip>:8546;</p>
+
+<p># Uncomment for SSL Server
+  #listen <external-ip>:8546 ssl;
+  #ssl on;
+  #ssl_certificate /etc/nginx/parity.ui.crt;
+  #ssl_certificate_key /etc/nginx/parity.ui.key;</p>
+
+<p>location / {
+    proxy_pass http://127.0.0.1:8546;</p>
+
+<p>proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection &quot;upgrade&quot;;
+    proxy_read_timeout 86400;
+  }
+}
+```</p></li>
+<li><p>Restart nginx and run Parity without any flags (default <code>interface</code>/<code>port</code>/<code>cors</code>/<code>hosts</code> settings are sufficient)</p></li>
+<li><p>On the Client, open Parity UI.</p></li>
+<li><p>If Parity UI requests a new token, run on the Host:</p></li>
+</ol>
+<pre class="highlight plaintext"><code>   $ parity signer new-token
+</code></pre>

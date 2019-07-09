@@ -1,0 +1,99 @@
+<p>Dapps are an exciting way to showcase a contract or a series of contracts with a simple interface that allows users to interact with them in a secure way. This guide will walk you through the steps to develop a Dapp for your contract and integrate it into Parity UI.</p>
+
+<p>Parity UI supports two types of Dapps: local Dapps (they sit on your computer and are ideal for the development process or for private Dapps) and network Dapps (Dapps available to the whole community).</p>
+
+<p>Dapps are essentially web apps. A Dapp is a folder with at least two required files:
+* <code>index.html</code>, your Dapp&#39;s main page, its &quot;entry point&quot;: this page will be displayed when someone navigates to your Dapp
+* <code>manifest.json</code>, which provides various information about your Dapp</p>
+<h2 id='local-dapps'>Local Dapps</h2>
+<p>Local Dapps are Dapps located on your machine. Parity UI loads them automatically and displays them only to you.</p>
+
+<p>You will typically want to use a local Dapp during the Dapp development process. Once you&#39;re satisfied with your Dapp, you can, if you so wish, deploy it to the network (make it a network Dapp) so that anyone can access it.</p>
+
+<p>Local Dapps are a good way to become familiar with the Ethereum and Parity UI ecosystem.</p>
+<h3 id='building-a-local-dapp'>Building a local Dapp</h3>
+<p>Parity UI will load and display any Dapp located in the Parity UI <code>dapps</code> folder:
+* <code>~/.config/parity-ui/dapps/</code> on Linux
+* <code>~/Library/Application Support/parity-ui/dapps/</code> on Mac OS
+* <code>C:\Users\&lt;you&gt;\AppData\Local\parity-ui\dapps\</code> on Windows</p>
+
+<p>To make a new local Dapp, start by creating a folder for it, for example <code>~/.config/parity-ui/dapps/my-first-dapp/</code>.</p>
+
+<p>Next, you need to set up some files in your Dapp folder, at a minimum <code>index.html</code> and <code>manifest.json</code>.</p>
+
+<p>Those files can be created either manually or using <a href="https://github.com/chevdor/generator-ethdapp">chevdor&#39;s Dapp generator</a>, the latter supporting both web3 and parity.js apps.</p>
+
+<p>We will now walk you through the creation of those files.</p>
+<h4 id='manifest-json'>manifest.json</h4>
+<p>The <code>manifest.json</code> file provides information about your Dapp. A sample is given below:</p>
+<pre class="highlight json tab-json"><code><span class="w">    </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"my-first-dapp"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Cool Dapp"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"iconUrl"</span><span class="p">:</span><span class="w"> </span><span class="s2">"images/title.png"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"This is just a toy dapp with almost no functionality"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.0.1"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"author"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Joe Bloggs"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>Here are the fields recognized by Parity UI:
+* <code>id</code> (required) - A unique identifier for your Dapp
+* <code>name</code> (required) - The name of your Dapp as it will be displayed on Parity UI
+* <code>iconUrl</code> - Link to the Dapp icon, relative to the folder of the Dapp: for example <code>icon.png</code>
+* <code>description</code> - Additional information about your Dapp that will be displayed in various Dapp browsers
+* <code>version</code> - Version of your Dapp
+* <code>author</code> - Name of the person or organization that made the Dapp
+* <code>localUrl</code> - If set, Parity UI will display the given URL, for example <code>http://localhost:3001</code>, instead of <code>index.html</code> when the user navigates to the Dapp. This setting is useful when developing with live or hot reloading.</p>
+<h4 id='index-html'>index.html</h4>
+<p><code>index.html</code> is the entry point of your Dapp. This page will be displayed when someone goes to your Dapp. An example is given below:</p>
+<pre class="highlight html tab-html"><code><span class="cp">&lt;!doctype html&gt;</span>
+<span class="nt">&lt;html&gt;</span>
+  <span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"utf-8"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;title&gt;</span>My Dapp<span class="nt">&lt;/title&gt;</span>
+    <span class="nt">&lt;link</span> <span class="na">href=</span><span class="s">"app.css"</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">type=</span><span class="s">"text/css"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;/head&gt;</span>
+  <span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"container"</span><span class="nt">&gt;&lt;/div&gt;</span>
+    <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"app.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+  <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre>
+<p>In the above html, <code>app.css</code> will be your Dapp-specific CSS styles and <code>app.js</code> will contain the specific Dapp logic.</p>
+
+<p>Note that Parity UI will automatically inject a global <code>ethereum</code> JavaScript object into your Dapp, as well as the legacy <code>parity</code> and <code>web3</code> objects. These variables will let you communicate with your node and thereby interact with the network.</p>
+<h4 id='app-css'>app.css</h4>
+<p>A very simple css file could contain the following:</p>
+<pre class="highlight css tab-css"><code><span class="nf">#container</span> <span class="p">{</span>
+  <span class="nl">margin</span><span class="p">:</span> <span class="m">1em</span><span class="p">;</span>
+  <span class="nl">font-size</span><span class="p">:</span> <span class="m">1.5em</span><span class="p">;</span>
+  <span class="nl">background</span><span class="p">:</span> <span class="m">#eee</span><span class="p">;</span>
+  <span class="nl">border-radius</span><span class="p">:</span> <span class="m">5px</span><span class="p">;</span>
+  <span class="nl">padding</span><span class="p">:</span> <span class="m">1.5em</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre><h4 id='app-js'>app.js</h4>
+<p>For a very simple application displaying the blockNumber, we would write the following:</p>
+<pre class="highlight javascript"><code><span class="nb">window</span><span class="p">.</span><span class="nx">parity</span><span class="p">.</span><span class="nx">api</span><span class="p">.</span><span class="nx">subscribe</span><span class="p">(</span><span class="s1">'eth_blockNumber'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">blockNumber</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'error'</span><span class="p">,</span> <span class="nx">error</span><span class="p">);</span>
+    <span class="k">return</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">'container'</span><span class="p">).</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">blockNumber</span><span class="p">.</span><span class="nx">toFormat</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre><h2 id='network-dapps'>Network Dapps</h2>
+<p>Once your local Dapp operates as intended, you might want to deploy your Dapp to the network. To do so, Parity UI includes a Dapp Registry application to register the manifest, icon and content. The instructions to deploy your Dapp to the network are <a href="Register-your-DAPP-for-discovery">detailed here</a>. You might also want to get familiar with the smart contracts and Dapps involved in the process: <a href="Parity-name-registry">Parity Name Registry</a>, <a href="Parity-Github-Hint">Parity GitHub Hint</a> and <a href="Parity-dapp-registry">Parity Dapp Registry</a>.</p>
+
+<ul>
+<li>It is recommended to do the deployment on the test network first.</li>
+<li><a href="Parity-dapp-registry">Register the Dapp</a> to receive a new unique network id.</li>
+<li>Generate the correct content hashes <a href="Parity-Github-Hint">via the GitHubHint Dapp</a> (GHH).
+
+<ul>
+<li>For manifests and files, you should use the <em>File Link</em> option</li>
+<li>For the actual Dapp content bundle, you should use the <em>Content Link</em> option</li>
+</ul></li>
+<li>Edit the Dapp <a href="Parity-dapp-registry">in the Dapp Registry</a> and supply the image, manifest and content hashes as generated in the previous step.</li>
+<li>The Dapp should now be visible in Parity UI.</li>
+</ul>
+<h2 id='additional-notes'>Additional notes</h2>
+<p>It is highly recommended that Dapp developers use the Parity UI registry for easy name lookups, especially when having multiple contracts on multiple chains. <a href="Parity-name-registry">The name registry</a> associates names to addresses in a straightforward and transparent manner, regardless of the chain.</p>

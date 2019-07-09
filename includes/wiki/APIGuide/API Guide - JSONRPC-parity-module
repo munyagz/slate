@@ -1,0 +1,2263 @@
+<h2 id='json-rpc-methods'>JSON-RPC methods</h2>
+<ul>
+<li><a href="#parity_alltransactionhashes">parity_allTransactionHashes</a></li>
+<li><a href="#parity_alltransactions">parity_allTransactions</a></li>
+<li><a href="#parity_call">parity_call</a></li>
+<li><a href="#parity_cidv0">parity_cidV0</a></li>
+<li><a href="#parity_composetransaction">parity_composeTransaction</a></li>
+<li><a href="#parity_consensuscapability">parity_consensusCapability</a></li>
+<li><a href="#parity_decryptmessage">parity_decryptMessage</a></li>
+<li><a href="#parity_encryptmessage">parity_encryptMessage</a></li>
+<li><a href="#parity_futuretransactions">parity_futureTransactions</a></li>
+<li><a href="#parity_getblockheaderbynumber">parity_getBlockHeaderByNumber</a></li>
+<li><a href="#parity_getblockreceipts">parity_getBlockReceipts</a></li>
+<li><a href="#parity_hardwarepinmatrixack">parity_hardwarePinMatrixAck</a></li>
+<li><a href="#parity_listopenedvaults">parity_listOpenedVaults</a></li>
+<li><a href="#parity_liststoragekeys">parity_listStorageKeys</a></li>
+<li><a href="#parity_listvaults">parity_listVaults</a></li>
+<li><a href="#parity_localtransactions">parity_localTransactions</a></li>
+<li><a href="#parity_lockedhardwareaccountsinfo">parity_lockedHardwareAccountsInfo</a></li>
+<li><a href="#parity_releasesinfo">parity_releasesInfo</a></li>
+<li><a href="#parity_signmessage">parity_signMessage</a></li>
+<li><a href="#parity_submitworkdetail">parity_submitWorkDetail</a></li>
+<li><a href="#parity_verifysignature">parity_verifySignature</a></li>
+<li><a href="#parity_versioninfo">parity_versionInfo</a></li>
+</ul>
+<h4 id='account-vaults'>Account Vaults</h4>
+<ul>
+<li><a href="#parity_changevault">parity_changeVault</a></li>
+<li><a href="#parity_changevaultpassword">parity_changeVaultPassword</a></li>
+<li><a href="#parity_closevault">parity_closeVault</a></li>
+<li><a href="#parity_getvaultmeta">parity_getVaultMeta</a></li>
+<li><a href="#parity_newvault">parity_newVault</a></li>
+<li><a href="#parity_openvault">parity_openVault</a></li>
+<li><a href="#parity_setvaultmeta">parity_setVaultMeta</a></li>
+</ul>
+<h4 id='accounts-read-only-and-signatures'>Accounts (read-only) and Signatures</h4>
+<ul>
+<li><a href="#parity_accountsinfo">parity_accountsInfo</a></li>
+<li><a href="#parity_checkrequest">parity_checkRequest</a></li>
+<li><a href="#parity_defaultaccount">parity_defaultAccount</a></li>
+<li><a href="#parity_generatesecretphrase">parity_generateSecretPhrase</a></li>
+<li><a href="#parity_hardwareaccountsinfo">parity_hardwareAccountsInfo</a></li>
+<li><a href="#parity_listaccounts">parity_listAccounts</a></li>
+<li><a href="#parity_phrasetoaddress">parity_phraseToAddress</a></li>
+<li><a href="#parity_postsign">parity_postSign</a></li>
+<li><a href="#parity_posttransaction">parity_postTransaction</a></li>
+</ul>
+<h4 id='block-authoring-aka-quot-mining-quot'>Block Authoring (aka &quot;mining&quot;)</h4>
+<ul>
+<li><a href="#parity_defaultextradata">parity_defaultExtraData</a></li>
+<li><a href="#parity_extradata">parity_extraData</a></li>
+<li><a href="#parity_gasceiltarget">parity_gasCeilTarget</a></li>
+<li><a href="#parity_gasfloortarget">parity_gasFloorTarget</a></li>
+<li><a href="#parity_mingasprice">parity_minGasPrice</a></li>
+<li><a href="#parity_transactionslimit">parity_transactionsLimit</a></li>
+</ul>
+<h4 id='development'>Development</h4>
+<ul>
+<li><a href="#parity_devlogs">parity_devLogs</a></li>
+<li><a href="#parity_devlogslevels">parity_devLogsLevels</a></li>
+</ul>
+<h4 id='network-information'>Network Information</h4>
+<ul>
+<li><a href="#parity_chain">parity_chain</a></li>
+<li><a href="#parity_chainstatus">parity_chainStatus</a></li>
+<li><a href="#parity_gaspricehistogram">parity_gasPriceHistogram</a></li>
+<li><a href="#parity_netchain">parity_netChain</a></li>
+<li><a href="#parity_netpeers">parity_netPeers</a></li>
+<li><a href="#parity_netport">parity_netPort</a></li>
+<li><a href="#parity_nextnonce">parity_nextNonce</a></li>
+<li><a href="#parity_pendingtransactions">parity_pendingTransactions</a></li>
+<li><a href="#parity_pendingtransactionsstats">parity_pendingTransactionsStats</a></li>
+<li><a href="#parity_registryaddress">parity_registryAddress</a></li>
+<li><a href="#parity_removetransaction">parity_removeTransaction</a></li>
+<li><a href="#parity_rpcsettings">parity_rpcSettings</a></li>
+<li><a href="#parity_unsignedtransactionscount">parity_unsignedTransactionsCount</a></li>
+</ul>
+<h4 id='node-settings'>Node Settings</h4>
+<ul>
+<li><a href="#parity_enode">parity_enode</a></li>
+<li><a href="#parity_mode">parity_mode</a></li>
+<li><a href="#parity_nodekind">parity_nodeKind</a></li>
+<li><a href="#parity_nodename">parity_nodeName</a></li>
+<li><a href="#parity_wsurl">parity_wsUrl</a></li>
+</ul>
+<h2 id='json-rpc-api-reference'>JSON-RPC API Reference</h2><h3 id='parity_alltransactionhashes'>parity_allTransactionHashes</h3>
+<p>Request the list of transactions present in the transaction pool/ transaction queue</p>
+<h4 id='parameters'>Parameters</h4>
+<p>None</p>
+<h4 id='returns'>Returns</h4>
+<ul>
+<li><code>Array</code> - List of transaction hash present in the node&#39;s transaction pool</li>
+</ul>
+<h4 id='example'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_allTransactionHashes&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: [
+    &quot;0x530683c1197f5b78a93d2ac07d41bd51913ddabd703b332b7024c0a8b45ab1ef&quot;,
+    &quot;0x385ad71ae858c3b229c30d4ac690f86396f8fd48b32bdba966306a9c95ab52ad&quot;,
+    &quot;0xdabc1f5156b2635f60c67d8cc27e9b07526f9239e9af821e80655766365dfa8d&quot;
+  ]
+}
+</code></p>
+
+<hr>
+<h3 id='parity_alltransactions'>parity_allTransactions</h3>
+<p>Returns all the transactions from the transaction queue.</p>
+<h4 id='parameters-2'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-2'>Returns</h4>
+<ul>
+<li><code>Array</code> - Transaction list.
+
+<ul>
+<li><code>hash</code>:   <code>Hash</code> - 32 Bytes - hash of the transaction.</li>
+<li><code>nonce</code>:   <code>Quantity</code> - The number of transactions made by the sender prior to this one.</li>
+<li><code>blockHash</code>:   <code>Hash</code> - 32 Bytes - hash of the block where this transaction was in. <code>null</code> when its pending.</li>
+<li><code>blockNumber</code>:   <code>Quantity</code> or <code>Tag</code> - Block number where this transaction was in. <code>null</code> when its pending.</li>
+<li><code>transactionIndex</code>:   <code>Quantity</code> - Integer of the transactions index position in the block. <code>null</code> when its pending.</li>
+<li><code>from</code>:   <code>Address</code> - 20 Bytes - address of the sender.</li>
+<li><code>to</code>:   <code>Address</code> - 20 Bytes - address of the receiver. <code>null</code> when its a contract creation transaction.</li>
+<li><code>value</code>:   <code>Quantity</code> - Value transferred in Wei.</li>
+<li><code>gasPrice</code>:   <code>Quantity</code> - Gas price provided by the sender in Wei.</li>
+<li><code>gas</code>:   <code>Quantity</code> - Gas provided by the sender.</li>
+<li><code>input</code>:   <code>Data</code> - The data send along with the transaction.</li>
+<li><code>creates</code>:   <code>Address</code> - (optional) Address of a created contract or <code>null</code>.</li>
+<li><code>raw</code>:   <code>Data</code> - Raw transaction data.</li>
+<li><code>publicKey</code>:   <code>Data</code> - Public key of the signer.</li>
+<li><code>chainId</code>:   <code>Quantity</code> - The chain id of the transaction, if any.</li>
+<li><code>standardV</code>:   <code>Quantity</code> - The standardized V field of the signature (0 or 1).</li>
+<li><code>v</code>:   <code>Quantity</code> - The V field of the signature.</li>
+<li><code>r</code>:   <code>Quantity</code> - The R field of the signature.</li>
+<li><code>s</code>:   <code>Quantity</code> - The S field of the signature.</li>
+<li><code>condition</code>:   <code>Object</code> - (optional) Conditional submission, Block number in <code>block</code> or timestamp in <code>time</code> or <code>null</code>.</li>
+</ul></li>
+</ul>
+<h4 id='example-2'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_allTransactions&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: [
+    {
+      &quot;blockHash&quot;: null,
+      &quot;blockNumber&quot;: null,
+      &quot;chainId&quot;: null,
+      &quot;condition&quot;: null,
+      &quot;creates&quot;: null,
+      &quot;from&quot;: &quot;0x5f3dffcf347944d3739b0805c934d86c8621997f&quot;,
+      &quot;gas&quot;: &quot;0x493e0&quot;,
+      &quot;gasPrice&quot;: &quot;0x12a05f200&quot;,
+      &quot;hash&quot;: &quot;0x045301a128ffcb4662dd199d1176bdf4cc9f0628e10d6bf120edfb52e3e39a78&quot;,
+      &quot;input&quot;: &quot;0x13f56f730...f3b4dc000&quot;,
+      &quot;nonce&quot;: &quot;0x577&quot;,
+      &quot;publicKey&quot;: &quot;0x3bb...9ce1b1&quot;,
+      &quot;r&quot;: &quot;0x6fd2c7a5dbb8795038ca258196083b3eabe15a20e3020c3f45e88f2e447be410&quot;,
+      &quot;raw&quot;: &quot;0xf88b8247d202...83eef3f8916bb818ce7&quot;,
+      &quot;s&quot;: &quot;0x5993992c547d20234aabfc8c32a58d25784255fef500383eef3f8916bb818ce7&quot;,
+      &quot;standardV&quot;: &quot;0x0&quot;,
+      &quot;to&quot;: &quot;0xe8b2d01ffa0a15736b2370b6e5064f9702c891b6&quot;,
+      &quot;transactionIndex&quot;: null,
+      &quot;v&quot;: &quot;0x1b&quot;,
+      &quot;value&quot;: &quot;0x0&quot;
+    },
+    { ... }, { ... }, ...
+  ]
+}
+</code></p>
+
+<hr>
+<h3 id='parity_call'>parity_call</h3>
+<p>perform multiple <code>eth_call</code> requests on top of each other, i.e. transaction n will be executed on top of a pending block with all n-1 transactions applied first. Allows to get a result of execution of dependent transactions.</p>
+<h4 id='parameters-3'>Parameters</h4>
+<ol>
+<li><code>Array</code> - List of transaction&#39;s object to be called in sequence</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">"from"</span><span class="p">:</span> <span class="s2">"0x407d73d8a49eeb85d32cf465507dd71d507100c1"</span><span class="p">,</span>
+      <span class="s2">"to"</span><span class="p">:</span> <span class="s2">"0xa94f5374fce5edbc8e2a8697c15331677e6ebf0b"</span><span class="p">,</span>
+      <span class="s2">"value"</span><span class="p">:</span> <span class="s2">"0x186a0"</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">"from"</span><span class="p">:</span> <span class="s2">"0x407d73d8a49eeb85d32cf465507dd71d507100c1"</span><span class="p">,</span>
+      <span class="s2">"to"</span><span class="p">:</span> <span class="s2">"0xa94f5374fce5edbc8e2a8697c15331677e6ebf0b"</span><span class="p">,</span>
+      <span class="s2">"value"</span><span class="p">:</span> <span class="s2">"0x186a0"</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-3'>Returns</h4>
+<ul>
+<li><code>Array</code> - List of the return value of each call.</li>
+</ul>
+<h4 id='example-3'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_call&quot;,&quot;params&quot;:[[{&quot;from&quot;:&quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;,&quot;to&quot;:&quot;0xa94f5374fce5edbc8e2a8697c15331677e6ebf0b&quot;,&quot;value&quot;:&quot;0x186a0&quot;},{&quot;from&quot;:&quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;,&quot;to&quot;:&quot;0xa94f5374fce5edbc8e2a8697c15331677e6ebf0b&quot;,&quot;value&quot;:&quot;0x186a0&quot;}]],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: [
+    &quot;0x&quot;,
+    &quot;0x&quot;
+  ]
+}
+</code></p>
+
+<hr>
+<h3 id='parity_cidv0'>parity_cidV0</h3>
+<p>Compute a v0 IPFS Content ID from protobuf encoded bytes.</p>
+<h4 id='parameters-4'>Parameters</h4>
+<ol>
+<li><code>Data</code> - to encode.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span><span class="s2">"0x666f6f626172"</span><span class="p">]</span>
+</code></pre><h4 id='returns-4'>Returns</h4>
+<ul>
+<li><code>String</code> - Base58 encoded CID</li>
+</ul>
+<h4 id='example-4'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_cidV0&quot;,&quot;params&quot;:[&quot;0x666f6f626172&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;QmSbFjqjd6nFwNHqsBCC7SK8GShGcayLUEtysJjNGhZAnC&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_composetransaction'>parity_composeTransaction</h3>
+<p>Given partial transaction request produces transaction with all fields filled in. Such transaction can be then signed externally.</p>
+<h4 id='parameters-5'>Parameters</h4>
+<ol>
+<li><code>Object</code> - see <a href="JSONRPC-eth-module#eth_sendtransaction"><code>eth_sendTransaction</code></a>.
+
+<ul>
+<li><code>from</code>:   <code>Address</code> - 20 Bytes - The address the transaction is send from.</li>
+<li><code>to</code>:   <code>Address</code> - (optional) 20 Bytes - The address the transaction is directed to.</li>
+<li><code>gas</code>:   <code>Quantity</code> - (optional) Integer of the gas provided for the transaction execution. eth_call consumes zero gas, but this parameter may be needed by some executions.</li>
+<li><code>gasPrice</code>:   <code>Quantity</code> - (optional) Integer of the gas price used for each paid gas.</li>
+<li><code>value</code>:   <code>Quantity</code> - (optional) Integer of the value sent with this transaction.</li>
+<li><code>data</code>:   <code>Data</code> - (optional) 4 byte hash of the method signature followed by encoded parameters. For details see <a href="https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI">Ethereum Contract ABI</a>.</li>
+<li><code>nonce</code>:   <code>Quantity</code> - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.</li>
+<li><code>condition</code>:   <code>Object</code> - (optional) Conditional submission of the transaction. Can be either an integer block number <code>{ block: 1 }</code> or UTC timestamp (in seconds) <code>{ time: 1491290692 }</code> or <code>null</code>.</li>
+</ul></li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[{</span>
+  <span class="s2">"from"</span><span class="p">:</span> <span class="s2">"0xb60e8dd61c5d32be8058bb8eb970870f07233155"</span><span class="p">,</span>
+  <span class="s2">"to"</span><span class="p">:</span> <span class="s2">"0xd46e8dd67c5d32be8058bb8eb970870f07244567"</span><span class="p">,</span>
+  <span class="s2">"value"</span><span class="p">:</span> <span class="s2">"0x9184e72a"</span> <span class="c1">// 2441406250</span>
+<span class="p">}]</span>
+</code></pre><h4 id='returns-5'>Returns</h4>
+<ul>
+<li><code>Object</code> - Transaction object (same as the parameter) with missing optional fields filled in by defaults.</li>
+</ul>
+<h4 id='example-5'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_composeTransaction&quot;,&quot;params&quot;:[{&quot;from&quot;:&quot;0xb60e8dd61c5d32be8058bb8eb970870f07233155&quot;,&quot;to&quot;:&quot;0xd46e8dd67c5d32be8058bb8eb970870f07244567&quot;,&quot;value&quot;:&quot;0x9184e72a&quot;}],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: {
+    &quot;condition&quot;: null,
+    &quot;data&quot;: &quot;0x&quot;,
+    &quot;from&quot;: &quot;0xb60e8dd61c5d32be8058bb8eb970870f07233155&quot;,
+    &quot;gas&quot;: &quot;0xe57e0&quot;,
+    &quot;gasPrice&quot;: &quot;0x4a817c800&quot;,
+    &quot;nonce&quot;: &quot;0x0&quot;,
+    &quot;to&quot;: &quot;0xd46e8dd67c5d32be8058bb8eb970870f07244567&quot;,
+    &quot;value&quot;: &quot;0x9184e72a&quot;
+  }
+}
+</code></p>
+
+<hr>
+<h3 id='parity_consensuscapability'>parity_consensusCapability</h3>
+<p>Returns information on current consensus capability.</p>
+<h4 id='parameters-6'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-6'>Returns</h4>
+<ul>
+<li><code>Object</code> - or <code>String</code> - Either <code>&quot;capable&quot;</code>, <code>{&quot;capableUntil&quot;:N}</code>, <code>{&quot;incapableSince&quot;:N}</code> or <code>&quot;unknown&quot;</code> (<code>N</code> is a block number).</li>
+</ul>
+<h4 id='example-6'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_consensusCapability&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;capable&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_decryptmessage'>parity_decryptMessage</h3>
+<p>Decrypt a message encrypted with a ECIES public key.</p>
+<h4 id='parameters-7'>Parameters</h4>
+<ol>
+<li><code>Address</code> - Account which can decrypt the message.</li>
+<li><code>Data</code> - Encrypted message.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x00a329c0648769a73afac7f9381e08fb43dbea72"</span><span class="p">,</span>
+  <span class="s2">"0x0405afee7fa2ab3e48c27b00d543389270cb7267fc191ca1311f297255a83cbe8d77a4ba135b51560700a582924fa86d2b19029fcb50d2b68d60a7df1ba81df317a19c8def117f2b9cf8c2618be0e3f146a5272fb9e5528719d2d7a1bd91fa620901cffa756305c79c093e7af30fa3c1587029421351c34a7c1e5a2b"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-7'>Returns</h4>
+<ul>
+<li><code>Data</code> - Decrypted message.</li>
+</ul>
+<h4 id='example-7'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_decryptMessage&quot;,&quot;params&quot;:[&quot;0x00a329c0648769a73afac7f9381e08fb43dbea72&quot;,&quot;0x0405afee7fa2ab3e48c27b00d543389270cb7267fc191ca1311f297255a83cbe8d77a4ba135b51560700a582924fa86d2b19029fcb50d2b68d60a7df1ba81df317a19c8def117f2b9cf8c2618be0e3f146a5272fb9e5528719d2d7a1bd91fa620901cffa756305c79c093e7af30fa3c1587029421351c34a7c1e5a2b&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0x68656c6c6f20776f726c64&quot; // hello world
+}
+</code></p>
+
+<hr>
+<h3 id='parity_encryptmessage'>parity_encryptMessage</h3>
+<p>Encrypt some data with a public key under ECIES.</p>
+<h4 id='parameters-8'>Parameters</h4>
+<ol>
+<li><code>Hash</code> - Public EC key generated with <code>secp256k1</code> curve, truncated to the last 64 bytes.</li>
+<li><code>Data</code> - The message to encrypt.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0xD219959D466D666060284733A80DDF025529FEAA8337169540B3267B8763652A13D878C40830DD0952639A65986DBEC611CF2171A03CFDC37F5A40537068AA4F"</span><span class="p">,</span>
+  <span class="s2">"0x68656c6c6f20776f726c64"</span> <span class="c1">// "hello world"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-8'>Returns</h4>
+<ul>
+<li><code>Data</code> - Encrypted message.</li>
+</ul>
+<h4 id='example-8'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_encryptMessage&quot;,&quot;params&quot;:[&quot;0xD219959D466D666060284733A80DDF025529FEAA8337169540B3267B8763652A13D878C40830DD0952639A65986DBEC611CF2171A03CFDC37F5A40537068AA4F&quot;,&quot;0x68656c6c6f20776f726c64&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0x0491debeec5e874a453f84114c084c810708ebcb553b02f1b8c05511fa4d1a25fa38eb49a32c815e2b39b7bcd56d66648bf401067f15413dae683084ca7b01e21df89be9ec4bc6c762a657dbd3ba1540f557e366681b53629bb2c02e1443b5c0adc6b68f3442c879456d6a21ec9ed07847fa3c3ecb73ec7ee9f8e32d&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_futuretransactions'>parity_futureTransactions</h3>
+<p><strong>This method is deprecated in favor of <a href="#parity_allTransactions">parity_allTransactions</a></strong></p>
+
+<p>Returns all future transactions from transaction queue.</p>
+<h4 id='parameters-9'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-9'>Returns</h4>
+<ul>
+<li><code>Array</code> - Transaction list.
+
+<ul>
+<li><code>hash</code>:   <code>Hash</code> - 32 Bytes - hash of the transaction.</li>
+<li><code>nonce</code>:   <code>Quantity</code> - The number of transactions made by the sender prior to this one.</li>
+<li><code>blockHash</code>:   <code>Hash</code> - 32 Bytes - hash of the block where this transaction was in. <code>null</code> when its pending.</li>
+<li><code>blockNumber</code>:   <code>Quantity</code> or <code>Tag</code> - Block number where this transaction was in. <code>null</code> when its pending.</li>
+<li><code>transactionIndex</code>:   <code>Quantity</code> - Integer of the transactions index position in the block. <code>null</code> when its pending.</li>
+<li><code>from</code>:   <code>Address</code> - 20 Bytes - address of the sender.</li>
+<li><code>to</code>:   <code>Address</code> - 20 Bytes - address of the receiver. <code>null</code> when its a contract creation transaction.</li>
+<li><code>value</code>:   <code>Quantity</code> - Value transferred in Wei.</li>
+<li><code>gasPrice</code>:   <code>Quantity</code> - Gas price provided by the sender in Wei.</li>
+<li><code>gas</code>:   <code>Quantity</code> - Gas provided by the sender.</li>
+<li><code>input</code>:   <code>Data</code> - The data send along with the transaction.</li>
+<li><code>creates</code>:   <code>Address</code> - (optional) Address of a created contract or <code>null</code>.</li>
+<li><code>raw</code>:   <code>Data</code> - Raw transaction data.</li>
+<li><code>publicKey</code>:   <code>Data</code> - Public key of the signer.</li>
+<li><code>chainId</code>:   <code>Quantity</code> - The chain id of the transaction, if any.</li>
+<li><code>standardV</code>:   <code>Quantity</code> - The standardized V field of the signature (0 or 1).</li>
+<li><code>v</code>:   <code>Quantity</code> - The V field of the signature.</li>
+<li><code>r</code>:   <code>Quantity</code> - The R field of the signature.</li>
+<li><code>s</code>:   <code>Quantity</code> - The S field of the signature.</li>
+<li><code>condition</code>:   <code>Object</code> - (optional) Conditional submission, Block number in <code>block</code> or timestamp in <code>time</code> or <code>null</code>.</li>
+</ul></li>
+</ul>
+<h4 id='example-9'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_futureTransactions&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: [
+    {
+      &quot;hash&quot;: &quot;0x80de421cd2e7e46824a91c343ca42b2ff339409eef09e2d9d73882462f8fce31&quot;,
+      &quot;nonce&quot;: &quot;0x1&quot;,
+      &quot;blockHash&quot;: null,
+      &quot;blockNumber&quot;: null,
+      &quot;transactionIndex&quot;: null,
+      &quot;from&quot;: &quot;0xe53e478c072265e2d9a99a4301346700c5fbb406&quot;,
+      &quot;to&quot;: &quot;0xf5d405530dabfbd0c1cab7a5812f008aa5559adf&quot;,
+      &quot;value&quot;: &quot;0x2efc004ac03a4996&quot;,
+      &quot;gasPrice&quot;: &quot;0x4a817c800&quot;,
+      &quot;gas&quot;: &quot;0x5208&quot;,
+      &quot;input&quot;: &quot;0x&quot;,
+      &quot;creates&quot;: null,
+      &quot;raw&quot;: &quot;0xf86c018504a817c80082520894f5d405530dabfbd0c1cab7a5812f008aa5559adf882efc004ac03a49968025a0b40c6967a7e8bbdfd99a25fd306b9ef23b80e719514aeb7ddd19e2303d6fc139a06bf770ab08119e67dc29817e1412a0e3086f43da308c314db1b3bca9fb6d32bd&quot;,
+      &quot;publicKey&quot;: &quot;0xeba33fd74f06236e17475bc5b6d1bac718eac048350d77d3fc8fbcbd85782a57c821255623c4fd1ebc9d555d07df453b2579ee557b7203fc256ca3b3401e4027&quot;,
+      &quot;chainId&quot;: 1,
+      &quot;standardV&quot;: &quot;0x0&quot;,
+      &quot;v&quot;: &quot;0x25&quot;,
+      &quot;r&quot;: &quot;0xb40c6967a7e8bbdfd99a25fd306b9ef23b80e719514aeb7ddd19e2303d6fc139&quot;,
+      &quot;s&quot;: &quot;0x6bf770ab08119e67dc29817e1412a0e3086f43da308c314db1b3bca9fb6d32bd&quot;,
+      &quot;condition&quot;: {
+        &quot;block&quot;: 1
+      }
+    },
+    { ... }, { ... }, ...
+  ]
+}
+</code></p>
+
+<hr>
+<h3 id='parity_getblockheaderbynumber'>parity_getBlockHeaderByNumber</h3>
+<p>Get block header. Same as <a href="JSONRPC-eth-module#eth_getblockbynumber"><code>eth_getBlockByNumber</code></a> but without uncles and transactions.</p>
+<h4 id='parameters-10'>Parameters</h4>
+<ol>
+<li><code>Quantity</code> or <code>Tag</code> - integer of a block number, or the string <code>&#39;earliest&#39;</code>, <code>&#39;latest&#39;</code> or <code>&#39;pending&#39;</code>, as in the default block parameter.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x1b4"</span> <span class="c1">// 436</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-10'>Returns</h4>
+<ul>
+<li><code>Object</code> - Block header</li>
+</ul>
+<h4 id='example-10'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_getBlockHeaderByNumber&quot;,&quot;params&quot;:[&quot;0x1b4&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: {
+    &quot;author&quot;: &quot;0xbb7b8287f3f0a933474a79eae42cbca977791171&quot;,
+    &quot;difficulty&quot;: &quot;0x4ea3f27bc&quot;,
+    &quot;extraData&quot;: &quot;0x476574682f4c5649562f76312e302e302f6c696e75782f676f312e342e32&quot;,
+    &quot;gasLimit&quot;: &quot;0x1388&quot;,
+    &quot;gasUsed&quot;: &quot;0x0&quot;,
+    &quot;hash&quot;: &quot;0xdc0818cf78f21a8e70579cb46a43643f78291264dda342ae31049421c82d21ae&quot;,
+    &quot;logsBloom&quot;: &quot;0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000&quot;,
+    &quot;miner&quot;: &quot;0xbb7b8287f3f0a933474a79eae42cbca977791171&quot;,
+    &quot;mixHash&quot;: &quot;0x4fffe9ae21f1c9e15207b1f472d5bbdd68c9595d461666602f2be20daf5e7843&quot;,
+    &quot;nonce&quot;: &quot;0x689056015818adbe&quot;,
+    &quot;number&quot;: &quot;0x1b4&quot;,
+    &quot;parentHash&quot;: &quot;0xe99e022112df268087ea7eafaf4790497fd21dbeeb6bd7a1721df161a6657a54&quot;,
+    &quot;receiptsRoot&quot;: &quot;0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421&quot;,
+    &quot;sealFields&quot;: [
+      &quot;0xa04fffe9ae21f1c9e15207b1f472d5bbdd68c9595d461666602f2be20daf5e7843&quot;,
+      &quot;0x88689056015818adbe&quot;
+    ],
+    &quot;sha3Uncles&quot;: &quot;0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347&quot;,
+    &quot;size&quot;: &quot;0x21b&quot;,
+    &quot;stateRoot&quot;: &quot;0xddc8b0234c2e0cad087c8b389aa7ef01f7d79b2570bccb77ce48648aa61c904d&quot;,
+    &quot;timestamp&quot;: &quot;0x55ba467c&quot;,
+    &quot;transactionsRoot&quot;: &quot;0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421&quot;
+  }
+}
+</code></p>
+
+<hr>
+<h3 id='parity_getblockreceipts'>parity_getBlockReceipts</h3>
+<p>Get receipts from all transactions from particular block, more efficient than fetching the receipts one-by-one</p>
+<h4 id='parameters-11'>Parameters</h4>
+<ol>
+<li><code>Quantity</code> or <code>Tag</code> - integer of a block number, or the string <code>&#39;earliest&#39;</code>, <code>&#39;latest&#39;</code> or <code>&#39;pending&#39;</code>, as in the default block parameter.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span><span class="s2">"0x8D2B29"</span><span class="p">]</span>
+</code></pre><h4 id='returns-11'>Returns</h4>
+<ul>
+<li><code>Array</code> - The list of all the transaction&#39;s receipts of the given block</li>
+</ul>
+<h4 id='example-11'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_getBlockReceipts&quot;,&quot;params&quot;:[&quot;0x8D2B29&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: [
+    {
+      &quot;blockHash&quot;: &quot;0x64d67cf84d95f8dfa1e1c3b5a5260aaf801ac99529b4ec3ae19bb06ba78c7bd5&quot;,
+      &quot;blockNumber&quot;: &quot;0x8d2b29&quot;,
+      &quot;contractAddress&quot;: null,
+      &quot;cumulativeGasUsed&quot;: &quot;0x5208&quot;,
+      &quot;from&quot;: &quot;0x4d6bb4ed029b33cf25d0810b029bd8b1a6bcab7b&quot;,
+      &quot;gasUsed&quot;: &quot;0x5208&quot;,
+      &quot;logs&quot;: [],
+      &quot;logsBloom&quot;: &quot;0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000&quot;,
+      &quot;root&quot;: null,
+      &quot;status&quot;: &quot;0x1&quot;,
+      &quot;to&quot;: &quot;0xe9c245293dac615c11a5bf26fcec91c3617645e4&quot;,
+      &quot;transactionHash&quot;: &quot;0x1eba82fb5e8426b520c49a5d8dc6c24157e8f45fb9102aca4a99f5617c1539fc&quot;,
+      &quot;transactionIndex&quot;: &quot;0x0&quot;
+    },
+    {
+      &quot;blockHash&quot;: &quot;0x64d67cf84d95f8dfa1e1c3b5a5260aaf801ac99529b4ec3ae19bb06ba78c7bd5&quot;,
+      &quot;blockNumber&quot;: &quot;0x8d2b29&quot;,
+      &quot;contractAddress&quot;: null,
+      &quot;cumulativeGasUsed&quot;: &quot;0x3fc28&quot;,
+      &quot;from&quot;: &quot;0x0caf0d921b2bd24ca04e1f06344e976af223783b&quot;,
+      &quot;gasUsed&quot;: &quot;0x3aa20&quot;,
+      &quot;logs&quot;: [],
+      &quot;logsBloom&quot;: &quot;0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000&quot;,
+      &quot;root&quot;: null,
+      &quot;status&quot;: &quot;0x1&quot;,
+      &quot;to&quot;: &quot;0xf2bb17cb59746cae43d65eec233925b6584cddef&quot;,
+      &quot;transactionHash&quot;: &quot;0x70a50d28db69e5c7a8686141f282530d52e7e3c625296dc53eb5684afa727886&quot;,
+      &quot;transactionIndex&quot;: &quot;0x1&quot;
+    }
+  ]
+}
+</code></p>
+
+<hr>
+<h3 id='parity_hardwarepinmatrixack'>parity_hardwarePinMatrixAck</h3>
+<p>Send a pin to a hardware wallet at a specific path to unlock it</p>
+<h4 id='parameters-12'>Parameters</h4>
+<ol>
+<li><code>String</code> - path to the device</li>
+<li><code>String</code> - the pin as recieved from the pin matrix</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"USB_2b24_0001_14100000"</span><span class="p">,</span>
+  <span class="s2">"1234"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-12'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - Whether or not the pin entry successfully unlocked the device</li>
+</ul>
+<h4 id='example-12'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_hardwarePinMatrixAck&quot;,&quot;params&quot;:[&quot;USB_2b24_0001_14100000&quot;,&quot;1234&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_listopenedvaults'>parity_listOpenedVaults</h3>
+<p>Returns a list of all opened vaults</p>
+<h4 id='parameters-13'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-13'>Returns</h4>
+<ul>
+<li><code>Array</code> - Names of all opened vaults</li>
+</ul>
+<h4 id='example-13'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_listOpenedVaults&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;[&#39;Personal&#39;]&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_liststoragekeys'>parity_listStorageKeys</h3>
+<p>Returns all storage keys of the given address (first parameter) if Fat DB is enabled (<code>--fat-db</code>), <code>null</code> otherwise.</p>
+<h4 id='parameters-14'>Parameters</h4>
+<ol>
+<li><code>Address</code> - 20 Bytes - Account for which to retrieve the storage keys.</li>
+<li><code>Quantity</code> - Integer number of addresses to display in a batch.</li>
+<li><code>Hash</code> - 32 Bytes - Offset storage key from which the batch should start in order, or <code>null</code>.</li>
+<li><code>Quantity</code> or <code>Tag</code> - (optional) integer block number, or the string <code>&#39;latest&#39;</code>, <code>&#39;earliest&#39;</code> or <code>&#39;pending&#39;</code>.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x407d73d8a49eeb85d32cf465507dd71d507100c1"</span><span class="p">,</span>
+  <span class="mi">5</span><span class="p">,</span>
+  <span class="kc">null</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-14'>Returns</h4>
+<ul>
+<li><code>Array</code> - Requested number of 32 byte long storage keys for the given account or <code>null</code> if Fat DB is not enabled.</li>
+</ul>
+<h4 id='example-14'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_listStorageKeys&quot;,&quot;params&quot;:[&quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;,5,null],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: [
+    &quot;0xaab1a2940583e213f1d57a3ed358d5f5406177c8ff3c94516bfef3ea62d00c22&quot;,
+    &quot;0xba8469eca5641b186e86cbc5343dfa5352df04feb4564cd3cf784f213aaa0319&quot;,
+    &quot;0x769d107ba778d90205d7a159e820c41c20bf0783927b426c602561e74b7060e5&quot;,
+    &quot;0x0289865bcaa58f7f5bf875495ac7af81e3630eb88a3a0358407c7051a850624a&quot;,
+    &quot;0x32e0536502b9163b0a1ce6e3aabd95fa4a2bf602bbde1b9118015648a7a51178&quot;
+  ]
+}
+</code></p>
+
+<hr>
+<h3 id='parity_listvaults'>parity_listVaults</h3>
+<p>Returns a list of all available vaults</p>
+<h4 id='parameters-15'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-15'>Returns</h4>
+<ul>
+<li><code>Array</code> - Names of all available vaults</li>
+</ul>
+<h4 id='example-15'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_listVaults&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;[&#39;Personal&#39;,&#39;Work&#39;]&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_localtransactions'>parity_localTransactions</h3>
+<p>Returns an object of current and past local transactions.</p>
+<h4 id='parameters-16'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-16'>Returns</h4>
+<ul>
+<li><code>Object</code> - Mapping of transaction hashes to status objects status object.</li>
+</ul>
+<h4 id='example-16'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_localTransactions&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: {
+    &quot;0x09e64eb1ae32bb9ac415ce4ddb3dbad860af72d9377bb5f073c9628ab413c532&quot;: {
+      &quot;status&quot;: &quot;mined&quot;,
+      &quot;transaction&quot;: {
+        &quot;from&quot;: &quot;0x00a329c0648769a73afac7f9381e08fb43dbea72&quot;,
+        &quot;to&quot;: &quot;0x00a289b43e1e4825dbedf2a78ba60a640634dc40&quot;,
+        &quot;value&quot;: &quot;0xfffff&quot;,
+        &quot;blockHash&quot;: null,
+        &quot;blockNumber&quot;: null,
+        &quot;creates&quot;: null,
+        &quot;gas&quot;: &quot;0xe57e0&quot;,
+        &quot;gasPrice&quot;: &quot;0x2d20cff33&quot;,
+        &quot;hash&quot;: &quot;0x09e64eb1ae32bb9ac415ce4ddb3dbad860af72d9377bb5f073c9628ab413c532&quot;,
+        &quot;input&quot;: &quot;0x&quot;,
+        &quot;condition&quot;: {
+          &quot;block&quot;: 1
+        },
+        &quot;chainId&quot;: null,
+        &quot;nonce&quot;: &quot;0x0&quot;,
+        &quot;publicKey&quot;: &quot;0x3fa8c08c65a83f6b4ea3e04e1cc70cbe3cd391499e3e05ab7dedf28aff9afc538200ff93e3f2b2cb5029f03c7ebee820d63a4c5a9541c83acebe293f54cacf0e&quot;,
+        &quot;raw&quot;: &quot;0xf868808502d20cff33830e57e09400a289b43e1e4825dbedf2a78ba60a640634dc40830fffff801ca034c333b0b91cd832a3414d628e3fea29a00055cebf5ba59f7038c188404c0cf3a0524fd9b35be170439b5ffe89694ae0cfc553cb49d1d8b643239e353351531532&quot;,
+        &quot;standardV&quot;: &quot;0x1&quot;,
+        &quot;v&quot;: &quot;0x1c&quot;,
+        &quot;r&quot;: &quot;0x34c333b0b91cd832a3414d628e3fea29a00055cebf5ba59f7038c188404c0cf3&quot;,
+        &quot;s&quot;: &quot;0x524fd9b35be170439b5ffe89694ae0cfc553cb49d1d8b643239e353351531532&quot;,
+        &quot;transactionIndex&quot;: null
+      }
+    },
+    &quot;0x...&quot;: { ... }
+  }
+}
+</code></p>
+
+<hr>
+<h3 id='parity_lockedhardwareaccountsinfo'>parity_lockedHardwareAccountsInfo</h3>
+<p>Provides a list of paths to locked hardware wallets</p>
+<h4 id='parameters-17'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-17'>Returns</h4>
+<ul>
+<li><code>Array</code> - Paths of all locked hardware wallets</li>
+</ul>
+<h4 id='example-17'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_lockedHardwareAccountsInfo&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;[&#39;/dev/hidraw0&#39;]&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_releasesinfo'>parity_releasesInfo</h3>
+<p>returns a ReleasesInfo object describing the current status of releases</p>
+<h4 id='parameters-18'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-18'>Returns</h4>
+<ul>
+<li><code>Object</code> - Information on current releases, <code>null</code> if not available.
+
+<ul>
+<li><code>fork</code>:   <code>Quantity</code> - Block number representing the last known fork for this chain, which may be in the future.</li>
+<li><code>minor</code>:   <code>Object</code> - Information about latest minor update to current version, <code>null</code> if this is the latest minor version.</li>
+<li><code>track</code>:   <code>Object</code> - Information about the latest release in this track.</li>
+</ul></li>
+</ul>
+<h4 id='example-18'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_releasesInfo&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: null
+}
+</code></p>
+
+<hr>
+<h3 id='parity_signmessage'>parity_signMessage</h3>
+<p>Sign the hashed message bytes with the given account.</p>
+<h4 id='parameters-19'>Parameters</h4>
+<ol>
+<li><code>Address</code> - Account which signs the message.</li>
+<li><code>String</code> - Passphrase to unlock the account.</li>
+<li><code>Data</code> - Hashed message.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0xc171033d5cbff7175f29dfd3a63dda3d6f8f385e"</span><span class="p">,</span>
+  <span class="s2">"password1"</span><span class="p">,</span>
+  <span class="s2">"0xbc36789e7a1e281436464229828f817d6612f7b477d66591ff96a9e064bcc98a"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-19'>Returns</h4>
+<ul>
+<li><code>Data</code> - Message signature.</li>
+</ul>
+<h4 id='example-19'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_signMessage&quot;,&quot;params&quot;:[&quot;0xc171033d5cbff7175f29dfd3a63dda3d6f8f385e&quot;,&quot;password1&quot;,&quot;0xbc36789e7a1e281436464229828f817d6612f7b477d66591ff96a9e064bcc98a&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0x1d9e33a8cf8bfc089a172bca01da462f9e359c6cb1b0f29398bc884e4d18df4f78588aee4fb5cc067ca62d2abab995e0bba29527be6ac98105b0320020a2efaf00&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_submitworkdetail'>parity_submitWorkDetail</h3>
+<p>Used for submitting a proof-of-work solution. Similar to <code>eth_submitWork</code> but will return the block hash on success, and return an explicit error message on failure.</p>
+<h4 id='parameters-20'>Parameters</h4>
+<ol>
+<li><code>Data</code> - 8 Bytes - The nonce found (64 bits).</li>
+<li><code>Data</code> - 32 Bytes - The header&#39;s pow-hash (256 bits)</li>
+<li><code>Data</code> - 32 Bytes - The mix digest (256 bits).</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x0000000000000001"</span><span class="p">,</span>
+  <span class="s2">"0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"</span><span class="p">,</span>
+  <span class="s2">"0xD1FE5700000000000000000000000000D1FE5700000000000000000000000000"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-20'>Returns</h4>
+<ul>
+<li><code>Hash</code> - Hash of the submitted block if successful</li>
+</ul>
+<h4 id='example-20'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_submitWorkDetail&quot;,&quot;params&quot;:[&quot;0x0000000000000001&quot;,&quot;0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef&quot;,&quot;0xD1FE5700000000000000000000000000D1FE5700000000000000000000000000&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0x07a992176ab51ee50539c1ba287bef937fe49c9a96dafa03954fb6fefa594691&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_verifysignature'>parity_verifySignature</h3>
+<p>Recovers the public key and address that produced the given signature, as well as checks for chain replay protection against the current chain spec</p>
+<h4 id='parameters-21'>Parameters</h4>
+<ol>
+<li><code>Boolean</code> - flag to indicate if this signature was produced with the &#39;Ethereum Signed Message&#39; prefix, usually signatures gotten from <a href="JSONRPC-eth-module#eth_signMessage"><code>eth_signMessage</code></a> are prefixed.</li>
+<li><code>Data</code> - Hashed message.</li>
+<li><code>Quantity</code> - The R field of the signature.</li>
+<li><code>Quantity</code> - The S field of the signature.</li>
+<li><code>Quantity</code> - The V field of the signature.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="kc">true</span><span class="p">,</span>
+  <span class="s2">"0xbc36789e7a1e281436464229828f817d6612f7b477d66591ff96a9e064bcc98a"</span><span class="p">,</span>
+  <span class="s2">"0x4355c47d63924e8a72e509b65029052eb6c299d53a04e167c5775fd466751c9d"</span><span class="p">,</span>
+  <span class="s2">"0x07299936d304c153f6443dfa05f40ff007d72911b6f72307f996231605b91562"</span><span class="p">,</span>
+  <span class="s2">"0x1b"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-21'>Returns</h4>
+<ul>
+<li><code>Object</code> - Information recovered from the signature
+
+<ul>
+<li><code>address</code>:   <code>Address</code> - The address recovered from the signature</li>
+<li><code>publicKey</code>:   <code>Quantity</code> - Public key recovered from the signature</li>
+<li><code>isValidForCurrentChain</code>:   <code>Boolean</code> - Flag that reports if this signture was produced for the current chain spec</li>
+</ul></li>
+</ul>
+<h4 id='example-21'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_verifySignature&quot;,&quot;params&quot;:[true,&quot;0xbc36789e7a1e281436464229828f817d6612f7b477d66591ff96a9e064bcc98a&quot;,&quot;0x4355c47d63924e8a72e509b65029052eb6c299d53a04e167c5775fd466751c9d&quot;,&quot;0x07299936d304c153f6443dfa05f40ff007d72911b6f72307f996231605b91562&quot;,&quot;0x1b&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: {
+    &quot;address&quot;: &quot;0xb60e8dd61c5d32be8058bb8eb970870f07233155&quot;,
+    &quot;publicKey&quot;: &quot;0x3fa8c08c65a83f6b4ea3e04e1cc70cbe3cd391499e3e05ab7dedf28aff9afc538200ff93e3f2b2cb5029f03c7ebee820d63a4c5a9541c83acebe293f54cacf0e&quot;,
+    &quot;isValidForCurrentChain&quot;: false
+  }
+}
+</code></p>
+
+<hr>
+<h3 id='parity_versioninfo'>parity_versionInfo</h3>
+<p>Provides information about running version of Parity.</p>
+<h4 id='parameters-22'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-22'>Returns</h4>
+<ul>
+<li><code>Object</code> - Information on current version.
+
+<ul>
+<li><code>hash</code>:   <code>Hash</code> - 20 Byte hash of the current build.</li>
+<li><code>track</code>:   <code>String</code> - Track on which it was released, one of: <code>&quot;stable&quot;</code>, <code>&quot;beta&quot;</code>, <code>&quot;nightly&quot;</code>, <code>&quot;testing&quot;</code>, <code>&quot;null&quot;</code> (unknown or self-built).</li>
+<li><code>version</code>:   <code>Object</code> - Version number composed of <code>major</code>, <code>minor</code> and <code>patch</code> integers.</li>
+</ul></li>
+</ul>
+<h4 id='example-22'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_versionInfo&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: {
+    &quot;hash&quot;: &quot;0x2ae8b4ca278dd7b896090366615fef81cbbbc0e0&quot;,
+    &quot;track&quot;: &quot;null&quot;,
+    &quot;version&quot;: {
+      &quot;major&quot;: 1,
+      &quot;minor&quot;: 6,
+      &quot;patch&quot;: 0
+    }
+  }
+}
+</code></p>
+
+<hr>
+<h3 id='parity_changevault'>parity_changeVault</h3>
+<p>Changes the current vault for the account</p>
+<h4 id='parameters-23'>Parameters</h4>
+<ol>
+<li><code>Address</code> - Account address</li>
+<li><code>String</code> - Vault name</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x63Cf90D3f0410092FC0fca41846f596223979195"</span><span class="p">,</span>
+  <span class="s2">"StrongVault"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-23'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - True on success</li>
+</ul>
+<h4 id='example-23'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_changeVault&quot;,&quot;params&quot;:[&quot;0x63Cf90D3f0410092FC0fca41846f596223979195&quot;,&quot;StrongVault&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_changevaultpassword'>parity_changeVaultPassword</h3>
+<p>Changes the password for any given vault</p>
+<h4 id='parameters-24'>Parameters</h4>
+<ol>
+<li><code>String</code> - Vault name</li>
+<li><code>String</code> - New Password</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"StrongVault"</span><span class="p">,</span>
+  <span class="s2">"p@55w0rd"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-24'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - True on success</li>
+</ul>
+<h4 id='example-24'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_changeVaultPassword&quot;,&quot;params&quot;:[&quot;StrongVault&quot;,&quot;p@55w0rd&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_closevault'>parity_closeVault</h3>
+<p>Closes a vault with the given name</p>
+<h4 id='parameters-25'>Parameters</h4>
+<ol>
+<li><code>String</code> - Vault name</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span><span class="s2">"StrongVault"</span><span class="p">]</span>
+</code></pre><h4 id='returns-25'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - True on success</li>
+</ul>
+<h4 id='example-25'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_closeVault&quot;,&quot;params&quot;:[&quot;StrongVault&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_getvaultmeta'>parity_getVaultMeta</h3>
+<p>Returns the metadata for a specific vault</p>
+<h4 id='parameters-26'>Parameters</h4>
+<ol>
+<li><code>String</code> - Vault name</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span><span class="s2">"StrongVault"</span><span class="p">]</span>
+</code></pre><h4 id='returns-26'>Returns</h4>
+<ul>
+<li><code>String</code> - The associated JSON metadata for this vault</li>
+</ul>
+<h4 id='example-26'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_getVaultMeta&quot;,&quot;params&quot;:[&quot;StrongVault&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;{\&quot;passwordHint\&quot;:\&quot;something\&quot;}&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_newvault'>parity_newVault</h3>
+<p>Creates a new vault with the given name &amp; password</p>
+<h4 id='parameters-27'>Parameters</h4>
+<ol>
+<li><code>String</code> - Vault name</li>
+<li><code>String</code> - Password</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"StrongVault"</span><span class="p">,</span>
+  <span class="s2">"p@55w0rd"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-27'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - True on success</li>
+</ul>
+<h4 id='example-27'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_newVault&quot;,&quot;params&quot;:[&quot;StrongVault&quot;,&quot;p@55w0rd&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_openvault'>parity_openVault</h3>
+<p>Opens a vault with the given name &amp; password</p>
+<h4 id='parameters-28'>Parameters</h4>
+<ol>
+<li><code>String</code> - Vault name</li>
+<li><code>String</code> - Password</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"StrongVault"</span><span class="p">,</span>
+  <span class="s2">"p@55w0rd"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-28'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - True on success</li>
+</ul>
+<h4 id='example-28'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_openVault&quot;,&quot;params&quot;:[&quot;StrongVault&quot;,&quot;p@55w0rd&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_setvaultmeta'>parity_setVaultMeta</h3>
+<p>Sets the metadata for a specific vault</p>
+<h4 id='parameters-29'>Parameters</h4>
+<ol>
+<li><code>String</code> - Vault name</li>
+<li><code>String</code> - The metadata as a JSON string</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"StrongVault"</span><span class="p">,</span>
+  <span class="s2">"{\"passwordHint\":\"something\"}"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-29'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - The boolean call result, true on success</li>
+</ul>
+<h4 id='example-29'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_setVaultMeta&quot;,&quot;params&quot;:[&quot;StrongVault&quot;,&quot;{\&quot;passwordHint\&quot;:\&quot;something\&quot;}&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_accountsinfo'>parity_accountsInfo</h3>
+<p>Provides metadata for accounts.</p>
+<h4 id='parameters-30'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-30'>Returns</h4>
+<ul>
+<li><code>Object</code> - Maps account address to metadata.
+
+<ul>
+<li><code>name</code>:   <code>String</code> - Account name</li>
+</ul></li>
+</ul>
+<h4 id='example-30'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_accountsInfo&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: {
+    &quot;0x0024d0c7ab4c52f723f3aaf0872b9ea4406846a4&quot;: {
+      &quot;name&quot;: &quot;Foo&quot;
+    },
+    &quot;0x004385d8be6140e6f889833f68b51e17b6eacb29&quot;: {
+      &quot;name&quot;: &quot;Bar&quot;
+    },
+    &quot;0x009047ed78fa2be48b62aaf095b64094c934dab0&quot;: {
+      &quot;name&quot;: &quot;Baz&quot;
+    }
+  }
+}
+</code></p>
+
+<hr>
+<h3 id='parity_checkrequest'>parity_checkRequest</h3>
+<p>Get the the transaction hash of the request previously posted to <a href="#parity_posttransaction"><code>parity_postTransaction</code></a> or <a href="#parity_postsign"><code>parity_postSign</code></a>. Will return a JSON-RPC error if the request was rejected.</p>
+<h4 id='parameters-31'>Parameters</h4>
+<ol>
+<li><code>Quantity</code> - The id of the request sent to the signer.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span><span class="s2">"0x1"</span><span class="p">]</span>
+</code></pre><h4 id='returns-31'>Returns</h4>
+<ul>
+<li><code>Hash</code> - 32 Bytes - the transaction hash or <code>null</code> if the request hasn&#39;t been signed yet.</li>
+</ul>
+<h4 id='example-31'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_checkRequest&quot;,&quot;params&quot;:[&quot;0x1&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0xde8dfd9642f7eeef12402f2a560dbf40921b4f0bda01fb84709b9d71f6c181be&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_defaultaccount'>parity_defaultAccount</h3>
+<p>Returns the defaultAccount that is to be used with transactions</p>
+<h4 id='parameters-32'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-32'>Returns</h4>
+<ul>
+<li><code>Address</code> - The account address</li>
+</ul>
+<h4 id='example-32'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_defaultAccount&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0x63Cf90D3f0410092FC0fca41846f596223979195&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_generatesecretphrase'>parity_generateSecretPhrase</h3>
+<p>Creates a secret phrase that can be associated with an account.</p>
+<h4 id='parameters-33'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-33'>Returns</h4>
+<ul>
+<li><code>String</code> - The secret phrase.</li>
+</ul>
+<h4 id='example-33'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_generateSecretPhrase&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;boasting breeches reshape reputably exit handrail stony jargon moneywise unhinge handed ruby&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_hardwareaccountsinfo'>parity_hardwareAccountsInfo</h3>
+<p>Provides metadata for attached hardware wallets</p>
+<h4 id='parameters-34'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-34'>Returns</h4>
+<ul>
+<li><code>Object</code> - Maps account address to metadata.
+
+<ul>
+<li><code>manufacturer</code>:   <code>String</code> - Manufacturer</li>
+<li><code>name</code>:   <code>String</code> - Account name</li>
+</ul></li>
+</ul>
+<h4 id='example-34'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_hardwareAccountsInfo&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: {
+    &quot;0x0024d0c7ab4c52f723f3aaf0872b9ea4406846a4&quot;: {
+      &quot;manufacturer&quot;: &quot;Ledger&quot;,
+      &quot;name&quot;: &quot;Nano S&quot;
+    }
+  }
+}
+</code></p>
+
+<hr>
+<h3 id='parity_listaccounts'>parity_listAccounts</h3>
+<p>Returns all addresses if Fat DB is enabled (<code>--fat-db</code>), <code>null</code> otherwise.</p>
+<h4 id='parameters-35'>Parameters</h4>
+<ol>
+<li><code>Quantity</code> - Integer number of addresses to display in a batch.</li>
+<li><code>Address</code> - 20 Bytes - Offset address from which the batch should start in order, or <code>null</code>.</li>
+<li><code>Quantity</code> or <code>Tag</code> - (optional) integer block number, or the string <code>&#39;latest&#39;</code>, <code>&#39;earliest&#39;</code> or <code>&#39;pending&#39;</code>.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="mi">5</span><span class="p">,</span>
+  <span class="kc">null</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-35'>Returns</h4>
+<ul>
+<li><code>Array</code> - Requested number of <code>Address</code>es or <code>null</code> if Fat DB is not enabled.</li>
+</ul>
+<h4 id='example-35'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_listAccounts&quot;,&quot;params&quot;:[5,null],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: [
+    &quot;0x7205b1bb42edce6e0ced37d1fd0a9d684f5a860f&quot;,
+    &quot;0x98a2559a814c300b274325c92df1682ae0d344e3&quot;,
+    &quot;0x2d7a7d0adf9c5f9073fefbdc18188bd23c68b633&quot;,
+    &quot;0xd4bb3284201db8b03c06d8a3057dd32538e3dfda&quot;,
+    &quot;0xa6396904b08aa31300ca54278b8e066ecc38e4a0&quot;
+  ]
+}
+</code></p>
+
+<hr>
+<h3 id='parity_phrasetoaddress'>parity_phraseToAddress</h3>
+<p>Converts a secret phrase into the corresponding address.</p>
+<h4 id='parameters-36'>Parameters</h4>
+<ol>
+<li><code>String</code> - The phrase</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span><span class="s2">"stylus outing overhand dime radial seducing harmless uselessly evasive tastiness eradicate imperfect"</span><span class="p">]</span>
+</code></pre><h4 id='returns-36'>Returns</h4>
+<ul>
+<li><code>Address</code> - Corresponding address</li>
+</ul>
+<h4 id='example-36'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_phraseToAddress&quot;,&quot;params&quot;:[&quot;stylus outing overhand dime radial seducing harmless uselessly evasive tastiness eradicate imperfect&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0x004385d8be6140e6f889833f68b51e17b6eacb29&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_postsign'>parity_postSign</h3>
+<p>Request a standard Ethereum message to be signed by an account.</p>
+<h4 id='parameters-37'>Parameters</h4>
+<ol>
+<li><code>Address</code> - Account address.</li>
+<li><code>Data</code> - The message.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0xb60e8dd61c5d32be8058bb8eb970870f07233155"</span><span class="p">,</span>
+  <span class="s2">"0x414243"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-37'>Returns</h4>
+<ul>
+<li><code>Quantity</code> - The id of the request to the signer.</li>
+</ul>
+<h4 id='example-37'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_postSign&quot;,&quot;params&quot;:[&quot;0xb60e8dd61c5d32be8058bb8eb970870f07233155&quot;,&quot;0x414243&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0x1&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_posttransaction'>parity_postTransaction</h3>
+<p>Posts a transaction to the signer without waiting for the signer response.</p>
+<h4 id='parameters-38'>Parameters</h4>
+<ol>
+<li><code>Object</code> - see <a href="JSONRPC-eth-module#eth_sendtransaction"><code>eth_sendTransaction</code></a>.
+
+<ul>
+<li><code>from</code>:   <code>Address</code> - 20 Bytes - The address the transaction is send from.</li>
+<li><code>to</code>:   <code>Address</code> - (optional) 20 Bytes - The address the transaction is directed to.</li>
+<li><code>gas</code>:   <code>Quantity</code> - (optional) Integer of the gas provided for the transaction execution. eth_call consumes zero gas, but this parameter may be needed by some executions.</li>
+<li><code>gasPrice</code>:   <code>Quantity</code> - (optional) Integer of the gas price used for each paid gas.</li>
+<li><code>value</code>:   <code>Quantity</code> - (optional) Integer of the value sent with this transaction.</li>
+<li><code>data</code>:   <code>Data</code> - (optional) 4 byte hash of the method signature followed by encoded parameters. For details see <a href="https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI">Ethereum Contract ABI</a>.</li>
+<li><code>nonce</code>:   <code>Quantity</code> - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.</li>
+<li><code>condition</code>:   <code>Object</code> - (optional) Conditional submission of the transaction. Can be either an integer block number <code>{ block: 1 }</code> or UTC timestamp (in seconds) <code>{ time: 1491290692 }</code> or <code>null</code>.</li>
+</ul></li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[{</span>
+  <span class="s2">"from"</span><span class="p">:</span> <span class="s2">"0xb60e8dd61c5d32be8058bb8eb970870f07233155"</span><span class="p">,</span>
+  <span class="s2">"to"</span><span class="p">:</span> <span class="s2">"0xd46e8dd67c5d32be8058bb8eb970870f07244567"</span><span class="p">,</span>
+  <span class="s2">"gas"</span><span class="p">:</span> <span class="s2">"0x76c0"</span><span class="p">,</span> <span class="c1">// 30400</span>
+  <span class="s2">"gasPrice"</span><span class="p">:</span> <span class="s2">"0x9184e72a000"</span><span class="p">,</span> <span class="c1">// 10000000000000</span>
+  <span class="s2">"value"</span><span class="p">:</span> <span class="s2">"0x9184e72a"</span><span class="p">,</span> <span class="c1">// 2441406250</span>
+  <span class="s2">"data"</span><span class="p">:</span> <span class="s2">"0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675"</span><span class="p">,</span>
+  <span class="s2">"condition"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"block"</span><span class="p">:</span> <span class="mi">354221</span><span class="p">,</span>
+    <span class="s2">"time"</span><span class="p">:</span> <span class="s2">"2018-11-16T15:59:08.596Z"</span>
+  <span class="p">}</span>
+<span class="p">}]</span>
+</code></pre><h4 id='returns-38'>Returns</h4>
+<ul>
+<li><code>Quantity</code> - The id of the request to the signer. If the account was already unlocked, returns <code>Hash</code> of the transaction instead.</li>
+</ul>
+<h4 id='example-38'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_postTransaction&quot;,&quot;params&quot;:[{&quot;from&quot;:&quot;0xb60e8dd61c5d32be8058bb8eb970870f07233155&quot;,&quot;to&quot;:&quot;0xd46e8dd67c5d32be8058bb8eb970870f07244567&quot;,&quot;gas&quot;:&quot;0x76c0&quot;,&quot;gasPrice&quot;:&quot;0x9184e72a000&quot;,&quot;value&quot;:&quot;0x9184e72a&quot;,&quot;data&quot;:&quot;0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675&quot;,&quot;condition&quot;:{&quot;block&quot;:354221,&quot;time&quot;:&quot;2018-11-16T15:59:08.596Z&quot;}}],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0x1&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_defaultextradata'>parity_defaultExtraData</h3>
+<p>Returns the default extra data</p>
+<h4 id='parameters-39'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-39'>Returns</h4>
+<ul>
+<li><code>Data</code> - Extra data</li>
+</ul>
+<h4 id='example-39'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_defaultExtraData&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0xd5830106008650617269747986312e31342e30826c69&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_extradata'>parity_extraData</h3>
+<p>Returns currently set extra data.</p>
+<h4 id='parameters-40'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-40'>Returns</h4>
+<ul>
+<li><code>Data</code> - Extra data.</li>
+</ul>
+<h4 id='example-40'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_extraData&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0xd5830106008650617269747986312e31342e30826c69&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_gasceiltarget'>parity_gasCeilTarget</h3>
+<p>Returns current target for gas ceiling.</p>
+<h4 id='parameters-41'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-41'>Returns</h4>
+<ul>
+<li><code>Quantity</code> - Gas ceiling target.</li>
+</ul>
+<h4 id='example-41'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_gasCeilTarget&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0x5fdfb0&quot; // 6283184
+}
+</code></p>
+
+<hr>
+<h3 id='parity_gasfloortarget'>parity_gasFloorTarget</h3>
+<p>Returns current target for gas floor.</p>
+<h4 id='parameters-42'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-42'>Returns</h4>
+<ul>
+<li><code>Quantity</code> - Gas floor target.</li>
+</ul>
+<h4 id='example-42'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_gasFloorTarget&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0x47b760&quot; // 4700000
+}
+</code></p>
+
+<hr>
+<h3 id='parity_mingasprice'>parity_minGasPrice</h3>
+<p>Returns currently set minimal gas price</p>
+<h4 id='parameters-43'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-43'>Returns</h4>
+<ul>
+<li><code>Quantity</code> - Minimal Gas Price</li>
+</ul>
+<h4 id='example-43'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_minGasPrice&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0x29f507000&quot; // 11262783488
+}
+</code></p>
+
+<hr>
+<h3 id='parity_transactionslimit'>parity_transactionsLimit</h3>
+<p>Changes limit for transactions in queue.</p>
+<h4 id='parameters-44'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-44'>Returns</h4>
+<ul>
+<li><code>Quantity</code> - Current max number of transactions in queue.</li>
+</ul>
+<h4 id='example-44'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_transactionsLimit&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: 1024
+}
+</code></p>
+
+<hr>
+<h3 id='parity_devlogs'>parity_devLogs</h3>
+<p>Returns latest stdout logs of your node.</p>
+<h4 id='parameters-45'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-45'>Returns</h4>
+<ul>
+<li><code>Array</code> - Development logs</li>
+</ul>
+<h4 id='example-45'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_devLogs&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: [
+    &quot;2017-01-20 18:14:19  Updated conversion rate to Ξ1 = US$10.63 (11199212000 wei/gas)&quot;,
+    &quot;2017-01-20 18:14:19  Configured for DevelopmentChain using InstantSeal engine&quot;,
+    &quot;2017-01-20 18:14:19  Operating mode: active&quot;,
+    &quot;2017-01-20 18:14:19  State DB configuration: fast&quot;,
+    &quot;2017-01-20 18:14:19  Starting Parity/v1.7.0-unstable-2ae8b4c-20170120/x86_64-linux-gnu/rustc1.14.0&quot;
+  ]
+}
+</code></p>
+
+<hr>
+<h3 id='parity_devlogslevels'>parity_devLogsLevels</h3>
+<p>Returns current logging level settings. Logging level can be set with <code>--logging</code> and be one of: <code>&quot;&quot;</code> (default), <code>&quot;info&quot;</code>, <code>&quot;debug&quot;</code>, <code>&quot;warn&quot;</code>, <code>&quot;error&quot;</code>, <code>&quot;trace&quot;</code>.</p>
+<h4 id='parameters-46'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-46'>Returns</h4>
+<ul>
+<li><code>String</code> - Current log level.</li>
+</ul>
+<h4 id='example-46'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_devLogsLevels&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;debug&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_chain'>parity_chain</h3>
+<p>Returns the name of the connected chain. </p>
+<h4 id='parameters-47'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-47'>Returns</h4>
+<ul>
+<li><code>String</code> - chain name, one of: &quot;foundation&quot;, &quot;kovan&quot;, &amp;c. of a filename.</li>
+</ul>
+<h4 id='example-47'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_chain&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;homestead&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_chainstatus'>parity_chainStatus</h3>
+<p>Returns the information on warp sync blocks</p>
+<h4 id='parameters-48'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-48'>Returns</h4>
+<ul>
+<li><code>Object</code> - The status object
+
+<ul>
+<li><code>blockGap</code>:   <code>Array</code> - (optional) Describes the gap in the blockchain, if there is one: (first, last)</li>
+</ul></li>
+</ul>
+<h4 id='example-48'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_chainStatus&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: {
+    &quot;blockGap&quot;: undefined
+  }
+}
+</code></p>
+
+<hr>
+<h3 id='parity_gaspricehistogram'>parity_gasPriceHistogram</h3>
+<p>Returns a snapshot of the historic gas prices.</p>
+<h4 id='parameters-49'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-49'>Returns</h4>
+<ul>
+<li><code>Object</code> - Historic values
+
+<ul>
+<li><code>bucketBounds</code>:   <code>Array</code> - Array of bound values.</li>
+<li><code>count</code>:   <code>Array</code> - Array of counts.</li>
+</ul></li>
+</ul>
+<h4 id='example-49'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_gasPriceHistogram&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: {
+    &quot;bucketBounds&quot;: [
+      &quot;0x4a817c800&quot;,
+      &quot;0x525433d01&quot;,
+      &quot;0x5a26eb202&quot;,
+      &quot;0x61f9a2703&quot;,
+      &quot;0x69cc59c04&quot;,
+      &quot;0x719f11105&quot;,
+      &quot;0x7971c8606&quot;,
+      &quot;0x81447fb07&quot;,
+      &quot;0x891737008&quot;,
+      &quot;0x90e9ee509&quot;,
+      &quot;0x98bca5a0a&quot;
+    ],
+    &quot;counts&quot;: [
+      487,
+      9,
+      7,
+      1,
+      8,
+      0,
+      0,
+      0,
+      0,
+      14
+    ]
+  }
+}
+</code></p>
+
+<hr>
+<h3 id='parity_netchain'>parity_netChain</h3>
+<p>Returns the name of the connected chain. DEPRECATED use <code>parity_chain</code> instead.</p>
+<h4 id='parameters-50'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-50'>Returns</h4>
+<ul>
+<li><code>String</code> - chain name.</li>
+</ul>
+<h4 id='example-50'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_netChain&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;homestead&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_netpeers'>parity_netPeers</h3>
+<p>Returns connected peers. Peers with non-empty protocols have completed handshake.</p>
+<h4 id='parameters-51'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-51'>Returns</h4>
+<ul>
+<li><code>Object</code> - Number of peers
+
+<ul>
+<li><code>active</code>:   <code>Quantity</code> - Number of active peers.</li>
+<li><code>connected</code>:   <code>Quantity</code> - Number of connected peers.</li>
+<li><code>max</code>:   <code>Quantity</code> - Maximum number of connected peers.</li>
+<li><code>peers</code>:   <code>Array</code> - List of all peers with details.</li>
+</ul></li>
+</ul>
+<h4 id='example-51'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_netPeers&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: {
+    &quot;active&quot;: 0,
+    &quot;connected&quot;: 25,
+    &quot;max&quot;: 25,
+    &quot;peers&quot;: [{ ... }, { ... }, { ... }, ...]
+  }
+}
+</code></p>
+
+<hr>
+<h3 id='parity_netport'>parity_netPort</h3>
+<p>Returns network port the node is listening on.</p>
+<h4 id='parameters-52'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-52'>Returns</h4>
+<ul>
+<li><code>Quantity</code> - Port number</li>
+</ul>
+<h4 id='example-52'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_netPort&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: 30303
+}
+</code></p>
+
+<hr>
+<h3 id='parity_nextnonce'>parity_nextNonce</h3>
+<p>Returns next available nonce for transaction from given account. Includes pending block and transaction queue.</p>
+<h4 id='parameters-53'>Parameters</h4>
+<ol>
+<li><code>Address</code> - Account</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span><span class="s2">"0x00A289B43e1e4825DbEDF2a78ba60a640634DC40"</span><span class="p">]</span>
+</code></pre><h4 id='returns-53'>Returns</h4>
+<ul>
+<li><code>Quantity</code> - Next valid nonce</li>
+</ul>
+<h4 id='example-53'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_nextNonce&quot;,&quot;params&quot;:[&quot;0x00A289B43e1e4825DbEDF2a78ba60a640634DC40&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0xc&quot; // 12
+}
+</code></p>
+
+<hr>
+<h3 id='parity_pendingtransactions'>parity_pendingTransactions</h3>
+<p>Returns a list of transactions currently in the queue.</p>
+<h4 id='parameters-54'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-54'>Returns</h4>
+<ul>
+<li><code>Array</code> - Transactions ordered by priority
+
+<ul>
+<li><code>hash</code>:   <code>Hash</code> - 32 Bytes - hash of the transaction.</li>
+<li><code>nonce</code>:   <code>Quantity</code> - The number of transactions made by the sender prior to this one.</li>
+<li><code>blockHash</code>:   <code>Hash</code> - 32 Bytes - hash of the block where this transaction was in. <code>null</code> when its pending.</li>
+<li><code>blockNumber</code>:   <code>Quantity</code> or <code>Tag</code> - Block number where this transaction was in. <code>null</code> when its pending.</li>
+<li><code>transactionIndex</code>:   <code>Quantity</code> - Integer of the transactions index position in the block. <code>null</code> when its pending.</li>
+<li><code>from</code>:   <code>Address</code> - 20 Bytes - address of the sender.</li>
+<li><code>to</code>:   <code>Address</code> - 20 Bytes - address of the receiver. <code>null</code> when its a contract creation transaction.</li>
+<li><code>value</code>:   <code>Quantity</code> - Value transferred in Wei.</li>
+<li><code>gasPrice</code>:   <code>Quantity</code> - Gas price provided by the sender in Wei.</li>
+<li><code>gas</code>:   <code>Quantity</code> - Gas provided by the sender.</li>
+<li><code>input</code>:   <code>Data</code> - The data send along with the transaction.</li>
+<li><code>creates</code>:   <code>Address</code> - (optional) Address of a created contract or <code>null</code>.</li>
+<li><code>raw</code>:   <code>Data</code> - Raw transaction data.</li>
+<li><code>publicKey</code>:   <code>Data</code> - Public key of the signer.</li>
+<li><code>chainId</code>:   <code>Quantity</code> - The chain id of the transaction, if any.</li>
+<li><code>standardV</code>:   <code>Quantity</code> - The standardized V field of the signature (0 or 1).</li>
+<li><code>v</code>:   <code>Quantity</code> - The V field of the signature.</li>
+<li><code>r</code>:   <code>Quantity</code> - The R field of the signature.</li>
+<li><code>s</code>:   <code>Quantity</code> - The S field of the signature.</li>
+<li><code>condition</code>:   <code>Object</code> - (optional) Conditional submission, Block number in <code>block</code> or timestamp in <code>time</code> or <code>null</code>.</li>
+</ul></li>
+</ul>
+<h4 id='example-54'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_pendingTransactions&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: [
+    {
+      &quot;blockHash&quot;: null,
+      &quot;blockNumber&quot;: null,
+      &quot;creates&quot;: null,
+      &quot;from&quot;: &quot;0xee3ea02840129123d5397f91be0391283a25bc7d&quot;,
+      &quot;gas&quot;: &quot;0x23b58&quot;,
+      &quot;gasPrice&quot;: &quot;0xba43b7400&quot;,
+      &quot;hash&quot;: &quot;0x160b3c30ab1cf5871083f97ee1cee3901cfba3b0a2258eb337dd20a7e816b36e&quot;,
+      &quot;input&quot;: &quot;0x095ea7b3000000000000000000000000bf4ed7b27f1d666546e30d74d50d173d20bca75400000000000000000000000000002643c948210b4bd99244ccd64d5555555555&quot;,
+      &quot;condition&quot;: {
+        &quot;block&quot;: 1
+      },
+      &quot;chainId&quot;: 1,
+      &quot;nonce&quot;: &quot;0x5&quot;,
+      &quot;publicKey&quot;: &quot;0x96157302dade55a1178581333e57d60ffe6fdf5a99607890456a578b4e6b60e335037d61ed58aa4180f9fd747dc50d44a7924aa026acbfb988b5062b629d6c36&quot;,
+      &quot;r&quot;: &quot;0x92e8beb19af2bad0511d516a86e77fa73004c0811b2173657a55797bdf8558e1&quot;,
+      &quot;raw&quot;: &quot;0xf8aa05850ba43b740083023b5894bb9bc244d798123fde783fcc1c72d3bb8c18941380b844095ea7b3000000000000000000000000bf4ed7b27f1d666546e30d74d50d173d20bca75400000000000000000000000000002643c948210b4bd99244ccd64d555555555526a092e8beb19af2bad0511d516a86e77fa73004c0811b2173657a55797bdf8558e1a062b4d4d125bbcb9c162453bc36ca156537543bb4414d59d1805d37fb63b351b8&quot;,
+      &quot;s&quot;: &quot;0x62b4d4d125bbcb9c162453bc36ca156537543bb4414d59d1805d37fb63b351b8&quot;,
+      &quot;standardV&quot;: &quot;0x1&quot;,
+      &quot;to&quot;: &quot;0xbb9bc244d798123fde783fcc1c72d3bb8c189413&quot;,
+      &quot;transactionIndex&quot;: null,
+      &quot;v&quot;: &quot;0x26&quot;,
+      &quot;value&quot;: &quot;0x0&quot;
+    },
+    { ... },
+    { ... }
+  ]
+}
+</code></p>
+
+<hr>
+<h3 id='parity_pendingtransactionsstats'>parity_pendingTransactionsStats</h3>
+<p>Returns propagation stats for transactions in the queue.</p>
+<h4 id='parameters-55'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-55'>Returns</h4>
+<ul>
+<li><code>Object</code> - mapping of transaction hashes to stats.</li>
+</ul>
+<h4 id='example-55'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_pendingTransactionsStats&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: {
+    &quot;0xdff37270050bcfba242116c745885ce2656094b2d3a0f855649b4a0ee9b5d15a&quot;: {
+      &quot;firstSeen&quot;: 3032066,
+      &quot;propagatedTo&quot;: {
+        &quot;0x605e04a43b1156966b3a3b66b980c87b7f18522f7f712035f84576016be909a2798a438b2b17b1a8c58db314d88539a77419ca4be36148c086900fba487c9d39&quot;: 1,
+        &quot;0xbab827781c852ecf52e7c8bf89b806756329f8cbf8d3d011e744a0bc5e3a0b0e1095257af854f3a8415ebe71af11b0c537f8ba797b25972f519e75339d6d1864&quot;: 1
+      }
+    }
+  }
+}
+</code></p>
+
+<hr>
+<h3 id='parity_registryaddress'>parity_registryAddress</h3>
+<p>The address for the global registry.</p>
+<h4 id='parameters-56'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-56'>Returns</h4>
+<ul>
+<li><code>Address</code> - The registry address.</li>
+</ul>
+<h4 id='example-56'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_registryAddress&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0x3bb2bb5c6c9c9b7f4ef430b47dc7e026310042ea&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_removetransaction'>parity_removeTransaction</h3>
+<p>Removes transaction from local transaction pool. Scheduled transactions and not-propagated transactions are safe to remove, removal of other transactions may have no effect though.</p>
+<h4 id='parameters-57'>Parameters</h4>
+<ol>
+<li><code>Hash</code> - Hash of transaction to remove.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span><span class="s2">"0x2547ea3382099c7c76d33dd468063b32d41016aacb02cbd51ebc14ff5d2b6a43"</span><span class="p">]</span>
+</code></pre><h4 id='returns-57'>Returns</h4>
+<ul>
+<li><code>Object</code> - Removed transaction or <code>null</code>.
+
+<ul>
+<li><code>hash</code>:   <code>Hash</code> - 32 Bytes - hash of the transaction.</li>
+<li><code>nonce</code>:   <code>Quantity</code> - The number of transactions made by the sender prior to this one.</li>
+<li><code>blockHash</code>:   <code>Hash</code> - 32 Bytes - hash of the block where this transaction was in. <code>null</code> when its pending.</li>
+<li><code>blockNumber</code>:   <code>Quantity</code> or <code>Tag</code> - Block number where this transaction was in. <code>null</code> when its pending.</li>
+<li><code>transactionIndex</code>:   <code>Quantity</code> - Integer of the transactions index position in the block. <code>null</code> when its pending.</li>
+<li><code>from</code>:   <code>Address</code> - 20 Bytes - address of the sender.</li>
+<li><code>to</code>:   <code>Address</code> - 20 Bytes - address of the receiver. <code>null</code> when its a contract creation transaction.</li>
+<li><code>value</code>:   <code>Quantity</code> - Value transferred in Wei.</li>
+<li><code>gasPrice</code>:   <code>Quantity</code> - Gas price provided by the sender in Wei.</li>
+<li><code>gas</code>:   <code>Quantity</code> - Gas provided by the sender.</li>
+<li><code>input</code>:   <code>Data</code> - The data send along with the transaction.</li>
+<li><code>creates</code>:   <code>Address</code> - (optional) Address of a created contract or <code>null</code>.</li>
+<li><code>raw</code>:   <code>Data</code> - Raw transaction data.</li>
+<li><code>publicKey</code>:   <code>Data</code> - Public key of the signer.</li>
+<li><code>chainId</code>:   <code>Quantity</code> - The chain id of the transaction, if any.</li>
+<li><code>standardV</code>:   <code>Quantity</code> - The standardized V field of the signature (0 or 1).</li>
+<li><code>v</code>:   <code>Quantity</code> - The V field of the signature.</li>
+<li><code>r</code>:   <code>Quantity</code> - The R field of the signature.</li>
+<li><code>s</code>:   <code>Quantity</code> - The S field of the signature.</li>
+<li><code>condition</code>:   <code>Object</code> - (optional) Conditional submission, Block number in <code>block</code> or timestamp in <code>time</code> or <code>null</code>.</li>
+</ul></li>
+</ul>
+<h4 id='example-57'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_removeTransaction&quot;,&quot;params&quot;:[&quot;0x2547ea3382099c7c76d33dd468063b32d41016aacb02cbd51ebc14ff5d2b6a43&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: [
+    {
+      &quot;blockHash&quot;: null,
+      &quot;blockNumber&quot;: null,
+      &quot;creates&quot;: null,
+      &quot;from&quot;: &quot;0xee3ea02840129123d5397f91be0391283a25bc7d&quot;,
+      &quot;gas&quot;: &quot;0x23b58&quot;,
+      &quot;gasPrice&quot;: &quot;0xba43b7400&quot;,
+      &quot;hash&quot;: &quot;0x160b3c30ab1cf5871083f97ee1cee3901cfba3b0a2258eb337dd20a7e816b36e&quot;,
+      &quot;input&quot;: &quot;0x095ea7b3000000000000000000000000bf4ed7b27f1d666546e30d74d50d173d20bca75400000000000000000000000000002643c948210b4bd99244ccd64d5555555555&quot;,
+      &quot;condition&quot;: {
+        &quot;block&quot;: 1
+      },
+      &quot;chainId&quot;: 1,
+      &quot;nonce&quot;: &quot;0x5&quot;,
+      &quot;publicKey&quot;: &quot;0x96157302dade55a1178581333e57d60ffe6fdf5a99607890456a578b4e6b60e335037d61ed58aa4180f9fd747dc50d44a7924aa026acbfb988b5062b629d6c36&quot;,
+      &quot;r&quot;: &quot;0x92e8beb19af2bad0511d516a86e77fa73004c0811b2173657a55797bdf8558e1&quot;,
+      &quot;raw&quot;: &quot;0xf8aa05850ba43b740083023b5894bb9bc244d798123fde783fcc1c72d3bb8c18941380b844095ea7b3000000000000000000000000bf4ed7b27f1d666546e30d74d50d173d20bca75400000000000000000000000000002643c948210b4bd99244ccd64d555555555526a092e8beb19af2bad0511d516a86e77fa73004c0811b2173657a55797bdf8558e1a062b4d4d125bbcb9c162453bc36ca156537543bb4414d59d1805d37fb63b351b8&quot;,
+      &quot;s&quot;: &quot;0x62b4d4d125bbcb9c162453bc36ca156537543bb4414d59d1805d37fb63b351b8&quot;,
+      &quot;standardV&quot;: &quot;0x1&quot;,
+      &quot;to&quot;: &quot;0xbb9bc244d798123fde783fcc1c72d3bb8c189413&quot;,
+      &quot;transactionIndex&quot;: null,
+      &quot;v&quot;: &quot;0x26&quot;,
+      &quot;value&quot;: &quot;0x0&quot;
+    },
+    { ... },
+    { ... }
+  ]
+}
+</code></p>
+
+<hr>
+<h3 id='parity_rpcsettings'>parity_rpcSettings</h3>
+<p>Provides current JSON-RPC API settings.</p>
+<h4 id='parameters-58'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-58'>Returns</h4>
+<ul>
+<li><code>Object</code> - JSON-RPC settings.
+
+<ul>
+<li><code>enabled</code>:   <code>Boolean</code> - <code>true</code> if JSON-RPC is enabled (default).</li>
+<li><code>interface</code>:   <code>String</code> - Interface on which JSON-RPC is running.</li>
+<li><code>port</code>:   <code>Quantity</code> - Port on which JSON-RPC is running.</li>
+</ul></li>
+</ul>
+<h4 id='example-58'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_rpcSettings&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: {
+    &quot;enabled&quot;: true,
+    &quot;interface&quot;: &quot;local&quot;,
+    &quot;port&quot;: 8545
+  }
+}
+</code></p>
+
+<hr>
+<h3 id='parity_unsignedtransactionscount'>parity_unsignedTransactionsCount</h3>
+<p>Returns number of unsigned transactions when running with Trusted Signer. Error otherwise</p>
+<h4 id='parameters-59'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-59'>Returns</h4>
+<ul>
+<li><code>Quantity</code> - Number of unsigned transactions</li>
+</ul>
+<h4 id='example-59'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_unsignedTransactionsCount&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: 0
+}
+</code></p>
+
+<hr>
+<h3 id='parity_enode'>parity_enode</h3>
+<p>Returns the node enode URI.</p>
+<h4 id='parameters-60'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-60'>Returns</h4>
+<ul>
+<li><code>String</code> - Enode URI</li>
+</ul>
+<h4 id='example-60'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_enode&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;enode://050929adcfe47dbe0b002cb7ef2bf91ca74f77c4e0f68730e39e717f1ce38908542369ae017148bee4e0d968340885e2ad5adea4acd19c95055080a4b625df6a@172.17.0.1:30303&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_mode'>parity_mode</h3>
+<p>Get the mode. Results one of: <code>&quot;active&quot;</code>, <code>&quot;passive&quot;</code>, <code>&quot;dark&quot;</code>, <code>&quot;offline&quot;</code>.</p>
+<h4 id='parameters-61'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-61'>Returns</h4>
+<ul>
+<li><code>String</code> - The mode.</li>
+</ul>
+<h4 id='example-61'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_mode&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;active&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_nodekind'>parity_nodeKind</h3>
+<p>Returns the node type availability and capability</p>
+<h4 id='parameters-62'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-62'>Returns</h4>
+<ul>
+<li><code>Object</code> - Availability and Capability.
+
+<ul>
+<li><code>availability</code>:   <code>String</code> - Availability, either <code>personal</code> or <code>public</code>.</li>
+<li><code>capability</code>:   <code>String</code> - Capability, either <code>full</code> or <code>light</code>.</li>
+</ul></li>
+</ul>
+<h4 id='example-62'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_nodeKind&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: {
+    &quot;availability&quot;: &quot;personal&quot;,
+    &quot;capability&quot;: &quot;light&quot;
+  }
+}
+</code></p>
+
+<hr>
+<h3 id='parity_nodename'>parity_nodeName</h3>
+<p>Returns node name, set when starting parity with <code>--identity NAME</code>.</p>
+<h4 id='parameters-63'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-63'>Returns</h4>
+<ul>
+<li><code>String</code> - Node name.</li>
+</ul>
+<h4 id='example-63'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_nodeName&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;Doge&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_wsurl'>parity_wsUrl</h3>
+<p>Returns the hostname and the port of WebSockets/Signer server, error if not enabled.</p>
+<h4 id='parameters-64'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-64'>Returns</h4>
+<ul>
+<li><code>String</code> - The hostname and port number</li>
+</ul>
+<h4 id='example-64'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_wsUrl&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;localhost:8546&quot;
+}
+</code></p>

@@ -1,0 +1,89 @@
+<p>Parity Ethereum client is listening to the network for transactions to include in blocks (if mining/validating) or to broadcast. These transactions emitted locally or externally are verified and ordered in a transaction queue. This document aims at describing the process of selecting or rejecting these transactions.</p>
+<h2 id='terminology'>Terminology</h2>
+<ul>
+<li><code>rejected</code> - means that a transaction was not added to the queue.</li>
+<li><code>drop</code> - means that a transaction was added to the queue but got removed later on.</li>
+</ul>
+<h2 id='accepting-conditions'>Accepting conditions</h2>
+<p>Transactions received from the network must fulfil the following criteria in order to be added to the queue:
+- the transaction&#39;s gas price is above the minimum set (configurable with the flag <code>--min-gas-price</code>) unless it is a <a href="Permissioning#gas-price">zero gas price transactions aka service transaction</a> allowed by an on-chain managed contract.
+- the amount of gas used by the transaction is lower than the current block gas limit.
+- the amount of gas used by the transaction is below the maximum set (configurable with the flag <code>--tx-queue-gas</code>).
+- the account sending the transaction has a sufficient balance to cover the fee costs (<code>gas * gas price</code>) on top of the <code>value</code> transfer.
+- the transaction&#39;s signature is correct.
+- the nonce is not in the <em>past</em>.
+- the transaction&#39;s byte length of the RLP form does not exceed 300 * 1024 (or whatever is configured as <code>max_transaction_size</code> in the <a href="Chain-specification">chain specification</a>).</p>
+
+<p>Note that a transaction would be included in the queue if it fulfils the criteria mentioned above and:
+- the nonce is <code>current</code>: equals to state nonce + number of already pending transactions.
+or
+- the nonce is <code>future</code>: there is a nonce gap, meaning that the transaction seems to have been received out of order, parity will, therefore, keep it, anticipating that transactions with lower nonces will fill the gap (gap = <code>expected nonce</code> vs <code>transaction nonce</code>). A <code>future</code> transactions will not be propagated nor will it get included in the pending block as it would be invalid.</p>
+<h2 id='dropping-conditions'>Dropping conditions</h2>
+<p>Once a transaction has been added to the queue, it might get dropped if:
+- any pre-verified condition has changed (nonce and balance change in the meantime)
+- the queue length limit is reached (configurable with the flag <code>--tx-queue-size</code>)
+- the per-sender max number of transactions is reached (configurable with the flag <code>--tx-queue-per-sender</code>)
+- the memory limit was reached (configurable with the flag <code>--tx-queue-mem-limit</code>)
+- a different transaction with the same nonce was signed by the same sender, and its gas price is at least 12.5% higher than the previous one. This new transaction would replace the transaction that is already in the pool.</p>
+
+<p>Note that the last 3 conditions require additionally that another transaction with a higher overall score (i.e. <code>gas price</code>), potentially from a different sender, fulfils the requirement to enter the pool while it&#39;s full.</p>
+<h2 id='dropping-logic'>Dropping logic</h2>
+<p>Given the following transactions in a queue from a <em>same non local sender account</em>:</p>
+
+<p><code>[TX(nonce=1)| TX(nonce=2) | Tx(nonce=3) | Tx(nonce=4)]</code></p>
+
+<p>Where <code>nonce=1</code> is in the past, <code>nonce=2</code> is current, <code>nonce=3</code> and <code>nonce=4</code> are in the future.
+<code>nonce=1</code> can be dropped without discussion. The transaction with <code>nonce=5</code> would be the &quot;lowest rated&quot; transaction for this sender as it is far in the future. The system would then compare this transaction with the other transactions in the queue from the other senders. The decision to drop a transaction is taken based on the transaction queue strategy (<code>--tx-queue-strategy</code>), which is  <code>gas_price</code> per default. If the transaction <code>nonce=5</code> has the lowest gas price among the &quot;lowest rated&quot; transactions from the queue, it will be dropped.</p>
+<h2 id='exceptions'>Exceptions</h2><h3 id='local-transactions'>Local transactions</h3>
+<p>Local transactions are transactions that have been created or submitted to the local node. Such transactions have a priority boost in the queue - they will get propagated first and included in the pending block first.
+Local transactions can be submitted via two RPC methods: <code>eth_sendTransaction</code> and <code>eth_sendRawTransaction</code>. For the former the node has to manage the private key (the sender address), for the latter the transaction is going to be marked as local no matter the sender.</p>
+<h3 id='configuration-flags'>Configuration flags</h3>
+<ul>
+<li><p><code>--tx-queue-no-unfamiliar-locals</code>: This flag disables treating all transactions received using <code>eth_sendRawTransaction</code> as local. Only transactions that are signed by one of the local accounts (private key) will get marked as local, others will be treated in the same way as if they were received over the network.
+The flag is recommended in case your RPC is exposed for external (potentially untrusted) clients.</p></li>
+<li><p><code>--tx-queue-no-early-exit</code>: Disables early-rejection of the transactions in case the queue is at it&#39;s limits. By default if the pool is full we omit most of the (heavy) verification logic for the transactions and reject transactions early only by looking at their gas price. As a consequence we are not able to identify transactions received from the network as the ones that should be prioritized (local), because the node is managing the private key for them. If that behavior is undesired (i.e. you sign/submit local transactions on node A, then want them to be propagated to node B and prioritized there) you can use the flag to disable early rejection.</p></li>
+</ul>
+<h4 id='recap'>Recap</h4>
+<p>The table below shows when transaction is considered as local:</p>
+
+<table><thead>
+<tr>
+<th style="text-align: center"></th>
+<th style="text-align: center">Received via RPC <code>eth_sendTransaction</code></th>
+<th style="text-align: center">Received via RPC <code>eth_sendRawTransaction</code></th>
+<th style="text-align: center">Received over the network   and sender is local account</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: center">no flag</td>
+<td style="text-align: center">YES</td>
+<td style="text-align: center">YES</td>
+<td style="text-align: center">NO*</td>
+</tr>
+<tr>
+<td style="text-align: center"><code>tx-queue-no-unfamiliar-locals</code></td>
+<td style="text-align: center">YES</td>
+<td style="text-align: center">NO**</td>
+<td style="text-align: center">NO*</td>
+</tr>
+<tr>
+<td style="text-align: center"><code>tx-queue-no-early-exit</code></td>
+<td style="text-align: center">YES</td>
+<td style="text-align: center">YES</td>
+<td style="text-align: center">YES</td>
+</tr>
+<tr>
+<td style="text-align: center">both</td>
+<td style="text-align: center">YES</td>
+<td style="text-align: center">NO**</td>
+<td style="text-align: center">YES</td>
+</tr>
+</tbody></table>
+<pre class="highlight plaintext"><code> * YES if the pool is not full
+** YES if the sender is local account
+</code></pre><h2 id='rpc-apis'>RPC APIs</h2>
+<p>The RPC API will only show the external transactions that are in the queue. They will never return rejected transactions. 
+- <a href="JSONRPC-parity-module#parity_localtransactions"><code>parity_localTransactions</code></a> will show up to 25 local transactions, be they already mined, pending or <a href="#dropping-conditions">dropped</a>. This RPC method is used in the top section of the Parity UI TxQueueViewer Dapp.
+- <a href="JSONRPC-parity-module#parity_pendingtransactions"><code>parity_pendingTransactions</code></a> will show the transactions added to the queue that will be processed soon (and do not fulfil any of the <a href="#dropping-conditions">droping conditions</a>). This RPC method is used in the bottom section of the Parity UI TxQueueViewer Dapp.
+- <a href="/JSONRPC-parity-module#parity_alltransactions"><code>parity_allTransactions</code></a> will show the transactions added to the queue that will be processed soon as well as the ones that might get dropped.
+- <a href="JSONRPC-parity-module#parity_futuretransactions"><code>parity_futureTransactions</code></a> is deprecated in favor of <code>parity_allTransactions</code>. It can be computed by subtracting <code>parity_pendingTransactions</code> to <code>parity_allTransactions</code>.</p>

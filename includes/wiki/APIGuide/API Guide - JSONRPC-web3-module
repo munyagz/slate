@@ -1,0 +1,56 @@
+<h2 id='json-rpc-methods'>JSON-RPC methods</h2>
+<ul>
+<li><a href="#web3_clientversion">web3_clientVersion</a></li>
+<li><a href="#web3_sha3">web3_sha3</a></li>
+</ul>
+<h2 id='json-rpc-api-reference'>JSON-RPC API Reference</h2><h3 id='web3_clientversion'>web3_clientVersion</h3>
+<p>Returns the current client version.</p>
+<h4 id='parameters'>Parameters</h4>
+<p>None</p>
+<h4 id='returns'>Returns</h4>
+<ul>
+<li><code>String</code> - The current client version</li>
+</ul>
+<h4 id='example'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;web3_clientVersion&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;Parity//v1.5.0-unstable-9db3f38-20170103/x86_64-linux-gnu/rustc1.14.0&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='web3_sha3'>web3_sha3</h3>
+<p>Returns Keccak-256 (<strong>not</strong> the standardized SHA3-256) of the given data.</p>
+<h4 id='parameters-2'>Parameters</h4>
+<ol>
+<li><code>String</code> - The data to convert into a SHA3 hash.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x68656c6c6f20776f726c64"</span> <span class="c1">// "hello world"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-2'>Returns</h4>
+<ul>
+<li><code>Data</code> - The Keccak-256 hash of the given string.</li>
+</ul>
+<h4 id='example-2'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;web3_sha3&quot;,&quot;params&quot;:[&quot;0x68656c6c6f20776f726c64&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0x47173285a8d7341e5e972fc677286384f802f8ef42a5ec5f03bbfa254cb01fad&quot;
+}
+</code></p>

@@ -1,0 +1,147 @@
+<p><strong>This is the fourth part of the Dapp Tutorial.</strong> We assume you&#39;re familiar with the content of the past chapters.</p>
+
+<p><a href="Tutorial-Part-3.md">⟵ 3rd Part</a> | <a href="Tutorial-Part-5.md">5th Part ⟶</a></p>
+
+<hr>
+<h2 id='calling-contracts'>Calling Contracts</h2>
+<p>You should now be familiar with <code>Bond</code>s and some of the core Parity bond API. Next we&#39;ll put this knowledge to use with more complex expressions that will feature contracts.</p>
+
+<p>Contract API basically comes in three pieces. Firstly, there&#39;s state-changing transactions like transferring tokens to a counter-party. Secondly, there&#39;s event reception and reporting that (usually) happen when such a state change occurs. Finally, there is inspection of the contract state through calling <code>constant</code> functions. For now we will restrict ourselves to the latter.</p>
+<h3 id='1-our-first-contract'>1. Our first contract</h3>
+<p>The first contract we will deal with is the global (name) registry. If you are not yet familiar, this is a registry that exists on all sensible blockchains which records fields of information for any desired name. The registry records ownership information so that names can be registered and their information changed at a later date.</p>
+
+<p>The registry contract has a fairly simple API for inspecting. We only need to worry about two functions:</p>
+
+<ul>
+<li><code>getOwner(bytes32) -&gt; address</code> Given the Keccak hash of a name, this returns the address of its owner, if it has been reserved.</li>
+<li><code>getData(bytes32, bytes32) -&gt; bytes32</code> Given the Keccak hash of a name and a second field key, this returns the associated data.</li>
+</ul>
+
+<p>There are subordinate functions to the latter such as <code>getAddress</code> and <code>getUint</code> which coerce the data into some other type. It is important to note that amongst the standardised field keys are:</p>
+
+<ul>
+<li><code>A</code> the <code>address</code> primarily associated with this name; if you&#39;re wanting to send funds to the name, this is where to send them (assuming it&#39;s not null).</li>
+<li><code>CONTENT</code> the <code>bytes32</code> which equals the Keccak hash of any content associated with this name. e.g. If the name represents a dapp, then this would be the hash of the dapp&#39;s content.</li>
+<li><code>IMG</code> the <code>bytes32</code> which equals the Keccak hash of an associated image; this might be a persons&#39;s avatar or the dapp icon, depending on what is being named.</li>
+</ul>
+
+<p>Let&#39;s begin by displaying the address associated with the name <code>&#39;gavofyork&#39;</code>. To do this we will need to create a special <code>Bond</code>-API contract object. The function to do this is <code>bonds.makeContract</code>; it takes the address and the ABI of the contract and returns an object with <code>Bond</code>-returning functions for each of the contract&#39;s functions.</p>
+
+<p>The address is easy enough to find; this can be determined via the <code>parity.api.parity.registry</code> call. The ABI spec is rather long and can be derived from the contract code available at the ethcore/contracts repository. Since there is only a single canonical registry, Parity, conveniently constructs this for you and provides it at the <code>bonds.registry</code> object.</p>
+
+<p>To figure out the primary associated address of the <code>gavofyork</code> name, we can use the <code>getAddress</code> call, together with the <code>parity.api.util.sha3</code> call to take the Keccak hash of our name. The full expression would be:</p>
+<pre class="highlight javascript"><code><span class="nx">bonds</span><span class="p">.</span><span class="nx">registry</span><span class="p">.</span><span class="nx">getAddress</span><span class="p">(</span><span class="nx">parity</span><span class="p">.</span><span class="nx">api</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">sha3</span><span class="p">(</span><span class="s1">'gavofyork'</span><span class="p">))</span>
+</code></pre>
+<p>Typing <code>parity.api.util.sha3(...)</code> every time you want to look up a name in the registry gets tedious fast. Happily, Parity provides a number of derivative helper functions as part of the <code>bonds.registry</code> object: <code>lookupData</code>, <code>lookupAddress</code>, <code>lookupUint</code> and <code>lookupOwner</code>; they&#39;re all just like the <code>get</code>-prefixed brethren, but do the hashing for you. Our expression therefore can become:</p>
+<pre class="highlight javascript"><code><span class="nx">bonds</span><span class="p">.</span><span class="nx">registry</span><span class="p">.</span><span class="nx">lookupAddress</span><span class="p">(</span><span class="s1">'gavofyork'</span><span class="p">,</span> <span class="s1">'A'</span><span class="p">)</span>
+</code></pre>
+<p>Let&#39;s get this in to our dapp. Change the <code>render()</code>ed HTML to:</p>
+<pre class="highlight plaintext"><code>&lt;div&gt;
+    gavofyork's address is&amp;nbsp;
+    &lt;Rspan&gt;{bonds.registry.lookupAddress('gavofyork', 'A')}&lt;/Rspan&gt;
+&lt;/div&gt;
+</code></pre>
+<p>Refresh your dapp page and, assuming you&#39;re running on Kovan, you&#39;ll see something like:</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/22712813/2e36a65c-ed54-11e6-896d-c123bd95d3d5.png" alt="image" /></p>
+<h3 id='2-dynamic-lookups'>2. Dynamic lookups</h3>
+<p>Now this is all very well, but perhaps you&#39;re not just interested in my account, but want to allow the user to enter whatever account they desire. Bonds make it easy:</p>
+<pre class="highlight jsx tab-jsx"><code><span class="kr">export</span> <span class="kr">class</span> <span class="nx">App</span> <span class="kr">extends</span> <span class="nx">React</span><span class="p">.</span><span class="nx">Component</span> <span class="p">{</span>
+    <span class="nx">constructor</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kr">super</span><span class="p">();</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">bond</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Bond</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+                Address of <span class="p">&lt;</span><span class="nc">InputBond</span> <span class="na">bond=</span><span class="si">{</span><span class="k">this</span><span class="p">.</span><span class="nx">bond</span><span class="si">}</span> <span class="na">placeholder=</span><span class="s1">'Lookup a name'</span> <span class="p">/&gt;</span> is:<span class="p">&lt;</span><span class="nt">br</span><span class="p">/&gt;</span>
+                <span class="p">&lt;</span><span class="nc">Rspan</span><span class="p">&gt;</span><span class="si">{</span><span class="nx">bonds</span><span class="p">.</span><span class="nx">registry</span><span class="p">.</span><span class="nx">lookupAddress</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">bond</span><span class="p">,</span> <span class="s1">'A'</span><span class="p">)</span><span class="si">}</span><span class="p">&lt;/</span><span class="nc">Rspan</span><span class="p">&gt;</span>
+                , it's balance is <span class="p">&lt;</span><span class="nc">Rspan</span><span class="p">&gt;</span>
+                    <span class="si">{</span><span class="nx">bonds</span><span class="p">.</span><span class="nx">balance</span><span class="p">(</span><span class="nx">bonds</span><span class="p">.</span><span class="nx">registry</span><span class="p">.</span><span class="nx">lookupAddress</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">bond</span><span class="p">,</span> <span class="s1">'A'</span><span class="p">)).</span><span class="nx">map</span><span class="p">(</span><span class="nx">formatBalance</span><span class="p">)</span><span class="si">}</span>
+                <span class="p">&lt;/</span><span class="nc">Rspan</span><span class="p">&gt;</span>
+            <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+<p>Here we have rewritten the component to include a new <code>Bond</code> which, via the <code>InputBond</code>, we are using to represent the current text in the text input field. We are passing this into the <code>lookupAddress</code> function to turn it into a <code>Bond</code> equivalent to the address for that name in the registry, and using this as the <code>value</code> of a reactive <code>Hash</code> display component. We are also using it in conjunction with <code>bonds.getBalance</code> to display a formatted balance of the account.</p>
+
+<p>Here&#39;s what it looks like:</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/22713122/2c8146e0-ed55-11e6-8809-c5329cf89bae.png" alt="image" /></p>
+
+<p>If the name you are currently looking up happens to have its address changed meanwhile, or their balance changes, you will of course see these details reflected in real-time.</p>
+<h3 id='3-derivative-contracts'>3. Derivative contracts</h3>
+<p>So far so good, but while the registry contract is interesting, it&#39;s not usually the final destination. Typically the registry is used to lookup the address of a second contract that you would actually like to use.</p>
+
+<p>Let&#39;s suppose that second contract is the GithubHint contract; if you&#39;re not already familiar, the GithubHint contract allows you to suggest which URLs might serve content for a particular hash. It&#39;s a semi-centralised, hacky alternative to content-addressable-delivery systems like BitTorrent/Kademlia, Swarm and IPFS. We use it widely in Parity as a means of content dissemination.</p>
+
+<p>Since it&#39;s a &quot;standard&quot; contract in Parity, the ABI for it is available in <code>oo7-parity</code> as <code>GitHubHintABI</code>. The address changes per chain, but can be discovered via the registry under the name <code>&#39;githubhint&#39;</code>; the expression would therefore be <code>bonds.registry.lookupAddress(&#39;githubhint&#39;, &#39;A&#39;)</code>.</p>
+
+<p>An important thing to realise about the <code>makeContract</code> function is that it does not require a &quot;plain&quot; address for the contract, but can actually work with a <code>Bond</code> for the address; everything will magically react if the address to which the <code>Bond</code> evaluates changes.</p>
+
+<p>Therefore our GithubHint contract object can be created with the expression:</p>
+<pre class="highlight javascript"><code><span class="nx">bonds</span><span class="p">.</span><span class="nx">makeContract</span><span class="p">(</span>
+    <span class="nx">bonds</span><span class="p">.</span><span class="nx">registry</span><span class="p">.</span><span class="nx">lookupAddress</span><span class="p">(</span><span class="s1">'githubhint'</span><span class="p">,</span> <span class="s1">'A'</span><span class="p">),</span>
+    <span class="nx">GitHubHintABI</span><span class="p">);</span>
+</code></pre>
+<p>Though we mustn&#39;t forget to import <code>GitHubHint</code>:</p>
+<pre class="highlight javascript"><code><span class="kr">import</span> <span class="p">{</span><span class="nx">GitHubHintABI</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">'oo7-parity'</span><span class="p">;</span>
+</code></pre>
+<p>The GithubHint contract has only a single inspection method: <code>entries</code>. This takes a <code>bytes32</code> (the hash of the content to be found) and returns three items (via an array). There are three kinds of entry; Github repository entries, whereby the first and second items form the address of a particular commit of a particular repository; general URLs, where the first item is a URL and the second is the null hash; and empty entries where both items are null. The third item is always the owner (if any) of the entry and the only account capable of changing the hint information.</p>
+
+<p>In this small demo, we&#39;ll assume that we are looking up only URLs and so are only interested in the first item. We therefore want an expression like:</p>
+<pre class="highlight javascript"><code><span class="nx">GithubHint</span><span class="p">.</span><span class="nx">entries</span><span class="p">(</span><span class="nx">hash</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</code></pre>
+<p>where <code>hash</code> is some content hash and <code>GithubHint</code> is the contract object.</p>
+
+<p>Putting this all together we can change our dapp to:</p>
+<pre class="highlight jsx tab-jsx"><code><span class="kr">export</span> <span class="kr">class</span> <span class="nx">App</span> <span class="kr">extends</span> <span class="nx">React</span><span class="p">.</span><span class="nx">Component</span> <span class="p">{</span>
+    <span class="nx">constructor</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kr">super</span><span class="p">();</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">bond</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Bond</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">GithubHint</span> <span class="o">=</span> <span class="nx">bonds</span><span class="p">.</span><span class="nx">makeContract</span><span class="p">(</span><span class="nx">bonds</span><span class="p">.</span><span class="nx">registry</span><span class="p">.</span><span class="nx">lookupAddress</span><span class="p">(</span><span class="s1">'githubhint'</span><span class="p">,</span> <span class="s1">'A'</span><span class="p">),</span> <span class="nx">GitHubHintABI</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+                URL for content <span class="p">&lt;</span><span class="nc">HashBond</span> <span class="na">bond=</span><span class="si">{</span><span class="k">this</span><span class="p">.</span><span class="nx">bond</span><span class="si">}</span> <span class="na">floatingLabelText=</span><span class="s1">'Content-hash'</span> <span class="p">/&gt;</span> is:<span class="p">&lt;</span><span class="nt">br</span><span class="p">/&gt;</span>
+                <span class="p">&lt;</span><span class="nc">Rspan</span><span class="p">&gt;</span><span class="si">{</span><span class="k">this</span><span class="p">.</span><span class="nx">GithubHint</span><span class="p">.</span><span class="nx">entries</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">bond</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="p">&lt;/</span><span class="nc">Rspan</span><span class="p">&gt;</span>
+            <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+<p>Note that we are using <code>HashBond</code> from <code>oo7-react</code> rather than <code>InputBond</code>. This just ensures that we enter only valid 32-byte hashes. Ensure that the import line is changed to:</p>
+<pre class="highlight jsx tab-jsx"><code><span class="kr">import</span> <span class="p">{</span><span class="nx">InputBond</span><span class="p">,</span> <span class="nx">HashBond</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">'parity-reactive-ui'</span><span class="p">;</span>
+</code></pre>
+<p>When you refresh the page enter the hash of a some content you know has a URL hint, for example:</p>
+
+<p><code>0xd40679a3a234d8421c678d64f4df3308859e8ad07ac95ce4a228aceb96955287</code></p>
+
+<p>Then watch the URL come up!</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/22715524/3f1545cc-ed5f-11e6-9536-f7fd9fed423d.png" alt="image" /></p>
+<h3 id='further-refinements'>Further refinements</h3>
+<p>Let&#39;s display the image associated with a registered name - we want to type <code>gavofyork</code> and have my mug come up. First we&#39;ll need to import the reactive version of the <code>img</code> element (the <code>Rimg</code> component) from the <code>oo7-react</code> package, so we should change the <code>oo7-react</code> import line:</p>
+<pre class="highlight plaintext"><code>import {Rspan, Rimg} from 'oo7-react';
+</code></pre>
+<p>Next, let&#39;s alter the dapp&#39;s render <code>div</code>:</p>
+<pre class="highlight plaintext"><code>&lt;div&gt;
+    &lt;InputBond bond={this.bond} placeholder='Name' /&gt;
+    &lt;Rimg src={this.GithubHint.entries(bonds.registry.lookupData(this.bond, 'IMG'))[0]} /&gt;
+&lt;/div&gt;
+</code></pre>
+<p>The only interesting thing here is the fact we&#39;re looking up the <code>IMG</code> entry of the entered name, passing it into GithubHint and taking the URL item from the result.</p>
+
+<p>Fire it up and type the name of an entry which has an <code>IMG</code> field (e.g. <code>gavofyork</code>):</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/22715677/1e3e2be2-ed60-11e6-9609-16475996e7f3.png" alt="image" /></p>
+
+<p>And after enough time to download, you should see the avatar!</p>
+
+<p>Now that you&#39;re familiar with how to inspect the state of contracts, in the next tutorial, we&#39;ll look into state-changing APIs, starting with making simple transactions.</p>
+
+<hr>
+
+<p><a href="Tutorial-Part-5.md">5th Part ⟶</a></p>

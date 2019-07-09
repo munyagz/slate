@@ -1,0 +1,556 @@
+<p>The trace module is for getting a deeper insight into transaction processing.
+It includes two sets of calls; the transaction trace filtering API and the ad-hoc tracing API.</p>
+
+<p><strong>Note:</strong> In order to use these API Parity must be fully synced with flags <code>$ parity --tracing on</code>.</p>
+<h2 id='the-ad-hoc-tracing-api'>The Ad-hoc Tracing API</h2>
+<p>The ad-hoc tracing API allows you to perform a number of different diagnostics on calls or transactions,
+either historical ones from the chain or hypothetical ones not yet mined. The diagnostics include:</p>
+
+<ul>
+<li><code>trace</code> <strong>Transaction trace</strong>. An equivalent trace to that in the previous section.</li>
+<li><code>vmTrace</code> <strong>Virtual Machine execution trace</strong>. Provides a full trace of the VM&#39;s state throughout the execution of the transaction, including for any subcalls.</li>
+<li><code>stateDiff</code> <strong>State difference</strong>. Provides information detailing all altered portions of the Ethereum state made due to the execution of the transaction.</li>
+</ul>
+
+<p>There are three means of providing a transaction to execute; either providing the same information as when making
+a call using <code>eth_call</code> (see <code>trace_call</code>), through providing raw, signed, transaction data as when using
+<code>eth_sendRawTransaction</code> (see <code>trace_rawTransaction</code>) or simply a transaction hash for a previously mined
+transaction (see <code>trace_replayTransaction</code>). In the latter case, your node must be in archive mode or the
+transaction should be within the most recent 1000 blocks.</p>
+<h2 id='the-transaction-trace-filtering-api'>The Transaction-Trace Filtering API</h2>
+<p>These APIs allow you to get a full <em>externality</em> trace on any transaction executed throughout the Parity chain.
+Unlike the log filtering API, you are able to search and filter based only upon address information.
+Information returned includes the execution of all <code>CREATE</code>s, <code>SUICIDE</code>s and all variants of <code>CALL</code> together
+with input data, output data, gas usage, amount transferred and the success status of each individual action.</p>
+<h3 id='traceaddress-field'><code>traceAddress</code> field</h3>
+<p>The <code>traceAddress</code> field of all returned traces, gives the exact location in the call trace [index in root,
+index in first <code>CALL</code>, index in second <code>CALL</code>, ...].</p>
+
+<p>i.e. if the trace is:
+<code>
+A
+  CALLs B
+    CALLs G
+  CALLs C
+    CALLs G
+</code>
+then it should look something like:</p>
+
+<p><code>[ {A: []}, {B: [0]}, {G: [0, 0]}, {C: [1]}, {G: [1, 0]} ]</code></p>
+<h2 id='json-rpc-methods'>JSON-RPC methods</h2><h4 id='ad-hoc-tracing'>Ad-hoc Tracing</h4>
+<ul>
+<li><a href="#trace_call">trace_call</a></li>
+<li><a href="#trace_callmany">trace_callMany</a></li>
+<li><a href="#trace_rawtransaction">trace_rawTransaction</a></li>
+<li><a href="#trace_replayblocktransactions">trace_replayBlockTransactions</a></li>
+<li><a href="#trace_replaytransaction">trace_replayTransaction</a></li>
+</ul>
+<h4 id='transaction-trace-filtering'>Transaction-Trace Filtering</h4>
+<ul>
+<li><a href="#trace_block">trace_block</a></li>
+<li><a href="#trace_filter">trace_filter</a></li>
+<li><a href="#trace_get">trace_get</a></li>
+<li><a href="#trace_transaction">trace_transaction</a></li>
+</ul>
+<h2 id='json-rpc-api-reference'>JSON-RPC API Reference</h2><h3 id='trace_call'>trace_call</h3>
+<p>Executes the given call and returns a number of possible traces for it.</p>
+<h4 id='parameters'>Parameters</h4>
+<ol>
+<li><code>Object</code> - Call options, same as <code>eth_call</code>.
+
+<ul>
+<li><code>from</code>:   <code>Address</code> - (optional) 20 Bytes - The address the transaction is send from.</li>
+<li><code>to</code>:   <code>Address</code> - (optional when creating new contract) 20 Bytes - The address the transaction is directed to.</li>
+<li><code>gas</code>:   <code>Quantity</code> - (optional) Integer of the gas provided for the transaction execution. eth_call consumes zero gas, but this parameter may be needed by some executions.</li>
+<li><code>gasPrice</code>:   <code>Quantity</code> - (optional) Integer of the gas price used for each paid gas.</li>
+<li><code>value</code>:   <code>Quantity</code> - (optional) Integer of the value sent with this transaction.</li>
+<li><code>data</code>:   <code>Data</code> - (optional) 4 byte hash of the method signature followed by encoded parameters. For details see <a href="https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI">Ethereum Contract ABI</a>.</li>
+</ul></li>
+<li><code>Array</code> - Type of trace, one or more of: <code>&quot;vmTrace&quot;</code>, <code>&quot;trace&quot;</code>, <code>&quot;stateDiff&quot;</code>.</li>
+<li><code>Quantity</code> or <code>Tag</code> - (optional) Integer of a block number, or the string <code>&#39;earliest&#39;</code>, <code>&#39;latest&#39;</code> or <code>&#39;pending&#39;</code>.</li>
+</ol>
+<h4 id='returns'>Returns</h4>
+<ul>
+<li><code>Array</code> - Block traces</li>
+</ul>
+<h4 id='example'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;trace_call&quot;,&quot;params&quot;:[{ ... },[&quot;trace&quot;]],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: {
+    &quot;output&quot;: &quot;0x&quot;,
+    &quot;stateDiff&quot;: null,
+    &quot;trace&quot;: [{
+      &quot;action&quot;: { ... },
+      &quot;result&quot;: {
+        &quot;gasUsed&quot;: &quot;0x0&quot;,
+        &quot;output&quot;: &quot;0x&quot;
+      },
+      &quot;subtraces&quot;: 0,
+      &quot;traceAddress&quot;: [],
+      &quot;type&quot;: &quot;call&quot;
+    }],
+    &quot;vmTrace&quot;: null
+  }
+}
+</code></p>
+
+<hr>
+<h3 id='trace_callmany'>trace_callMany</h3>
+<p>Performs multiple call traces on top of the same block. i.e. transaction <code>n</code> will be executed on top of a pending block with all <code>n-1</code> transactions applied (traced) first. Allows to trace dependent transactions.</p>
+<h4 id='parameters-2'>Parameters</h4>
+<ol>
+<li><code>Array</code> - List of trace calls with the type of trace, one or more of: <code>&quot;vmTrace&quot;</code>, <code>&quot;trace&quot;</code>, <code>&quot;stateDiff&quot;</code>.</li>
+<li><code>Quantity</code> or <code>Tag</code> - (optional) integer block number, or the string <code>&#39;latest&#39;</code>, <code>&#39;earliest&#39;</code> or <code>&#39;pending&#39;</code>, see the <a href="#the-default-block-parameter">default block parameter</a>.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="p">[</span>
+    <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="s2">"from"</span><span class="p">:</span> <span class="s2">"0x407d73d8a49eeb85d32cf465507dd71d507100c1"</span><span class="p">,</span>
+        <span class="s2">"to"</span><span class="p">:</span> <span class="s2">"0xa94f5374fce5edbc8e2a8697c15331677e6ebf0b"</span><span class="p">,</span>
+        <span class="s2">"value"</span><span class="p">:</span> <span class="s2">"0x186a0"</span>
+      <span class="p">},</span>
+      <span class="p">[</span><span class="s2">"trace"</span><span class="p">]</span>
+    <span class="p">],</span>
+    <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="s2">"from"</span><span class="p">:</span> <span class="s2">"0x407d73d8a49eeb85d32cf465507dd71d507100c1"</span><span class="p">,</span>
+        <span class="s2">"to"</span><span class="p">:</span> <span class="s2">"0xa94f5374fce5edbc8e2a8697c15331677e6ebf0b"</span><span class="p">,</span>
+        <span class="s2">"value"</span><span class="p">:</span> <span class="s2">"0x186a0"</span>
+      <span class="p">},</span>
+      <span class="p">[</span><span class="s2">"trace"</span><span class="p">]</span>
+    <span class="p">]</span>
+  <span class="p">],</span>
+  <span class="s2">"latest"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-2'>Returns</h4>
+<ul>
+<li><code>Array</code> - Array of the given transactions&#39; traces</li>
+</ul>
+<h4 id='example-2'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;trace_callMany&quot;,&quot;params&quot;:[[[{&quot;from&quot;:&quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;,&quot;to&quot;:&quot;0xa94f5374fce5edbc8e2a8697c15331677e6ebf0b&quot;,&quot;value&quot;:&quot;0x186a0&quot;},[&quot;trace&quot;]],[{&quot;from&quot;:&quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;,&quot;to&quot;:&quot;0xa94f5374fce5edbc8e2a8697c15331677e6ebf0b&quot;,&quot;value&quot;:&quot;0x186a0&quot;},[&quot;trace&quot;]]],&quot;latest&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: [
+    {
+      &quot;output&quot;: &quot;0x&quot;,
+      &quot;stateDiff&quot;: null,
+      &quot;trace&quot;: [{
+        &quot;action&quot;: {
+          &quot;callType&quot;: &quot;call&quot;,
+          &quot;from&quot;: &quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;,
+          &quot;gas&quot;: &quot;0x1dcd12f8&quot;,
+          &quot;input&quot;: &quot;0x&quot;,
+          &quot;to&quot;: &quot;0xa94f5374fce5edbc8e2a8697c15331677e6ebf0b&quot;,
+          &quot;value&quot;: &quot;0x186a0&quot;
+        },
+        &quot;result&quot;: {
+          &quot;gasUsed&quot;: &quot;0x0&quot;,
+          &quot;output&quot;: &quot;0x&quot;
+        },
+        &quot;subtraces&quot;: 0,
+        &quot;traceAddress&quot;: [],
+        &quot;type&quot;: &quot;call&quot;
+      }],
+      &quot;vmTrace&quot;: null
+    },
+    {
+      &quot;output&quot;: &quot;0x&quot;,
+      &quot;stateDiff&quot;: null,
+      &quot;trace&quot;: [{
+        &quot;action&quot;: {
+          &quot;callType&quot;: &quot;call&quot;,
+          &quot;from&quot;: &quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;,
+          &quot;gas&quot;: &quot;0x1dcd12f8&quot;,
+          &quot;input&quot;: &quot;0x&quot;,
+          &quot;to&quot;: &quot;0xa94f5374fce5edbc8e2a8697c15331677e6ebf0b&quot;,
+          &quot;value&quot;: &quot;0x186a0&quot;
+        },
+        &quot;result&quot;: {
+          &quot;gasUsed&quot;: &quot;0x0&quot;,
+          &quot;output&quot;: &quot;0x&quot;
+        },
+        &quot;subtraces&quot;: 0,
+        &quot;traceAddress&quot;: [],
+        &quot;type&quot;: &quot;call&quot;
+      }],
+      &quot;vmTrace&quot;: null
+    }
+  ]
+}
+</code></p>
+
+<hr>
+<h3 id='trace_rawtransaction'>trace_rawTransaction</h3>
+<p>Traces a call to <code>eth_sendRawTransaction</code> without making the call, returning the traces</p>
+<h4 id='parameters-3'>Parameters</h4>
+<ol>
+<li><code>Data</code> - Raw transaction data.</li>
+<li><code>Array</code> - Type of trace, one or more of: <code>&quot;vmTrace&quot;</code>, <code>&quot;trace&quot;</code>, <code>&quot;stateDiff&quot;</code>.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675"</span><span class="p">,</span>
+  <span class="p">[</span><span class="s2">"trace"</span><span class="p">]</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-3'>Returns</h4>
+<ul>
+<li><code>Object</code> - Block traces.</li>
+</ul>
+<h4 id='example-3'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;trace_rawTransaction&quot;,&quot;params&quot;:[&quot;0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675&quot;,[&quot;trace&quot;]],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: {
+    &quot;output&quot;: &quot;0x&quot;,
+    &quot;stateDiff&quot;: null,
+    &quot;trace&quot;: [{
+      &quot;action&quot;: { ... },
+      &quot;result&quot;: {
+        &quot;gasUsed&quot;: &quot;0x0&quot;,
+        &quot;output&quot;: &quot;0x&quot;
+      },
+      &quot;subtraces&quot;: 0,
+      &quot;traceAddress&quot;: [],
+      &quot;type&quot;: &quot;call&quot;
+    }],
+    &quot;vmTrace&quot;: null
+  }
+}
+</code></p>
+
+<hr>
+<h3 id='trace_replayblocktransactions'>trace_replayBlockTransactions</h3>
+<p>Replays all transactions in a block returning the requested traces for each transaction.</p>
+<h4 id='parameters-4'>Parameters</h4>
+<ol>
+<li><code>Quantity</code> or <code>Tag</code> - Integer of a block number, or the string <code>&#39;earliest&#39;</code>, <code>&#39;latest&#39;</code> or <code>&#39;pending&#39;</code>.</li>
+<li><code>Array</code> - Type of trace, one or more of: <code>&quot;vmTrace&quot;</code>, <code>&quot;trace&quot;</code>, <code>&quot;stateDiff&quot;</code>.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x2ed119"</span><span class="p">,</span>
+  <span class="p">[</span><span class="s2">"trace"</span><span class="p">]</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-4'>Returns</h4>
+<ul>
+<li><code>Array</code> - Block transactions traces.</li>
+</ul>
+<h4 id='example-4'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;trace_replayBlockTransactions&quot;,&quot;params&quot;:[&quot;0x2ed119&quot;,[&quot;trace&quot;]],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: [
+    {
+      &quot;output&quot;: &quot;0x&quot;,
+      &quot;stateDiff&quot;: null,
+      &quot;trace&quot;: [{
+        &quot;action&quot;: { ... },
+        &quot;result&quot;: {
+          &quot;gasUsed&quot;: &quot;0x0&quot;,
+          &quot;output&quot;: &quot;0x&quot;
+        },
+        &quot;subtraces&quot;: 0,
+        &quot;traceAddress&quot;: [],
+        &quot;type&quot;: &quot;call&quot;
+      }],
+      &quot;vmTrace&quot;: null
+    },
+    { ... }
+  ]
+}
+</code></p>
+
+<hr>
+<h3 id='trace_replaytransaction'>trace_replayTransaction</h3>
+<p>Replays a transaction, returning the traces.</p>
+<h4 id='parameters-5'>Parameters</h4>
+<ol>
+<li><code>Hash</code> - Transaction hash.</li>
+<li><code>Array</code> - Type of trace, one or more of: <code>&quot;vmTrace&quot;</code>, <code>&quot;trace&quot;</code>, <code>&quot;stateDiff&quot;</code>.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x02d4a872e096445e80d05276ee756cefef7f3b376bcec14246469c0cd97dad8f"</span><span class="p">,</span>
+  <span class="p">[</span><span class="s2">"trace"</span><span class="p">]</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-5'>Returns</h4>
+<ul>
+<li><code>Object</code> - Block traces.</li>
+</ul>
+<h4 id='example-5'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;trace_replayTransaction&quot;,&quot;params&quot;:[&quot;0x02d4a872e096445e80d05276ee756cefef7f3b376bcec14246469c0cd97dad8f&quot;,[&quot;trace&quot;]],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: {
+    &quot;output&quot;: &quot;0x&quot;,
+    &quot;stateDiff&quot;: null,
+    &quot;trace&quot;: [{
+      &quot;action&quot;: { ... },
+      &quot;result&quot;: {
+        &quot;gasUsed&quot;: &quot;0x0&quot;,
+        &quot;output&quot;: &quot;0x&quot;
+      },
+      &quot;subtraces&quot;: 0,
+      &quot;traceAddress&quot;: [],
+      &quot;type&quot;: &quot;call&quot;
+    }],
+    &quot;vmTrace&quot;: null
+  }
+}
+</code></p>
+
+<hr>
+<h3 id='trace_block'>trace_block</h3>
+<p>Returns traces created at given block.</p>
+<h4 id='parameters-6'>Parameters</h4>
+<ol>
+<li><code>Quantity</code> or <code>Tag</code> - Integer of a block number, or the string <code>&#39;earliest&#39;</code>, <code>&#39;latest&#39;</code> or <code>&#39;pending&#39;</code>.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x2ed119"</span> <span class="c1">// 3068185</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-6'>Returns</h4>
+<ul>
+<li><code>Array</code> - Block traces.</li>
+</ul>
+<h4 id='example-6'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;trace_block&quot;,&quot;params&quot;:[&quot;0x2ed119&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: [
+    {
+      &quot;action&quot;: {
+        &quot;callType&quot;: &quot;call&quot;,
+        &quot;from&quot;: &quot;0xaa7b131dc60b80d3cf5e59b5a21a666aa039c951&quot;,
+        &quot;gas&quot;: &quot;0x0&quot;,
+        &quot;input&quot;: &quot;0x&quot;,
+        &quot;to&quot;: &quot;0xd40aba8166a212d6892125f079c33e6f5ca19814&quot;,
+        &quot;value&quot;: &quot;0x4768d7effc3fbe&quot;
+      },
+      &quot;blockHash&quot;: &quot;0x7eb25504e4c202cf3d62fd585d3e238f592c780cca82dacb2ed3cb5b38883add&quot;,
+      &quot;blockNumber&quot;: 3068185,
+      &quot;result&quot;: {
+        &quot;gasUsed&quot;: &quot;0x0&quot;,
+        &quot;output&quot;: &quot;0x&quot;
+      },
+      &quot;subtraces&quot;: 0,
+      &quot;traceAddress&quot;: [],
+      &quot;transactionHash&quot;: &quot;0x07da28d752aba3b9dd7060005e554719c6205c8a3aea358599fc9b245c52f1f6&quot;,
+      &quot;transactionPosition&quot;: 0,
+      &quot;type&quot;: &quot;call&quot;
+    },
+    ...
+  ]
+}
+</code></p>
+
+<hr>
+<h3 id='trace_filter'>trace_filter</h3>
+<p>Returns traces matching given filter</p>
+<h4 id='parameters-7'>Parameters</h4>
+<ol>
+<li><code>Object</code> - The filter object
+
+<ul>
+<li><code>fromBlock</code>:   <code>Quantity</code> or <code>Tag</code> - (optional) From this block.</li>
+<li><code>toBlock</code>:   <code>Quantity</code> or <code>Tag</code> - (optional) To this block.</li>
+<li><code>fromAddress</code>:   <code>Array</code> - (optional) Sent from these addresses.</li>
+<li><code>toAddress</code>:   <code>Address</code> - (optional) Sent to these addresses.</li>
+<li><code>after</code>:   <code>Quantity</code> - (optional) The offset trace number</li>
+<li><code>count</code>:   <code>Quantity</code> - (optional) Integer number of traces to display in a batch.</li>
+</ul></li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[{</span>
+  <span class="s2">"fromBlock"</span><span class="p">:</span> <span class="s2">"0x2ed0c4"</span><span class="p">,</span> <span class="c1">// 3068100</span>
+  <span class="s2">"toBlock"</span><span class="p">:</span> <span class="s2">"0x2ed128"</span><span class="p">,</span> <span class="c1">// 3068200</span>
+  <span class="s2">"toAddress"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"0x8bbB73BCB5d553B5A556358d27625323Fd781D37"</span><span class="p">],</span>
+  <span class="s2">"after"</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+  <span class="s2">"count"</span><span class="p">:</span> <span class="mi">100</span>
+<span class="p">}]</span>
+</code></pre><h4 id='returns-7'>Returns</h4>
+<ul>
+<li><code>Array</code> - Traces matching given filter</li>
+</ul>
+<h4 id='example-7'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;trace_filter&quot;,&quot;params&quot;:[{&quot;fromBlock&quot;:&quot;0x2ed0c4&quot;,&quot;toBlock&quot;:&quot;0x2ed128&quot;,&quot;toAddress&quot;:[&quot;0x8bbB73BCB5d553B5A556358d27625323Fd781D37&quot;],&quot;after&quot;:1000,&quot;count&quot;:100}],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: [
+    {
+      &quot;action&quot;: {
+        &quot;callType&quot;: &quot;call&quot;,
+        &quot;from&quot;: &quot;0x32be343b94f860124dc4fee278fdcbd38c102d88&quot;,
+        &quot;gas&quot;: &quot;0x4c40d&quot;,
+        &quot;input&quot;: &quot;0x&quot;,
+        &quot;to&quot;: &quot;0x8bbb73bcb5d553b5a556358d27625323fd781d37&quot;,
+        &quot;value&quot;: &quot;0x3f0650ec47fd240000&quot;
+      },
+      &quot;blockHash&quot;: &quot;0x86df301bcdd8248d982dbf039f09faf792684e1aeee99d5b58b77d620008b80f&quot;,
+      &quot;blockNumber&quot;: 3068183,
+      &quot;result&quot;: {
+        &quot;gasUsed&quot;: &quot;0x0&quot;,
+        &quot;output&quot;: &quot;0x&quot;
+      },
+      &quot;subtraces&quot;: 0,
+      &quot;traceAddress&quot;: [],
+      &quot;transactionHash&quot;: &quot;0x3321a7708b1083130bd78da0d62ead9f6683033231617c9d268e2c7e3fa6c104&quot;,
+      &quot;transactionPosition&quot;: 3,
+      &quot;type&quot;: &quot;call&quot;
+    },
+    ...
+  ]
+}
+</code></p>
+
+<hr>
+<h3 id='trace_get'>trace_get</h3>
+<p>Returns trace at given position.</p>
+<h4 id='parameters-8'>Parameters</h4>
+<ol>
+<li><code>Hash</code> - Transaction hash.</li>
+<li><code>Array</code> - Index positions of the traces.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x17104ac9d3312d8c136b7f44d4b8b47852618065ebfa534bd2d3b5ef218ca1f3"</span><span class="p">,</span>
+  <span class="p">[</span><span class="s2">"0x0"</span><span class="p">]</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-8'>Returns</h4>
+<ul>
+<li><code>Object</code> - Trace object</li>
+</ul>
+<h4 id='example-8'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;trace_get&quot;,&quot;params&quot;:[&quot;0x17104ac9d3312d8c136b7f44d4b8b47852618065ebfa534bd2d3b5ef218ca1f3&quot;,[&quot;0x0&quot;]],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: {
+    &quot;action&quot;: {
+      &quot;callType&quot;: &quot;call&quot;,
+      &quot;from&quot;: &quot;0x1c39ba39e4735cb65978d4db400ddd70a72dc750&quot;,
+      &quot;gas&quot;: &quot;0x13e99&quot;,
+      &quot;input&quot;: &quot;0x16c72721&quot;,
+      &quot;to&quot;: &quot;0x2bd2326c993dfaef84f696526064ff22eba5b362&quot;,
+      &quot;value&quot;: &quot;0x0&quot;
+    },
+    &quot;blockHash&quot;: &quot;0x7eb25504e4c202cf3d62fd585d3e238f592c780cca82dacb2ed3cb5b38883add&quot;,
+    &quot;blockNumber&quot;: 3068185,
+    &quot;result&quot;: {
+      &quot;gasUsed&quot;: &quot;0x183&quot;,
+      &quot;output&quot;: &quot;0x0000000000000000000000000000000000000000000000000000000000000001&quot;
+    },
+    &quot;subtraces&quot;: 0,
+    &quot;traceAddress&quot;: [
+      0
+    ],
+    &quot;transactionHash&quot;: &quot;0x17104ac9d3312d8c136b7f44d4b8b47852618065ebfa534bd2d3b5ef218ca1f3&quot;,
+    &quot;transactionPosition&quot;: 2,
+    &quot;type&quot;: &quot;call&quot;
+  }
+}
+</code></p>
+
+<hr>
+<h3 id='trace_transaction'>trace_transaction</h3>
+<p>Returns all traces of given transaction</p>
+<h4 id='parameters-9'>Parameters</h4>
+<ol>
+<li><code>Hash</code> - Transaction hash</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span><span class="s2">"0x17104ac9d3312d8c136b7f44d4b8b47852618065ebfa534bd2d3b5ef218ca1f3"</span><span class="p">]</span>
+</code></pre><h4 id='returns-9'>Returns</h4>
+<ul>
+<li><code>Array</code> - Traces of given transaction</li>
+</ul>
+<h4 id='example-9'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;trace_transaction&quot;,&quot;params&quot;:[&quot;0x17104ac9d3312d8c136b7f44d4b8b47852618065ebfa534bd2d3b5ef218ca1f3&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: [
+    {
+      &quot;action&quot;: {
+        &quot;callType&quot;: &quot;call&quot;,
+        &quot;from&quot;: &quot;0x1c39ba39e4735cb65978d4db400ddd70a72dc750&quot;,
+        &quot;gas&quot;: &quot;0x13e99&quot;,
+        &quot;input&quot;: &quot;0x16c72721&quot;,
+        &quot;to&quot;: &quot;0x2bd2326c993dfaef84f696526064ff22eba5b362&quot;,
+        &quot;value&quot;: &quot;0x0&quot;
+      },
+      &quot;blockHash&quot;: &quot;0x7eb25504e4c202cf3d62fd585d3e238f592c780cca82dacb2ed3cb5b38883add&quot;,
+      &quot;blockNumber&quot;: 3068185,
+      &quot;result&quot;: {
+        &quot;gasUsed&quot;: &quot;0x183&quot;,
+        &quot;output&quot;: &quot;0x0000000000000000000000000000000000000000000000000000000000000001&quot;
+      },
+      &quot;subtraces&quot;: 0,
+      &quot;traceAddress&quot;: [
+        0
+      ],
+      &quot;transactionHash&quot;: &quot;0x17104ac9d3312d8c136b7f44d4b8b47852618065ebfa534bd2d3b5ef218ca1f3&quot;,
+      &quot;transactionPosition&quot;: 2,
+      &quot;type&quot;: &quot;call&quot;
+    },
+    ...
+  ]
+}
+</code></p>

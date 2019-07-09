@@ -1,0 +1,201 @@
+<p><strong>This is the ninth part of the Dapp Tutorial.</strong> We assume you&#39;re familiar with the content of the past chapters.</p>
+
+<p><a href="Tutorial-Part-8.md">⟵ 8th Part</a> | <a href="Tutorial-Part-10.md">10th Part ⟶</a></p>
+
+<hr>
+<h2 id='deploying-a-contract'>Deploying a Contract</h2>
+<p>For our penultimate trick, we will introduce the ability to not just use, but also deploy the contract from our fledgling dapp. Deploying a contract is very similar to any other kind of transaction; we use a slightly different API (<code>bonds.deployContract</code>) in order to conveniently return us with a <code>Contract</code> object rather than just a transaction receipt as with the standard <code>bonds.post</code> API.</p>
+
+<p>There is backwards compatibility, so we can use the same <code>TransactionProgressBadge</code> in order to display the progress of the deployment transaction as it gets signed and confirmed.</p>
+<h3 id='1-split-and-prop'>1. Split and Prop</h3>
+<p>Before we can begin in earnest, we will need to refactor some of our existing code. Whereas at the moment, our dapp heads straight into the &quot;voting&quot; mode we actually want to create a new mode of operation where we are deploying the underlying contract. To do this, we will rename the class <code>App</code> to <code>Counter</code> (and remove the <code>export</code> functionality) and introduce a new exported class <code>App</code>.</p>
+
+<p>The new class <code>App</code> will, for now, just <code>render()</code> a <code>Counter</code> object. However, the one key change we&#39;ll make here is to pass in the <code>Counter</code> contract as a prop named <code>contract</code>. This has a two repercussions since we&#39;re working in React. Firstly, we should move the definitions of <code>this.voted</code>, <code>this.prevVote</code> and <code>this.prevVotes</code> from the constructor into <code>componentWillReceiveProps</code> and <code>componentWillMount</code>, so that they respond to changes in the prop value.</p>
+
+<p>Secondly, rather than storing the <code>Counter</code> contract object in <code>App</code>&#39;s &#39;<code>this.counter</code> we&#39;ll place it in the more correct <code>this.state.counter</code>, so that should it change (which it will, but not quite yet), it is reflected in the browser through forcing a new <code>render()</code>.</p>
+
+<p>Here&#39;s the final code for class <code>App</code>:</p>
+<pre class="highlight javascript"><code><span class="kr">export</span> <span class="kr">class</span> <span class="nx">App</span> <span class="kr">extends</span> <span class="nx">React</span><span class="p">.</span><span class="nx">Component</span> <span class="p">{</span>
+    <span class="nx">constructor</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="kr">super</span><span class="p">();</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">state</span> <span class="o">=</span> <span class="p">{</span> <span class="na">counter</span><span class="p">:</span> <span class="nx">bonds</span><span class="p">.</span><span class="nx">makeContract</span><span class="p">(</span><span class="s1">'0x7aC77Cb854E064f22E747F40b90FE6D6Bc1e3197'</span><span class="p">,</span> <span class="nx">CounterABI</span><span class="p">)</span> <span class="p">};</span>
+    <span class="p">}</span>
+    <span class="nx">render</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span><span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="nx">Counter</span> <span class="nx">contract</span><span class="o">=</span><span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nx">counter</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/div&gt;</span><span class="se">)</span><span class="err">;
+</span>    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+<p>The <code>render</code> function of the new <code>Counter</code> class is mostly equivalent to the same function in the original <code>App</code> class. The only change is to replace the two lines that use <code>this.counter</code> to instead use <code>this.props.contract</code>, which is now being passed from <code>App</code>. The two props lines for the <code>VoteOption</code> element <code>votes</code> and <code>vote</code> now read:</p>
+<pre class="highlight javascript"><code><span class="nx">votes</span><span class="o">=</span><span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">.</span><span class="nx">contract</span><span class="p">.</span><span class="nx">votes</span><span class="p">(</span><span class="nx">i</span><span class="p">)}</span>
+<span class="nx">vote</span><span class="o">=</span><span class="p">{()</span> <span class="o">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">setState</span><span class="p">({</span><span class="na">tx</span><span class="p">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">.</span><span class="nx">contract</span><span class="p">.</span><span class="nx">vote</span><span class="p">(</span><span class="nx">i</span><span class="p">)})}</span>
+</code></pre>
+<p>The <code>constructor</code> portion of the new <code>Counter</code> class is a little different from the <code>App</code> class. It now reads:</p>
+<pre class="highlight javascript"><code><span class="nx">constructor</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kr">super</span><span class="p">();</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">state</span> <span class="o">=</span> <span class="p">{</span> <span class="na">tx</span><span class="p">:</span> <span class="kc">null</span> <span class="p">};</span>
+<span class="p">}</span>
+<span class="nx">componentWillMount</span> <span class="p">()</span> <span class="p">{</span> <span class="k">this</span><span class="p">.</span><span class="nx">componentWillReceiveProps</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">);</span> <span class="p">}</span>
+<span class="nx">componentWillReceiveProps</span> <span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">voted</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">.</span><span class="nx">contract</span><span class="p">.</span><span class="nx">hasVoted</span><span class="p">(</span><span class="nx">bonds</span><span class="p">.</span><span class="nx">me</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">prevVote</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">.</span><span class="nx">contract</span><span class="p">.</span><span class="nx">Voted</span><span class="p">({</span> <span class="na">who</span><span class="p">:</span> <span class="nx">bonds</span><span class="p">.</span><span class="nx">me</span> <span class="p">});</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">prevVotes</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">.</span><span class="nx">contract</span><span class="p">.</span><span class="nx">Voted</span><span class="p">({</span> <span class="na">who</span><span class="p">:</span> <span class="nx">bonds</span><span class="p">.</span><span class="nx">accounts</span> <span class="p">});</span>
+<span class="p">}</span>
+</code></pre>
+<p>See how the bonds&#39; setup have been moved out of the constructor (inert to prop changes) into the React APIs functions which execute along with prop changes.</p>
+
+<p>With these changes, the dapp will remain essentially the same, however the ground is now prepared for introducing the deployment mode.</p>
+<h3 id='2-the-real-deal'>2. The Real Deal</h3>
+<p><code>Counter</code> class is ready for our needs; our efforts can now be concentrated on the <code>App</code> class, into which we&#39;ll add an initial mode for deploying the contract.</p>
+
+<p>One of the first things we need to remove is the hard-coded contract address. Furthermore, when we do deploy the contract, we&#39;ll need to track the transaction which is doing it. So we will swap out the state initialiser line in our constructor for one that initialises both the <code>counter</code> and a deployment <code>tx</code> to <code>null</code>:</p>
+<pre class="highlight javascript"><code><span class="k">this</span><span class="p">.</span><span class="nx">state</span> <span class="o">=</span> <span class="p">{</span> <span class="na">tx</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span> <span class="na">counter</span><span class="p">:</span> <span class="kc">null</span> <span class="p">};</span>
+</code></pre>
+<p>We&#39;ll also add a <code>deploy</code> function, whose job it is to sort out the deployment, once the user initiates it. Since we&#39;ll need to call it from an event handler, we&#39;ll pre-bind it to <code>this</code> in the constructor:</p>
+<pre class="highlight javascript"><code><span class="k">this</span><span class="p">.</span><span class="nx">deploy</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">deploy</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</code></pre>
+<p>For the new <code>deploy()</code> function, we&#39;ll use the <code>deployContract</code> API to create a new transaction. It requires the contract&#39;s bytecode (which we&#39;ll place in a <code>const CounterCode</code> next) and the ABI (which we already have in <code>CounterABI</code>). The function begins thus:</p>
+<pre class="highlight plaintext"><code>deploy () {
+    let tx = bonds.deployContract(CounterCode, CounterABI);
+</code></pre>
+<p>We will record this transaction in our state so we can feed it into a progress badge later:</p>
+<pre class="highlight javascript"><code>    <span class="k">this</span><span class="p">.</span><span class="nx">setState</span><span class="p">({</span><span class="nx">tx</span><span class="p">});</span>
+</code></pre>
+<p>Finally, and crucially, we&#39;ll set our state&#39;s <code>counter</code> key once the contract has been deployed. This makes use an API of <code>Bond</code> that we haven&#39;t seen yet: <code>done</code>. This is somewhat similar to <code>Bond.then</code>, except that unlike <code>.then</code> which is called <em>as soon as</em> the <code>Bond</code> takes a value, <code>.done</code> is called only once it has taken a value from which it will never again change.</p>
+
+<p>In the context of contract deployment this means it has been finalised. The object value here contains two keys: <code>confirmed</code> (which is the receipt of the transaction which deployed the contract) and <code>deployed</code> (which is the final contract object itself). We will record the latter in our state:</p>
+<pre class="highlight javascript"><code>    <span class="nx">tx</span><span class="p">.</span><span class="nx">done</span><span class="p">(</span><span class="nx">s</span> <span class="o">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">setState</span><span class="p">({</span> <span class="na">counter</span><span class="p">:</span> <span class="nx">s</span><span class="p">.</span><span class="nx">deployed</span> <span class="p">}));</span>
+<span class="p">}</span>
+</code></pre>
+<p>This leaves us little to do except render a button if the contract hasn&#39;t yet been deployed. Our <code>render</code> function thus becomes:</p>
+<pre class="highlight javascript"><code><span class="k">return</span> <span class="p">(</span><span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+    <span class="p">{</span><span class="o">!!</span><span class="k">this</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nx">counter</span>
+        <span class="p">?</span> <span class="o">&lt;</span><span class="nx">Counter</span> <span class="nx">contract</span><span class="o">=</span><span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nx">counter</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>        <span class="p">:</span> <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="nx">BButton</span> <span class="nx">content</span><span class="o">=</span><span class="s1">'Deploy'</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">deploy</span><span class="p">}</span><span class="sr">/</span><span class="err">&gt;
+</span>            <span class="o">&lt;</span><span class="nx">TransactionProgressLabel</span> <span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nx">tx</span><span class="p">}</span><span class="sr">/</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">}</span>
+<span class="o">&lt;</span><span class="sr">/div&gt;</span><span class="se">)</span><span class="err">;
+</span></code></pre>
+<p>To decide whether we have yet deployed a contract, we look at the <code>counter</code> item in state. If it coerces to <code>true</code> then we know we can go ahead and display the <code>Counter</code> component as before. Otherwise, we&#39;ll need to deploy the contract and instead display the usual combination of button (with the <code>onClick</code> handler) and a progress badge (picking up on <code>this.state.tx</code>).</p>
+
+<p>One final thing is to include the contract&#39;s byte code. You&#39;ll need to either get your own byte code from the compiler (as we did when we deployed the contract in the first place), or alternatively, just use this:</p>
+<pre class="highlight javascript"><code><span class="kr">const</span> <span class="nx">CounterCode</span> <span class="o">=</span> <span class="s1">'\
+0x6060604052341561000c57fe5b5b61017d8061001c6000396000f300606060405263fffff\
+fff60e060020a6000350416630121b93f811461003757806309eef43e1461004c5780635df8\
+13301461007c575bfe5b341561003f57fe5b61004a6004356100a1565b005b341561005457f\
+e5b610068600160a060020a036004351661012a565b60408051911515825251908190036020\
+0190f35b341561008457fe5b61008f60043561013f565b60408051918252519081900360200\
+190f35b600160a060020a03331660009081526001602052604090205460ff16156100c85760\
+006000fd5b60008181526020818152604080832080546001908101909155600160a060020a0\
+3331680855292819052818420805460ff191690911790555183927f4d99b957a2bc29a30ebd\
+96a7be8e68fe50a3c701db28a91436490b7d53870ca491a35b50565b6001602052600090815\
+2604090205460ff1681565b600060208190529081526040902054815600a165627a7a723058\
+20ef4d0d5cd232790fab92fcd67c633d228600212c1f337d0c68622f19f106c7fc0029'</span><span class="p">;</span>
+</code></pre>
+<p>Try it now and you&#39;ll see a deploy button waiting:</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/24910906/88da3b5e-1ec9-11e7-9060-5776f20e89d3.png" alt="image" /></p>
+
+<p>After clicking, it&#39;ll prompt you with a transaction to deploy the contract and eventually show you a blank voting tally, ready for you to cast the first vote!</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/24910910/8ba7f420-1ec9-11e7-95a1-2aa5596709a4.png" alt="image" /></p>
+<h3 id='3-consolidating'>3. Consolidating</h3>
+<p>Since we have the <code>TransactButton</code> component, we may as well use it.</p>
+
+<p>First, we won&#39;t need to maintain the status of the transaction which is deploying the contract. Remove the <code>tx: null</code> mapping in the constructor, so that line now reads:</p>
+<pre class="highlight javascript"><code><span class="k">this</span><span class="p">.</span><span class="nx">state</span> <span class="o">=</span> <span class="p">{</span> <span class="na">counter</span><span class="p">:</span> <span class="kc">null</span> <span class="p">};</span>
+</code></pre>
+<p>Next, the <code>deploy</code> function no longer needs to <code>setState({tx})</code> since we&#39;re not tracking the transaction; remove that line, too. The deploy function <em>will</em> however need to return the transaction <code>Bond</code>, since <code>TransactButton</code> will need it to track; end the function with <code>return tx</code>, so it now reads:</p>
+<pre class="highlight javascript"><code><span class="nx">deploy</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">tx</span> <span class="o">=</span> <span class="nx">bonds</span><span class="p">.</span><span class="nx">deployContract</span><span class="p">(</span><span class="nx">CounterCode</span><span class="p">,</span> <span class="nx">CounterABI</span><span class="p">);</span>
+    <span class="nx">tx</span><span class="p">.</span><span class="nx">done</span><span class="p">(</span><span class="nx">s</span> <span class="o">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">setState</span><span class="p">({</span> <span class="na">counter</span><span class="p">:</span> <span class="nx">s</span><span class="p">.</span><span class="nx">deployed</span> <span class="p">}));</span>
+    <span class="k">return</span> <span class="nx">tx</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+<p>You can remove the <code>BButton</code> and <code>TransactionProgressLabel</code> tags and replace them by the single tag:</p>
+<pre class="highlight jsx tab-jsx"><code><span class="o">&lt;</span><span class="nx">TransactButton</span> <span class="nx">content</span><span class="o">=</span><span class="s1">'Deploy'</span> <span class="nx">tx</span><span class="o">=</span><span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">deploy</span><span class="p">}</span> <span class="nx">statusText</span><span class="o">/&gt;</span>
+</code></pre>
+<p>Notice we&#39;re passing <code>this.deploy</code> in the <code>tx</code> prop in lieu of a straight transaction; in case you wish to handle the submission of the transaction yourself, you can pass it a function which does that and will be called when the button is clicked. We&#39;re also passing the <code>statusText</code> prop which puts a text string in the progress label rather than just an icon.</p>
+
+<p>Finally, don&#39;t forget to import the component:</p>
+<pre class="highlight javascript"><code><span class="kr">import</span> <span class="p">{</span><span class="nx">InputBond</span><span class="p">,</span> <span class="nx">HashBond</span><span class="p">,</span> <span class="nx">BButton</span><span class="p">,</span> <span class="nx">TransactionProgressLabel</span><span class="p">,</span> <span class="nx">AccountIcon</span><span class="p">,</span> <span class="nx">TransactButton</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">'parity-reactive-ui'</span><span class="p">;</span>
+</code></pre>
+<p>And that&#39;s it!</p>
+<h3 id='4-what-about-next-time'>4. What about Next Time?</h3>
+<p>This is great for now, but when we reload or return to this page, it will have forgotten the contract. We&#39;ll use the browser&#39;s local storage to ensure that it persists between sessions.</p>
+
+<p>In the <code>deploy</code> function, change the <code>tx.done()</code> line to store the contract&#39;s address in <code>window.localStorage</code>:</p>
+<pre class="highlight javascript"><code><span class="nx">tx</span><span class="p">.</span><span class="nx">done</span><span class="p">(</span><span class="nx">s</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">setState</span><span class="p">({</span> <span class="na">tx</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span> <span class="na">counter</span><span class="p">:</span> <span class="nx">s</span><span class="p">.</span><span class="nx">deployed</span> <span class="p">});</span>
+    <span class="nb">window</span><span class="p">.</span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">counter</span> <span class="o">=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">deployed</span><span class="p">.</span><span class="nx">address</span><span class="p">;</span>
+<span class="p">});</span>
+</code></pre>
+<p>Secondly, in the constructor, change the <code>this.state =</code> line to ensure that we recreate the contract at preference from any address stored in local storage; for this we&#39;ll use our old friend <code>bonds.makeContract</code>:</p>
+<pre class="highlight javascript"><code><span class="k">this</span><span class="p">.</span><span class="nx">state</span> <span class="o">=</span> <span class="p">{</span> <span class="na">counter</span><span class="p">:</span> <span class="nb">window</span><span class="p">.</span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">counter</span>
+    <span class="p">?</span> <span class="nx">bonds</span><span class="p">.</span><span class="nx">makeContract</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">counter</span><span class="p">,</span> <span class="nx">CounterABI</span><span class="p">)</span>
+    <span class="p">:</span> <span class="kc">null</span> <span class="p">};</span>
+</code></pre>
+<p>The next time you deploy in that browser session, it will be last (at least until you reset it in the next tutorial!).</p>
+<h3 id='5-and-what-about-dave'>5. And What about Dave?</h3>
+<p>So this is great for us, but as soon as we want to give it to someone else to vote, we run into an issue; they have no way of arriving at the vote we deployed. Let&#39;s also allow the user to enter the address of a vote instead of forcing them to deploy a new one.</p>
+
+<p>First we&#39;ll create a basic <code>Bond</code> in the constructor which will hold the address of the contract that the user entered. This goes right after <code>super()</code>:</p>
+<pre class="highlight javascript"><code><span class="k">this</span><span class="p">.</span><span class="nx">addr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Bond</span><span class="p">;</span>
+</code></pre>
+<p>Next we&#39;ll set things up so that the very first value that is placed in it is used (and saved) as our counter contract&#39;s address:</p>
+<pre class="highlight javascript"><code><span class="k">this</span><span class="p">.</span><span class="nx">addr</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">v</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nb">window</span><span class="p">.</span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">counter</span> <span class="o">=</span> <span class="nx">v</span><span class="p">;</span>
+    <span class="kd">let</span> <span class="nx">counter</span> <span class="o">=</span> <span class="nx">bonds</span><span class="p">.</span><span class="nx">makeContract</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">CounterABI</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">setState</span><span class="p">({</span> <span class="na">tx</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">counter</span> <span class="p">});</span>
+<span class="p">});</span>
+</code></pre>
+<p>Now we just have to ensure that the <code>Bond</code> only gets set when the user has entered the full address of a valid instance of the <code>Counter</code> contract. Luckily the <code>TextBond</code> component has a <code>validator</code> function allowing us to exactly this.</p>
+
+<p>Before we can realistically be able to detect counter contract instances, we&#39;ll need to know what code the contract has on the chain. This is related to, but not the same as, the byte code with which it was initialised. The code hash for my contract (compiled with solidity 0.4.10 with optimisations) is:</p>
+<pre class="highlight javascript"><code><span class="kr">const</span> <span class="nx">CounterCodeHash</span> <span class="o">=</span> <span class="s1">'0x10d2b44a953ecf30231a87c541df5d640b43a30d8ec9a6ed95e411675d8aff42'</span><span class="p">;</span>
+</code></pre>
+<p>Yours may be different. To figure it out, use the JS line in any bonds-enabled environment where ADDRESS is the address of a pre-deployed counter contract:</p>
+<pre class="highlight javascript"><code><span class="nx">bonds</span><span class="p">.</span><span class="nx">code</span><span class="p">(</span><span class="nx">ADDRESS</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="nx">Api</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">sha3</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">)</span>
+</code></pre>
+<p>Now to the code. First, we need to import the <code>Api</code> object from <code>@parity/parity.js</code>:</p>
+<pre class="highlight javascript"><code><span class="kr">import</span> <span class="p">{</span><span class="nx">Api</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">'@parity/parity.js'</span><span class="p">;</span>
+</code></pre>
+<p>After the button in the <code>render</code> function, we will add the following:</p>
+
+<p>{% raw %}
+<code>js
+&lt;span style={{margin: &#39;2em&#39;}}&gt;OR&lt;/span&gt;
+&lt;InputBond bond={this.addr} validator={v =&gt; v.startsWith(&#39;0x&#39;) &amp;&amp; v.length == 42 &amp;&amp; bonds.code(v).map(_ =&gt; parity.api.util.sha3(_) == CounterCodeHash) ? v : null}/&gt;
+</code>
+{% endraw %}</p>
+
+<p>The first line just splits the button from the text input. The second is our input for counter contract addresses. The <code>TextBond</code> we have seen before in the very first tutorial about <code>Bond</code>s. We have introduced a custom <code>validator</code> prop here, which first makes sure the string form <code>TextBond</code> is well-formed and then checks to make sure that the hash of the code at that address is what we would expect from a <code>Counter</code> contract. Only then is it valid and does it get set to <code>this.addr</code>.</p>
+
+<p>The only thing that is left is to ensure the address of a deployed contract is visible so it can be communicated. Right at the end of the <code>Counter</code> render&#39;s outer <code>div</code>, you can insert this final element:</p>
+
+<p>{% raw %}
+<code>js
+&lt;div style={{fontSize: &#39;small&#39;}}&gt;
+    Using contract at {this.props.contract.address}.
+&lt;/div&gt;
+</code>
+{% endraw %}</p>
+
+<p>You can now reload and set your current Counter contract&#39;s address like here:</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/24923831/18de9f82-1ef3-11e7-84d2-a4ee1c5cbe78.png" alt="image" /></p>
+
+<p>To try it out, first clear your local storage (in Chrome open dev console and head to the &#39;127.0.0.1&#39; frame, then enter <code>delete localStorage.counter</code>). On reload, you should be presented with the option to deploy or to enter an address.</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/24924187/369c9ca8-1ef4-11e7-871f-d9bca011377f.png" alt="image" /></p>
+
+<p>Once you complete the address, it will change into the voting window. Hurrah!</p>
+
+<p>Next, up we&#39;ll alter the contract a little to require a signed statement prior to voting.</p>
+
+<hr>
+
+<p><a href="Tutorial-Part-10.md">10th Part ⟶</a></p>

@@ -1,0 +1,91 @@
+<h1 id='technologies'>Technologies</h1>
+<hr>
+<h2 id='title-ipfs'>title: IPFS</h2>
+<p>Parity is listening for Ethereum-IPFS compatible calls. Currently supported thus far: <code>eth-block</code>, <code>eth-block-list</code>, <code>eth-tx</code>, and <code>eth-state-trie</code>. Any other IPFS API calls will not return anything.</p>
+<h3 id='implementation-status'>Implementation Status</h3>
+<p><code>js-ipfs</code> has support for Ethereum objects: IPFS can access the Ethereum blockchain on demand without having to constantly transfer the blocks. For that, the EthereumJS team was building a storage backend for <code>js-ipfs</code> that uses Parity, so that you can <em>read</em> blocks from the Ethereum chain. Track upstream progress at: <a href="https://github.com/ipfs/js-ipfs/issues/763">ipfs/js-ipfs/#763</a></p>
+
+<p>Parity implementation status overview:</p>
+
+<table><thead>
+<tr>
+<th>Available</th>
+<th>Type</th>
+<th>Name</th>
+<th>Code</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>[x]</code></td>
+<td><code>eth-block</code></td>
+<td>Ethereum Block (block header)</td>
+<td><code>0x90</code></td>
+</tr>
+<tr>
+<td><code>[x]</code></td>
+<td><code>eth-block-list</code></td>
+<td>Ethereum Block List (block ommers)</td>
+<td><code>0x91</code></td>
+</tr>
+<tr>
+<td><code>[ ]</code></td>
+<td><code>eth-tx-trie</code></td>
+<td>Ethereum Transaction Trie Node</td>
+<td><code>0x92</code></td>
+</tr>
+<tr>
+<td><code>[x]</code></td>
+<td><code>eth-tx</code></td>
+<td>Ethereum Transaction</td>
+<td><code>0x93</code></td>
+</tr>
+<tr>
+<td><code>[ ]</code></td>
+<td><code>eth-tx-receipt-trie</code></td>
+<td>Ethereum Transaction Receipt Trie Node</td>
+<td><code>0x94</code></td>
+</tr>
+<tr>
+<td><code>[ ]</code></td>
+<td><code>eth-tx-receipt</code></td>
+<td>Ethereum Transaction Receipt</td>
+<td><code>0x95</code></td>
+</tr>
+<tr>
+<td><code>[x]</code></td>
+<td><code>eth-state-trie</code></td>
+<td>Ethereum State Trie Node</td>
+<td><code>0x96</code></td>
+</tr>
+<tr>
+<td><code>[ ]</code></td>
+<td><code>eth-storage-trie</code></td>
+<td>Ethereum Contract Storage Trie Node</td>
+<td><code>0x98</code></td>
+</tr>
+</tbody></table>
+
+<p>Please subscribe to <a href="https://github.com/paritytech/parity-ethereum/issues/4172">#4172</a> for more details on Parity&#39;s implementation progress.</p>
+<h3 id='example-requests'>Example Requests</h3>
+<p>The <code>eth-ipfs-bridge</code> project allows early testing of the IPFS-implementation in Parity: <a href="https://github.com/kumavis/ipfs-eth-bridge">kumavis/ipfs-eth-bridge</a></p>
+
+<p>This allows anyone on the network to access Ethereum objects by their canonical hash as encoded by CIDs:</p>
+<pre class="highlight plaintext"><code>http://localhost:5001/api/v0/block/get?arg=z43AaGF5tmkT9SEX6urrhwpEW5ZSaACY73Vw357ZXTsur2fR8BM
+</code></pre>
+<p>See also the <code>explore-ethereum</code> examples provided by <code>js-ipfs</code>: <a href="https://github.com/ipfs/js-ipfs/tree/master/examples/explore-ethereum-blockchain">ipfs/js-ipfs/examples/explore-ethereum-blockchain</a></p>
+<h3 id='cli-reference'>CLI reference:</h3>
+<p>The IPFS HTTP API is disabled by default. Enable it with <code>--ipfs-api</code> to expose it to <code>localhost:5001</code>.</p>
+<pre class="highlight shell"><code>    --ipfs-api                     Enable IPFS-compatible HTTP API. <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span>
+    --ipfs-api-port PORT           Configure on which port the IPFS HTTP API should listen.
+                                   <span class="o">(</span>default: 5001<span class="o">)</span>
+    --ipfs-api-interface IP        Specify the hostname portion of the IPFS API server,
+                                   IP should be an interface<span class="s1">'s IP address or local.
+                                   (default: local)
+    --ipfs-api-cors URL            Specify CORS header for IPFS API responses.
+                                   (default: None)
+    --ipfs-api-hosts HOSTS         List of allowed Host header values. This option will
+                                   validate the Host header sent by the browser, it
+                                   is additional security against some attack
+                                   vectors. Special options: "all", "none"
+                                   (default: none).
+</span></code></pre>

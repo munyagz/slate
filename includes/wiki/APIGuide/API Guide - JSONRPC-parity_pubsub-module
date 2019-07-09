@@ -1,0 +1,83 @@
+<h2 id='json-rpc-methods'>JSON-RPC methods</h2>
+<ul>
+<li><a href="#parity_subscribe">parity_subscribe</a></li>
+<li><a href="#parity_unsubscribe">parity_unsubscribe</a></li>
+</ul>
+<h2 id='json-rpc-api-reference'>JSON-RPC API Reference</h2><h3 id='parity_subscribe'>parity_subscribe</h3>
+<p>Starts a subscription (on WebSockets / IPC / TCP transports) to results of calling some other RPC method.
+For every change in returned value of that RPC call a JSON-RPC notification with result and subscription ID will be sent to a client.</p>
+
+<p>Below examples use <code>wscat</code>, a simple command line WebSockets client. Find out how to install and use it by visiting <a href="https://github.com/websockets/wscat">wscat GitHub repository</a>.</p>
+
+<p>An example notification received by subscribing to <code>eth_getBalance</code> RPC method:
+<code>
+{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;method&quot;:&quot;parity_subscription&quot;,&quot;params&quot;:{&quot;subscription&quot;:&quot;0x416d77337e24399d&quot;,&quot;result&quot;:[&quot;0xcd2a3d9f938e13cd947ec05abc7fe734df8dd826&quot;]}}
+</code></p>
+
+<p>You can unsubscribe using <code>parity_unsubscribe</code> RPC method. Subscriptions are also tied to a transport
+connection, disconnecting causes all subscriptions to be canceled.</p>
+<h4 id='parameters'>Parameters</h4>
+<ol>
+<li><code>String</code> - RPC method name</li>
+<li><code>Array</code> - Parameters passed to RPC method. (Optional, defaults to no parameters)</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"eth_getBalance"</span><span class="p">,</span>
+  <span class="p">[</span>
+    <span class="s2">"0xcd2a3d9f938e13cd947ec05abc7fe734df8dd826"</span><span class="p">,</span>
+    <span class="s2">"latest"</span>
+  <span class="p">]</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns'>Returns</h4>
+<ul>
+<li><code>String</code> - Assigned subscription ID</li>
+</ul>
+<h4 id='example'>Example</h4>
+<p>Request
+```bash
+wscat -c localhost:8546</p>
+
+<blockquote>
+<p>{&quot;method&quot;:&quot;parity_subscribe&quot;,&quot;params&quot;:[&quot;eth_getBalance&quot;,[&quot;0xcd2a3d9f938e13cd947ec05abc7fe734df8dd826&quot;,&quot;latest&quot;]],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}
+```</p>
+</blockquote>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0x416d77337e24399d&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_unsubscribe'>parity_unsubscribe</h3>
+<p>Unsubscribes from a subscription.</p>
+<h4 id='parameters-2'>Parameters</h4>
+<ol>
+<li><code>String</code> - Subscription ID</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span><span class="s2">"0x416d77337e24399d"</span><span class="p">]</span>
+</code></pre><h4 id='returns-2'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - whether the call was successful</li>
+</ul>
+<h4 id='example-2'>Example</h4>
+<p>Request
+```bash
+wscat -c localhost:8546</p>
+
+<blockquote>
+<p>{&quot;method&quot;:&quot;parity_unsubscribe&quot;,&quot;params&quot;:[&quot;0x416d77337e24399d&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}
+```</p>
+</blockquote>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>

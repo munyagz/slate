@@ -1,0 +1,527 @@
+<p><strong>For <code>oo7-parity</code> version 0.6.0.</strong></p>
+
+<p><code>oo7-parity</code> is a Parity-centric Ethereum middleware designed to sit between your front-end and a Parity Ethereum node. It is based on <code>oo7</code> and <code>parity.js</code> (our low-level JS API for the Parity/Ethereum RPC). It makes heavy use of <code>Bond</code>s to deliver an effortless UI development experience that results in a responsive, reactive UI. It works best with the Parity Ethereum node, but is partially compatible with other clients, too.</p>
+
+<p>A <code>Bond</code> is like a <code>Promise</code> in that it&#39;s an asynchronously provided value. However, unlike a <code>Promise</code> it autonomously stays up to date. <code>Bond</code>s may be subscripted, transformed and composed. <code>oo7-react.js</code> exists for tying <code>Bond</code>s into the React library, trivially allowing the UI to display up-to-date information from the block chain.</p>
+<h2 id='installation'>Installation</h2>
+<p><code>oo7-parity.js</code> is available on NPM:</p>
+
+<p><code>npm install --save oo7-parity</code></p>
+
+<p>It brings in <code>oo7</code>, the underlying <code>Bond</code>s library items of which you will probably want to use and <code>@parity/parity.js</code>, the low-level Parity/Ethereum API library.</p>
+
+<p>If you are working on the UI with React, you&#39;ll probably want to install <code>parity-reactive-ui.js</code> too (which brings in <code>oo7-react</code>, the oo7 bindings for React and <code>semantic-ui</code>, a nice front-end UI toolkit):</p>
+
+<p><code>npm install --save parity-reactive-ui</code></p>
+<h2 id='usage'>Usage</h2>
+<p>Most of the API <code>oo7-parity</code> provides is contained within a single object: <code>bonds</code>. The majority of this document details each of the members of this object and how to use them. The rest of the API is compose of a number of utility functions to facilitate certain common actions required when working with <code>oo7-parity</code>.</p>
+<h3 id='utilities'>Utilities</h3>
+<p>There are several utility functions in <code>oo7-parity</code>:</p>
+
+<ul>
+<li><code>asciiToHex(String) =&gt; Bytes</code>: Convert some 7-bit ASCII to its <code>0x</code>-prefixed hex representation.</li>
+<li><code>bytesToHex(Array) =&gt; String</code>: Convert an array of integers between 0 and 255 inclusive to its <code>0x</code>-prefixed hex representation.</li>
+<li><code>hexToAscii(Bytes) =&gt; String</code>: Convert a <code>0x</code>-prefixed hex representation of binary data to 7-bit ASCII.</li>
+<li><code>isAddressValid(Address) =&gt; Bool</code>: Determine whether the provided (<code>0x</code>-prefixed, 20 byte) address has either a valid checksum or no checksum at all.</li>
+<li><code>sha3(String | Bytes) =&gt; Hash</code>: Compute the Keccak-256 cryptographic hash of <code>data</code>. <code>data</code> is interpreted as a hex string if it contains only hex characters except for an optional <code>0x</code> prefix. Otherwise it is interpreted as &quot;raw&quot; ASCII 7-bit bytes; if characters outside of the 7-bit range are used, then the result is undefined.</li>
+<li><p><code>isAddressValid(Address) =&gt; Address</code>: Given an address having a not-necessarily valid checksum, returns the same address with a valid checksum.</p></li>
+<li><p><code>denominations[]</code>: An array of names of each the standard Ethereum denominations, beginning at <code>wei</code> and increasing in factors of 1000.</p></li>
+<li><p><code>denominationMultiplier(String) =&gt; BigNumber</code>: Given the name of a denomination (from the array <code>denominations</code>), returns the multiplication factor that it represents. e.g. <code>+denominationMultiplier(&#39;wei&#39;) === 1</code>.</p></li>
+<li><p><code>interpretQuantity(String) =&gt; BigNumber</code>: Given a human-readable string of the form <code>&lt;decimal&gt; [&lt;units&gt;]?</code> returns the value. By default the units are <code>ether</code> (<code>10**18</code>).</p></li>
+<li><p><code>formatBalance(BigNumber) =&gt; String</code>: Given a balance/value, returns the human-readable string form, using appropriate units.</p></li>
+<li><p><code>formatBlockNumber(Number) =&gt; String</code>: Returns a string of the block number formatted nicely.</p></li>
+<li><p><code>isNullData(Bytes | Address | Hash) =&gt; Bool</code>: Returns <code>true</code> if the provided data is entire zero bytes.</p></li>
+<li><p><code>removeSigningPrefix(String) =&gt; String</code>: Given a message with a security prefix as per <code>eth_sign</code> standard, returns the original, unprefixed, message.</p></li>
+</ul>
+<h3 id='abis'>ABIs</h3>
+<p>A number of standard ABIs are provided as part of <code>oo7-parity</code>, useful for constructing contracts:</p>
+
+<ul>
+<li><code>RegistryABI</code>: The Parity general registry contract.</li>
+<li><code>GitHubHintABI</code>: The Parity GitHubHint contract.</li>
+<li><code>OperationsABI</code>: The Parity general operations contract.</li>
+<li><code>BadgeRegABI</code>: The Parity badge registry contract.</li>
+<li><code>TokenRegABI</code>: The Parity token registry contract.</li>
+<li><code>BadgeABI</code>: The Parity standard badge contract.</li>
+<li><code>TokenABI</code>: The ERC-20 standard token contract.</li>
+</ul>
+<h3 id='bonds'><code>bonds</code></h3><h4 id='setup-amp-options'>Setup &amp; <code>options</code></h4>
+<p>The main API object contains the logic for succinctly interacting with a Parity (or Parity-compatible Ethereum) node. It requires the address of such a node for it to work. <code>oo7-parity</code> exports the <code>bonds</code> object which is instantiated with the default address of a node (it uses the endpoint address injected by the environment and falls back on http://127.0.0.1:8545). This should work as expected in most circumstances.</p>
+
+<p>If you need to alter this in some way, this is possible through changes to the exported <code>options</code> symbol. By changing its fields, you are able to configure how the exported <code>bonds</code> object works. The fields of <code>options</code> are:</p>
+
+<ul>
+<li><code>api</code>: An <code>Api</code> instance, as exported by <code>parity.js</code>, which provides node interaction. Can by constructed through <code>new Api(transport)</code>, where <code>transport</code> is a correctly initialised instance of <code>Api.Transport</code> (e.g. <code>new Api(new Parity.Api.Transport.Http(&#39;http://localhost:8545&#39;))</code>).</li>
+</ul>
+
+<p>If multiple independent instances of <code>Bonds</code> are required (e.g. because you wish to communicate with multiple nodes sitting on multiple chains at simultaneously), then you can easily use the exported <code>Bonds</code> constructor which accepts a single parameter of type <code>Api.Transport</code>, detailing the transport mechanism to the node.</p>
+<h4 id='notes-on-usage'>Notes on Usage</h4>
+<p>Ensure you import the <code>bonds</code> object:</p>
+<pre class="highlight plaintext"><code>import {bonds} from 'oo7-parity';
+</code></pre>
+<p>In this reference, for brevity we have dropped the prefix of <code>bonds.</code>.</p>
+
+<p>All arguments may be given as one of:
+- a plain value, e.g. <code>bonds.findBlock(69)</code>;
+- a <code>Bond</code> object, e.g. <code>bonds.findBlock(bonds.blockNumber)</code>;
+- an <code>Object</code> or <code>Array</code> containing a mixture of <code>Bond</code>s and plain values e.g. <code>bonds.post({to: bonds.author, value: &#39;1000000000000000000&#39;})</code>.</p>
+
+<p>Note that items with no trailing parens should not be used as functions - they are <code>Bond</code>s in their own right e.g. this is right: <code>bonds.head.then(console.log)</code>; <code>...head().then...</code> is <strong>wrong</strong>.</p>
+
+<p>The type after <code>=&gt;</code> denotes the value type of <code>Bond</code> returned.</p>
+
+<p>If a function may take multiple types of parameters, then each type is separated with a pipe <code>|</code>.</p>
+
+<p>If a function&#39;s parameter is optional, then a <code>?</code> immediately follows it.</p>
+
+<p>If an item only works when the Ethereum client is Parity, then the item&#39;s prototype is followed with &quot;[parity]&quot;.</p>
+
+<p>If the parameter of a function&#39;s usage is non-obvious, then a <code>:</code> is appended, followed by an informative name.</p>
+
+<p>One item (<code>blocks</code>) is denoted an array: it may be dereferenced as an array e.g. <code>bonds.blocks[bonds.height]</code>.</p>
+
+<p>Items that return <code>Array</code>s or <code>Object</code>s may be dereferenced directly, e.g. <code>bonds.head.author</code> would be the <code>Bond</code> that evaluates to the author of the block currently at the head of the chain.</p>
+<h4 id='chain-inspection'>Chain Inspection</h4>
+<ul>
+<li><code>height =&gt; Number</code>: The height of the chain.</li>
+<li><code>findBlock(Number | Hash) =&gt; Block</code>: The block identified by the <code>Number</code> or <code>Hash</code>.</li>
+<li><code>blocks[Number | Hash] =&gt; Block</code>: The block identified by the <code>Number</code> or <code>Hash</code>.</li>
+<li><code>head =&gt; Block</code>: The most recently authored block on the chain.</li>
+<li><code>blockTransactionCount(Hash | Number) =&gt; Number</code>: The number of transactions in the block identified.</li>
+<li><code>uncleCount(Hash | Number) =&gt; Number</code>: The number of uncle headers in the block identified.</li>
+<li><code>uncle(blockHash: Hash | blockNumber: Number, uncleIndex: Number) =&gt; Header</code>: The uncle of index <code>uncleIndex</code> in the block identified by <code>blockHash</code> or <code>blockNumber</code>.</li>
+<li><code>transaction(blockHash: Hash | blockNumber: Number, txIndex: Number) =&gt; Transaction</code>: The transaction of index <code>txIndex</code> in the block identified by <code>blockHash</code> or <code>blockNumber</code>.</li>
+<li><code>transaction(txHash: Hash) =&gt; Transaction</code>: The transaction (which must appear in a block) whose hash is <code>txHash</code>.</li>
+<li><code>receipt(txHash: Hash) =&gt; Receipt</code>: The receipt of the transaction (which must appear in a block) whose hash is <code>txHash</code>.</li>
+</ul>
+<h4 id='accounts-inspection'>Accounts Inspection</h4>
+<ul>
+<li><code>me =&gt; Address</code>: The address of the account which the user would like the Dapp to act under.</li>
+<li><code>accounts =&gt; [Address]</code>: All addresses of accounts which the user would like the Dapp to know about.</li>
+<li><code>accountsInfo =&gt; { Address -&gt; AccountInfo }</code> [parity]: Information on all accounts which the user would like the Dapp to know about.</li>
+<li><code>hardwareAccountsInfo =&gt; { Address -&gt; AccountInfo }</code> [parity]: Information on all hardware (e.g. Ledger) accounts which the user would like the Dapp to know about.</li>
+</ul>
+<h4 id='signer'>Signer</h4>
+<ul>
+<li><code>post(Transaction) =&gt; TransactionStatus</code> [parity]: Posts the described transaction to the node for signing and publication. Evaluates to the status of the transaction as it becomes finalised (or not). Note: it is not supported to post a transaction which fails with an exception and unless <code>gas</code> is supplied then the lowest amount of gas will be used.</li>
+<li><code>sign(Address, Bytes) =&gt; SignatureStatus</code> [parity]: Issues a request to the user to sign a message, prepended with a known string for security. Evaluates to the status of the request.</li>
+<li><code>deployContract(initCode: Bytes, ABISpec, Transaction?) =&gt; DeploymentStatus</code> [parity]: Attempts to deploy a contract of the given initialisation code. Evaluates to the status of the request, including a contract object on finalisation.</li>
+<li><code>makeContract(Address, ABISpec) =&gt; Contract</code> [parity]: Creates a new contract object with the given <code>Address</code> and ABI specification.</li>
+</ul>
+<h4 id='state-inspection'>State Inspection</h4>
+<ul>
+<li><code>balance(Address) =&gt; BigNumber</code>: The balance of the account with <code>Address</code>.</li>
+<li><code>code(Address) =&gt; Bytes</code>: The code of the account with <code>Address</code>, if any.</li>
+<li><code>nonce(Address) =&gt; BigNumber</code>: The nonce of the account with <code>Address</code>.</li>
+<li><code>storageAt(Address, Location: BigNumber) =&gt; BigNumber</code>: The contents of the storage <code>Location</code> of the account with <code>Address</code>.</li>
+<li><code>call(Transaction) =&gt; Bytes</code>: The output of the <code>Transaction</code> when executed.</li>
+<li><code>estimateGas(Transaction) =&gt; BigNumber</code>: The lowest amount of gas that the <code>Transaction</code> will execute with before it becomes invalid or fails with an exception.</li>
+</ul>
+<h4 id='node-status'>Node Status</h4>
+<ul>
+<li><code>syncing =&gt; bool</code>: True when the node&#39;s state is currently out of date. False when it might be.</li>
+<li><code>authoring =&gt; bool</code>: Is the node currently authoring blocks?</li>
+<li><code>gasPrice =&gt; BigNumber</code>: The default gas price used by the node when posting transactions.</li>
+<li><code>gasPriceHistogram =&gt; [BigNumber]</code> [parity]: The histogram of gas prices of recent finalised transactions.</li>
+<li><code>mode =&gt; Label</code> [parity]: The current networking mode of Parity; one of <code>off</code>, <code>dark</code>, <code>passive</code>, <code>active</code>.</li>
+</ul>
+<h4 id='version-inspection'>Version Inspection</h4>
+<ul>
+<li><code>clientVersion =&gt; String</code>: The string describing the version of the client.</li>
+<li><code>ethProtocolVersion =&gt; Number</code>: The <code>eth</code> protocol version number.</li>
+<li><code>versionInfo =&gt; VersionInfo</code> [parity]: Extended information on the version of the client.</li>
+</ul>
+<h4 id='chain-metadata'>Chain Metadata</h4>
+<ul>
+<li><code>chainId =&gt; Number</code> [parity] The identity of the chain e.g. <code>42</code>.</li>
+<li><code>chainName =&gt; String</code> [parity] The name of the chain e.g. <code>kovan</code>.</li>
+<li><code>chainStatus =&gt; ChainStatus</code> [parity]: Information concerning the status of the local replication of the blockchain.</li>
+</ul>
+<h4 id='p2p-network'>P2P Network</h4>
+<ul>
+<li><code>peerCount =&gt; Number</code>: How many other nodes on the p2p network we are connected to.</li>
+<li><code>listening =&gt; bool</code>: Are we allowing inbound connections from other nodes?</li>
+<li><code>peers =&gt; Peers</code> [parity]: Information on each node to which we are connected.</li>
+<li><code>enode =&gt; String</code> [parity]: The node&#39;s &quot;enode&quot; (network ID).</li>
+<li><code>nodePort =&gt; Number</code> [parity]: The port on which the node listens for incoming p2p connections.</li>
+<li><code>nodeName =&gt; String</code> [parity]: The name give to peers to identify this node in peer lists.</li>
+</ul>
+<h4 id='block-authoring-aka-quot-mining-quot'>Block Authoring (aka &quot;mining&quot;)</h4>
+<ul>
+<li><code>author =&gt; Address</code>: The address of the author of blocks.</li>
+<li><code>defaultExtraData =&gt; Bytes</code> [parity]: The default for authored blocks&#39; &quot;extra data&quot; value (a client ID).</li>
+<li><code>extraData =&gt; Bytes</code> [parity]: The value used for authored blocks&#39; &quot;extra data&quot;.</li>
+<li><code>gasCeilTarget =&gt; BigNumber</code> [parity]: The maximum gas limit to be targeted - it will be reduced in blocks we author as much as possible if it is above this value.</li>
+<li><code>gasFloorTarget =&gt; BigNumber</code> [parity]: The minimum gas limit to be targeted - it will be increase in blocks we author as much as possible if it is below this value.</li>
+<li><code>minGasPrice =&gt; BigNumber</code> [parity]: The minimum gas price for which we will accept transactions.</li>
+<li><code>transactionsLimit =&gt; Number</code> [parity]: The maximum amount of transactions we will place in a block.</li>
+</ul>
+<h4 id='other-services'>Other Services</h4>
+<ul>
+<li><code>signerPort =&gt; Number</code> [parity] The port on which the (trusted) signer RPC server is currently listening.</li>
+<li><code>dappsPort =&gt; Number</code> [parity] The port on which the (untrusted) dapps RPC server is currently listening.</li>
+<li><code>dappsInterface =&gt; String</code> [parity] The interface on which the dapps RPC server is currently listening.</li>
+<li><code>hashContent(url: String) =&gt; Hash</code> [parity_set]: The Keccak hash of the content at the given URL, at the time of the call (this does not react to any changes in the content at <code>url</code> but will react should the address <code>url</code> itself change).</li>
+</ul>
+<h4 id='transaction-queue'>Transaction Queue</h4>
+<ul>
+<li><code>nextNonce(Address) =&gt; Number</code> [parity]: The next valid nonce of <code>Address</code>. Includes pending and future transactions as well as the state of the head of the chain.</li>
+<li><code>pending =&gt; [LocalTransaction]</code> [parity]: The (signed) transactions currently pending finalisation in the queue, ordered by priority.</li>
+<li><code>local =&gt; { Hash -&gt; LocalTransactionInfo }</code> [parity]: The status of locally-submitted transactions, including those both finalised and pending.</li>
+<li><code>future =&gt; [Transaction]</code> [parity]: Queued transactions whose nonce is too high such that they&#39;re not yet valid candidates for finalisation.</li>
+<li><code>pendingStats =&gt; { Hash -&gt; PropagationInfo }</code> [parity]: Extended information concerning a particular (identified) transaction pending finalisation.</li>
+<li><code>unsignedCount =&gt; Number</code> [parity]: The number of unsigned transactions pending signing.</li>
+</ul>
+<h4 id='consensus-amp-updates'>Consensus &amp; Updates</h4>
+<ul>
+<li><code>releasesInfo =&gt; ReleaseInfo</code> [parity]: Information on the latest releases of Parity.</li>
+<li><code>consensusCapability =&gt; Capability</code> [parity]: Information on the capability of taking part in the network&#39;s consensus of the current node. One of <code>&#39;unknown&#39;</code>, <code>&#39;capable&#39;</code>, <code>{&quot;capableUntil&quot;: BlockNumber}</code>, <code>{&quot;incapableSince&quot;: BlockNumber}</code>.</li>
+<li><code>upgradeReady =&gt; bool</code> [parity_set]: Whether there is currently an upgrade which is ready to install &amp; execute.</li>
+</ul>
+<h4 id='basic-contracts'>Basic Contracts</h4>
+<ul>
+<li><code>registry =&gt; Contract</code> [parity]: The root Parity name registry contract.</li>
+<li><code>githubhint =&gt; Contract</code> [parity]: The primary URL hinting contract.</li>
+<li><code>operations =&gt; Contract</code> [parity]: The primary operations contract.</li>
+<li><code>badgereg =&gt; Contract</code> [parity]: The root Parity badge registry contract.</li>
+<li><code>tokenreg =&gt; Contract</code> [parity]: The root Parity token registry contract.</li>
+</ul>
+<h4 id='composite-bonds'>Composite Bonds</h4>
+<ul>
+<li><code>badges =&gt; [BadgeInfo]</code> [parity]: Return the array containing information on all registered badges.</li>
+<li><code>badgesOf(Address) =&gt; [BadgeInfo]</code> [parity]: Return the information on all badges assigned to a particular identity.</li>
+<li><code>namesOf(Address) =&gt; NamesInfo</code> [parity]: Return an object detailing all names given to a particular address.</li>
+<li><code>names =&gt; [String]</code> [parity]: Return the array containing all reversible names registered in the Parity registry.</li>
+</ul>
+<h2 id='basic-types'>Basic Types</h2>
+<ul>
+<li><code>bool</code>: A Javascript <code>bool</code>. May be <code>true</code> or <code>false</code>.</li>
+<li><code>Number</code>: A number. May be passed in one of two forms:
+
+<ul>
+<li>Basic Javascript <code>Number</code> type, e.g. <code>69</code>. This is the default when being returned.</li>
+<li>A Javascript <code>String</code> containing a decimal number, e.g. <code>&quot;42&quot;</code>.</li>
+</ul></li>
+<li><code>BigNumber</code>: A large number, up to <code>2**256 - 1</code>. May be passed in one of three forms:
+
+<ul>
+<li>A <code>BigNumber</code> object. This is the default when being returned.</li>
+<li>Basic Javascript <code>Number</code> type.</li>
+<li>A Javascript <code>String</code> containing a decimal number.</li>
+</ul></li>
+<li><code>String</code>: A freeform Javascript <code>String</code>.</li>
+<li><code>Hash</code>: A string beginning with <code>0x</code> and with 64 hex digits following. Represents a 32-byte piece of data.</li>
+<li><code>Address</code>: A string beginning with <code>0x</code> and with 40 hex digits following. Represents a 20-byte account address.</li>
+<li><code>Bytes</code>: A string beginning with <code>0x</code> and with an even number of hash digits following. Represents an arbitrary length series of bytes.</li>
+<li><code>Label</code>: A string containing one of a number of alternative words/phrases.</li>
+<li><code>[Type]</code>: An <code>Array</code> of <code>Type</code>. The responsible <code>Bond</code> can usually be sub-scripted by an index in order to provide a <code>Bond</code> evaluating to that item.</li>
+</ul>
+<h2 id='object-types'>Object Types</h2>
+<p>Objects going from one type to another are denoted <code>{ KeyType -&gt;  ValueType }</code>. Others are listed here.</p>
+<h3 id='block'><code>Block</code></h3>
+<p>Equivalent to &quot;a block object&quot;, described at <a href="JSONRPC-eth-module.md#eth_getblockbyhash"><code>eth_getBlockByHash</code> RPC</a>.</p>
+<h3 id='header'><code>Header</code></h3>
+<p>Equivalent to <code>Block</code>, except that individual transactions are not provided.</p>
+<h3 id='transaction'><code>Transaction</code></h3>
+<p>Equivalent to &quot;a transaction object&quot;, described at <a href="JSONRPC-eth-module.md#eth_gettransactionbyhash"><code>eth_getTransactionByHash</code> RPC</a>.</p>
+<h3 id='receipt'><code>Receipt</code></h3>
+<p>Equivalent to &quot;a transaction receipt object&quot;, described at <a href="JSONRPC-eth-module.md#eth_gettransactionreceipt"><code>eth_getTransactionReceipt</code> RPC</a>.</p>
+<h3 id='accountinfo'><code>AccountInfo</code></h3>
+<p>Information describing a controlled account.</p>
+<h4 id='keys'>Keys</h4>
+<ul>
+<li><code>name</code>: The name given to the account by the user.</li>
+</ul>
+
+<p>Example:</p>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Main Account"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre><h3 id='transactionstatus'><code>TransactionStatus</code></h3>
+<p>The current status of a transaction to be committed to the blockchain. Must contain exactly one of the following keys.</p>
+<h4 id='keys-2'>Keys</h4>
+<ul>
+<li><code>estimating</code>: Always <code>null</code>. Implies that the minimum required gas for the transaction is being estimated.</li>
+<li><code>estimated</code>: The computed gas required for the transaction to succeed. Implies the user is about to be requested to approve the transaction.</li>
+<li><code>requested</code>: An internal identifier. Implies the user has been requested to approve this transaction.</li>
+<li><code>signed</code>: A signed transaction given as <code>Bytes</code>. Implies the transaction is about to be published to the network for inclusion in a block.</li>
+<li><code>confirmed</code>: The transaction&#39;s receipt. Implies that the transaction has been finalised.</li>
+<li><code>failed</code>: An error. Implies that the operation met with a failure at some point. Usually due to either the user rejecting approval of the transaction or that no amount of gas could be found for successful transaction execution.</li>
+</ul>
+
+<p>Example:</p>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+   </span><span class="s2">"estimating"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre><h3 id='deploystatus'><code>DeployStatus</code></h3>
+<p>The status of a contract-deployment transaction. Exactly equivalent to <code>TransactionStatus</code>, except that when there exists a <code>confirmed</code> key, there also exists a <code>deployed</code> key:</p>
+<h4 id='keys-3'>Keys</h4>
+<ul>
+<li><code>deployed</code>: The <code>Contract</code> object newly deployed due to this transaction.</li>
+</ul>
+<h3 id='signaturestatus'><code>SignatureStatus</code></h3>
+<p>The current status of a message to be signed. Must contain exactly one of the following keys.</p>
+<h4 id='keys-4'>Keys</h4>
+<ul>
+<li><code>requested</code>: An internal identifier. Implies the user has been requested to approve this transaction.</li>
+<li><code>signed</code>: A signed transaction given as <code>Bytes</code>. Implies the transaction is about to be published to the network for inclusion in a block.</li>
+<li><code>failed</code>: An error. Implies that the operation met with a failure at some point. Usually due to either the user rejecting approval of the transaction or that no amount of gas could be found for successful transaction execution.</li>
+</ul>
+
+<p>Example:</p>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+   </span><span class="s2">"signed"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0x1b0749bc94188f3d06b00217fe384a8aced3a9f6b4f21e22a4eed73e4e3f036a4913b439ed3fab0985353e9f0c9d748d42f6c1786726c6ab530c1f66772c6e5d63"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre><h3 id='abispec'><code>ABISpec</code></h3>
+<p>An ABI specification, as described in the <a href="https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI">Ethereum wiki article</a>.</p>
+<h3 id='chainstatus'><code>ChainStatus</code></h3>
+<p>Information on the status of the portion of the chain maintained locally. Equivalent to &quot;the status object&quot; described for the <a href="JSONRPC-parity-module.md#parity_chainstatus"><code>parity_chainStatus</code> RPC</a>.</p>
+<h3 id='peers'><code>Peers</code></h3>
+<p>Information on the peers known by the node.</p>
+<h4 id='keys-5'>Keys</h4>
+<ul>
+<li><code>active</code>: Number of peers in active communication with the node.</li>
+<li><code>connected</code>: Number of nodes connected as peers.</li>
+<li><code>max</code>: Maximum acceptable number of peers.</li>
+<li><code>peers</code>: Details of each peer expressed as an <code>Array</code>. Each item is an object with keys:
+
+<ul>
+<li><code>caps</code>: An <code>Array</code> of versioned capability identifiers given as <code>&quot;&lt;subprotocol-identifier&gt;/&lt;version&gt;&quot;</code>.</li>
+<li><code>id</code>: The <em>enode</em> identifier.</li>
+<li><code>name</code>: The node&#39;s full identifier.</li>
+<li><code>network</code>: An object with two keys:</li>
+<li><code>localAddress</code>: Locally assigned IP address and port.</li>
+<li><code>remoteAddress</code>: Remotely assigned IP address and port used for incoming connections.</li>
+<li><code>protocols</code>: An <code>Object</code> describing the state of the node in terms of each sub-protocol it supports. Maps sub protocol identifier to an <code>Object</code> with subprotocol-specific keys.</li>
+</ul></li>
+</ul>
+
+<p>Example:</p>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"active"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"connected"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"max"</span><span class="p">:</span><span class="w"> </span><span class="s2">"25"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"peers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"caps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="s2">"eth/62"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"eth/63"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"par/1"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"par/2"</span><span class="w">
+      </span><span class="p">],</span><span class="w">
+      </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2aa81bd0a761cd4f02c934dcf3f81c5b65953e51ab5ba03ceb1f125eb06418a1cdffb1c9d01871aa7bd456f3fce35e745608189ad1164f72b2161634b0c3f6ea"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Parity/v1.6.5-beta-987390f-20170328/x86_64-linux-gnu/rustc1.16.0"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"network"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"localAddress"</span><span class="p">:</span><span class="w"> </span><span class="s2">"192.168.0.15:63340"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"remoteAddress"</span><span class="p">:</span><span class="w"> </span><span class="s2">"188.166.240.190:30303"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="s2">"protocols"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"eth"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"difficulty"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2.03152996722570234887659664506662254654900182e+44"</span><span class="p">,</span><span class="w">
+          </span><span class="s2">"head"</span><span class="p">:</span><span class="w"> </span><span class="s2">"daac19a336359bc4a46b06bfc47e9aa62f5cde2974c987a70213fa2431a8d9d5"</span><span class="p">,</span><span class="w">
+          </span><span class="s2">"version"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre><h3 id='localtransactioninfo'><code>LocalTransactionInfo</code></h3>
+<p>Information concerning a locally-submitted transaction.</p>
+<h4 id='keys-6'>Keys</h4>
+<ul>
+<li><code>status</code>: Information regarding the status of this transaction. Must be one of:
+
+<ul>
+<li><code>&quot;pending&quot;</code>: Transaction is pending finalisation.</li>
+<li><code>&quot;future&quot;</code>: Transaction&#39;s nonce is not yet valid.</li>
+<li><code>&quot;mined&quot;</code>: Transaction has been mined.</li>
+<li><code>&quot;dropped&quot;</code>: Transaction was dropped because of queue&#39;s limit.</li>
+<li><code>&quot;replaced&quot;</code>: Transaction was replaced by another with higher gas price.</li>
+<li><code>&quot;rejected&quot;</code>: Transaction was rejected prior to entry into the queue.</li>
+<li><code>&quot;invalid&quot;</code>: Transaction is invalid.</li>
+<li><code>&quot;canceled&quot;</code>: Transaction was canceled.</li>
+</ul></li>
+</ul>
+
+<p>Example:</p>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mined"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"transaction"</span><span class="p">:</span><span class="w"> </span><span class="err">LocalTransaction</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre><h3 id='localtransaction'><code>LocalTransaction</code></h3>
+<p>Information representing a local Transaction pending finalisation.</p>
+<h4 id='keys-7'>Keys</h4>
+<p>Example as with <code>Transaction</code> object, but also:</p>
+
+<ul>
+<li><code>creates</code>: The optional <code>Address</code> of a created contract or null.</li>
+<li><code>raw</code>: The <code>Bytes</code> of the raw transaction data.</li>
+<li><code>publicKey</code>: The public key of the signer as 64 <code>Bytes</code>.</li>
+<li><code>networkId</code>: The network ID of the transaction as a <code>Number</code>. <code>null</code> is it is a pre-EIP155 transaction.</li>
+<li><code>standardV</code>: The standardised V field of the signature (either <code>0</code> or <code>1</code>).</li>
+<li><code>v</code>: The V field of the signature as a <code>Number</code>.</li>
+<li><code>r</code>: The R field of the signature as a <code>BigNumber</code>.</li>
+<li><code>s</code>: The S field of the signature as a <code>BigNumber</code>.</li>
+<li><code>condition</code>: A description of the criteria on which submission to the network was made conditional. May be <code>null</code> (submission should happen asap) or an <code>Object</code> with keys:
+
+<ul>
+<li><code>block</code>: The block <code>Number</code> only after which it may be submitted.</li>
+<li><code>time</code>: The Unix timestamp after which it may be submitted.</li>
+</ul></li>
+</ul>
+
+<p>Example:</p>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"blockHash"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"blockNumber"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"condition"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"block"</span><span class="p">:</span><span class="w"> </span><span class="s2">"747000"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"creates"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"from"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0x006E778F0fde07105C7adDc24b74b99bb4A89566"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"gas"</span><span class="p">:</span><span class="w"> </span><span class="s2">"21000"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"gasPrice"</span><span class="p">:</span><span class="w"> </span><span class="s2">"100000000000"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"hash"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0x780b0a0c19819bd84a11bc050cb7b230de0d68bd08ed8cfd2f4c4db7cb7e2b78"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"input"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0x"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"networkId"</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"nonce"</span><span class="p">:</span><span class="w"> </span><span class="s2">"286"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"publicKey"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0x46dc2dfd10421a5cb2e8750c54b4a991478ce8d026df4c1b7101b053a5dc8af8756c862978945f78ae47e35f93898c6f9d42ec8622c65f61ccb91c622a8749d9"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"r"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0x87b4fbf8199018ee6501e8224b81b252a092ee1a961fa2e700f97e101e85e5b3"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"raw"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0xf86e82011e85174876e8008252089400bc2ebf1d5a3f2f6a0aeb017c47a3d4739cd3b4880de0b6b3a76400008077a087b4fbf8199018ee6501e8224b81b252a092ee1a961fa2e700f97e101e85e5b3a02622b0b498406d78b06aa8aa6581137fc25b29010008f9af3878b4c1698337e2"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"s"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0x2622b0b498406d78b06aa8aa6581137fc25b29010008f9af3878b4c1698337e2"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"standardV"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0x0"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"to"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0x00bc2EBf1d5a3F2F6a0aEb017C47a3D4739CD3B4"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"transactionIndex"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"v"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0x77"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1000000000000000000"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre><h3 id='propagationinfo'><code>PropagationInfo</code></h3>
+<p>Information on the network propagation of a transaction.</p>
+<h4 id='keys-8'>Keys</h4>
+<ul>
+<li><code>firstSeen</code>: Block at which this transaction was first seen by the node.</li>
+<li><code>propagatedTo</code>: <code>Object</code> mapping node IDs to <code>Number</code> of times propagated to that peer.</li>
+</ul>
+
+<p>Example:</p>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"firstSeen"</span><span class="p">:</span><span class="w"> </span><span class="mi">745512</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"propagatedTo"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"0x48caeceb2724f2f71406990aa81efe87f8c53f26441d891473da2ae50cc138f238addc0e46b5aee240db55de8c711daac53d7b32a3f13e30edb86a3ca7c2700b"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre><h3 id='releaseinfo'><code>ReleaseInfo</code></h3>
+<p>Information concerning available updates.</p>
+<h4 id='keys-9'>Keys</h4>
+<ul>
+<li><code>fork</code>: The blockchain&#39;s most recent fork identifier (generally the transition block number of the last approved fork).</li>
+<li><code>minor</code>: Information on the latest release shared by the node&#39;s minor version. [experimental!]</li>
+<li><code>this_fork</code>: The highest fork identifier supported by the currently executing node.</li>
+<li><code>track</code>: Information on the latest release on the node&#39;s release track.</li>
+</ul>
+<h4 id='example'>Example</h4><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"fork"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"this_fork"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"track"</span><span class="p">:</span><span class="w"> </span><span class="err">new</span><span class="w"> </span><span class="err">ReleaseVersion()</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre><h3 id='versioninfo'><code>VersionInfo</code></h3>
+<p>Description of a release of Parity.</p>
+<h4 id='keys-10'>Keys</h4>
+<ul>
+<li><code>binary</code>: The Keccak hash of the release&#39;s executable on the node&#39;s platform.</li>
+<li><code>fork</code>: The latest fork identifier supported by this version.</li>
+<li><code>is_critical</code>: Whether this release contains critical (e.g. security) fixes.</li>
+<li><code>version</code>: Information on the releases version identifier.
+
+<ul>
+<li><code>hash</code>: Git commit hash of the the release.</li>
+<li><code>track</code>: Release track on which this version was made (one of <code>&#39;stable&#39;</code>, <code>&#39;beta&#39;</code>, <code>&#39;nightly&#39;</code> or <code>&#39;testing&#39;</code>).</li>
+<li><code>version</code>: Semantic version of the release.</li>
+<li><code>major</code>: Major component.</li>
+<li><code>minor</code>: Minor component.</li>
+<li><code>patch</code>: Patch component.</li>
+</ul></li>
+</ul>
+<h4 id='example-2'>Example</h4><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"binary"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0xf4e506d60763739ff9d59dfac577c71a3791512d7c552f8aa209d4069c11a9db"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"fork"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"is_critical"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"version"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"hash"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0x987390fb7d9f42a97c34aba254a8b9d8efd461d7"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"track"</span><span class="p">:</span><span class="w"> </span><span class="s2">"beta"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"version"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"major"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"minor"</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"patch"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre><h3 id='contract'><code>Contract</code></h3>
+<p>An object representing a (deployed) instance of a contract. Contains one basic field and then additional functions for each of three types of items within the contract: <code>public</code> fields and <code>constant</code> functions; other (state-mutating) <code>public</code> functions and events.</p>
+<h4 id='basic-keys'>Basic Keys</h4>
+<ul>
+<li><code>address</code>: The address of this contract; may be a <code>Bond</code>.</li>
+</ul>
+<h4 id='fields-and-constant-functions'>Fields and <code>constant</code> functions</h4>
+<p>These are the simplest to use. Each such item is represented as a function. This takes arguments in the case of a parameterised <code>constant</code> function or when the field represents an array, struct or mapping, correlated accordingly. Each parameter may itself be a <code>Bond</code>.</p>
+
+<p>When the function is invoked, a <code>Bond</code> is returned expressing the ongoing value that the contract gives when queried. This is reactive to all changes, including those in the contract&#39;s state, on its <code>address</code> (should that be a <code>Bond</code>) and on its parameters (where they are <code>Bond</code>s).</p>
+
+<p>Example:</p>
+<pre class="highlight javascript"><code><span class="c1">// Prints `gavofyork`'s address to the console.</span>
+<span class="nx">bonds</span><span class="p">.</span><span class="nx">registry</span><span class="p">.</span><span class="nx">lookupAddress</span><span class="p">(</span><span class="s1">'gavofyork'</span><span class="p">,</span> <span class="s1">'A'</span><span class="p">).</span><span class="nx">log</span><span class="p">()</span>
+</code></pre><h4 id='state-mutating-functions'>State-mutating functions</h4>
+<p>Each such item is represented as a function. This takes arguments exactly correlating to the function it maps from. When the function is invoked, a <code>TransactionStatus</code> bond is returned, tracking the state of the transaction required to execute and finalise that function.</p>
+
+<p>The parameters of these functions may be <code>Bond</code>s, but the resultant <code>Bond</code> is not reactive to changes in parameters since they are one-off commands only.</p>
+
+<p>Example:</p>
+<pre class="highlight javascript"><code><span class="c1">// Prints a message depending on whether we managed to change the address of `gavofyork`.</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">sha3</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">'oo7-parity'</span><span class="p">;</span>
+<span class="kd">let</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">bonds</span><span class="p">.</span><span class="nx">registry</span><span class="p">.</span><span class="nx">setAddress</span><span class="p">(</span><span class="nx">sha3</span><span class="p">(</span><span class="s1">'gavofyork'</span><span class="p">),</span> <span class="s1">'A'</span><span class="p">,</span> <span class="nx">bonds</span><span class="p">.</span><span class="nx">me</span><span class="p">);</span>
+<span class="nx">b</span><span class="p">.</span><span class="nx">tie</span><span class="p">(</span><span class="nx">s</span> <span class="o">=&gt;</span> <span class="p">{</span>
+   <span class="k">if</span> <span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">failed</span><span class="p">)</span> <span class="p">{</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`setAddress failed: </span><span class="p">${</span><span class="nx">s</span><span class="p">.</span><span class="nx">failed</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span> <span class="p">}</span>
+   <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">confirmed</span><span class="p">)</span> <span class="p">{</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`setAddress completed at #</span><span class="p">${</span><span class="nx">s</span><span class="p">.</span><span class="nx">confirmed</span><span class="p">.</span><span class="nx">blockNumber</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span> <span class="p">}</span>
+   <span class="k">else</span> <span class="p">{</span> <span class="k">return</span><span class="p">;</span> <span class="p">}</span>
+   <span class="nx">b</span><span class="p">.</span><span class="nx">untie</span><span class="p">();</span>
+<span class="p">})</span>
+</code></pre><h4 id='events'>Events</h4>
+<p>Events are represented as functions providing a <code>Bond</code> representing the state of a particular query. The query is described with two parameters passed to the function; both are given as objects. The value of the <code>Bond</code> is simply  an array of (matching) events emitted by the contract. The first describes a filter applied over any or all of the <code>indexed</code> event arguments, allowing the resultant <code>Bond</code> to contain only events   that match this filter. The second allows the provision of further options to govern which, and a limit on how many, events are contained in the <code>Bond</code>&#39;s value.</p>
+<h5 id='result-value'>Result value</h5>
+<p>This is an array of objects describing specific events emitted by the contract. Keys include:</p>
+
+<ul>
+<li><code>event</code>: The name of the <code>event</code> whose instance is described.</li>
+<li><code>log</code>: The underlying raw log item, as specified and returned by <code>eth_getFilterLogs</code>.</li>
+</ul>
+
+<p>In addition to these keys, further keys are provided for each event argument, named according to the corresponding argument in the original <code>event</code>.</p>
+<h5 id='first-parameter-filter'>First parameter: <code>filter</code></h5>
+<p>This is the first of two parameters and helps filter events in the resultant array. <code>filter</code> is an object where each key must be the name of an event parameter marked <code>indexed</code>. The value may be either a required value for that parameter to be, or an array of alternative values.</p>
+
+<p>All keys stated must be fulfilled for an event to be returned.</p>
+<h5 id='second-parameter-options'>Second parameter: <code>options</code></h5>
+<p>This is the second of two parameters. <code>options</code> is an object with three keys:</p>
+
+<ul>
+<li><code>fromBlock</code>: The block number before which no events shall be returned. Defaults to <code>0</code> if <code>undefined</code> or <code>null</code>.</li>
+<li><code>toBlock</code>: The block number after which no events shall be returned. Defaults to <code>pending</code> if <code>undefined</code> or <code>null</code>.</li>
+<li><code>limit</code>: The maximum amount of events to return. Defaults to <code>10</code> if <code>undefined</code> or <code>null</code>.</li>
+</ul>
+<h3 id='badgeinfo'><code>BadgeInfo</code></h3>
+<p>Information concerning a badge.</p>
+<h4 id='keys-11'>Keys</h4>
+<ul>
+<li><code>id: Number</code>: A numeric identifier of this badge. Unique over all registered badges.</li>
+<li><code>name: String</code>: A textual name for this badge. Not guarantees to be particularly presentable.</li>
+<li><code>caption: String</code>: A presentable string to describe this badge.</li>
+<li><code>img: Hash</code>: The hash of a representative image of this badge. Generally usable as an icon.</li>
+<li><code>badge: Contract</code>: The badge contract itself.</li>
+</ul>
+<h3 id='namesinfo'><code>NamesInfo</code></h3>
+<p>Information detailing how an identity is named by various naming systems.</p>
+<h4 id='keys-12'>Keys</h4>
+<ul>
+<li><code>owned: String</code>: The name given to this address if owned by the current user and exposed.</li>
+<li><code>registry: String</code>: The name given to this address in the Parity registry.</li>
+</ul>

@@ -1,0 +1,83 @@
+<p><strong>This is the eighth part of the Dapp Tutorial.</strong> We assume you&#39;re familiar with the content of the past chapters.</p>
+
+<p><a href="Tutorial-Part-7.md">⟵ 7th Part</a> | <a href="Tutorial-Part-9.md">9th Part ⟶</a></p>
+
+<hr>
+<h2 id='events'>Events</h2>
+<p>Events are items emitted by a contract allowing it to communicate to the external world. Usually they notify us of some particular important transition such as the receipt of funds or the change of an owner. In the case of our <code>Counter</code> contract, we have a single kind of <code>event</code>, called <code>Voted</code>, which alerts us to the action of somebody voting.</p>
+<h3 id='1-what-did-i-vote-for'>1. What did I vote for?</h3>
+<p>Let&#39;s use this to display a message describing what (if anything) we already voted for. For this, we will need to filter all events to retrieve the event emitted when we voted. Happily, there is a way of doing exactly this and, even better, it returns a <code>Bond</code>, so is reactive in the case of new blocks (with new logs) or, worse, a chain reorganisation.</p>
+
+<p>The way we set such a bond up is through calling into the function named after the <code>event</code> (i.e. <code>Voted</code>) with up to two arguments. The first argument allows us to filter the events we return by any of the <code>indexed</code> arguments to the event. The second argument controls which blocks whose transactions&#39; logs are included in the list that we receive. It is extremely important to filter as much as possible as early as possible since it contributes to significant resource usage, particularly so on the light client.</p>
+
+<p>In our case, we won&#39;t bother filtering by which blocks we include, but we will filter by the <code>indexed</code> argument <code>who</code>, asking for it to be exactly equal to our current identity (<code>bonds.me</code>). It is reactive, so if we switch to a different identity, everything will update automatically. The snippet we end up with is <code>this.counter.Voted({ who: bonds.me })</code>. We will assign this into our object under the name <code>prevVote</code> at the end of the constructor:</p>
+<pre class="highlight javascript"><code><span class="k">this</span><span class="p">.</span><span class="nx">prevVote</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">counter</span><span class="p">.</span><span class="nx">Voted</span><span class="p">({</span> <span class="na">who</span><span class="p">:</span> <span class="nx">bonds</span><span class="p">.</span><span class="nx">me</span> <span class="p">});</span>
+</code></pre>
+<p>Next, we should render it to the display in a message. For this we could create a new React component as we did with <code>VoteOption</code>, but it&#39;s a bit overkill for the moment. Instead we&#39;ll just use our trustly old friend <code>Rspan</code>. Inside the <code>Rspan</code>, we&#39;ll simply <code>map</code> the value of <code>prevVote</code> into a message telling us of which option we voted, or the empty string if we didn&#39;t yet vote.</p>
+
+<p>Since we know each identity (including our own) is limited to at most one vote, we know that the value of <code>prevVote</code>&#39;s <code>Bond</code> will be an array with either zero or one items, and that any item will contain four keys; the two parameters to the event (<code>who</code> and <code>option</code>) as well as <code>event</code> (which is the name of the event, <code>&quot;Voted&quot;</code>) and finally <code>log</code>, which is the raw EVM log representing the event. We care only about the <code>option</code>, since we already know the value of <code>who</code> due to our filter.</p>
+
+<p>Without the prettifying message, our snippet will therefore look something like: <code>v.length &gt; 0 ? v[0].option : &#39;&#39;</code>. The only things left are to change the option index into the name (using the <code>Option</code> array) and to enclose it in a message. Here&#39;s what gets added to the <code>render</code> function (I put it immediately before the final <code>&lt;/div&gt;</code>):</p>
+<pre class="highlight javascript"><code><span class="o">&lt;</span><span class="nx">Rspan</span><span class="o">&gt;</span>
+<span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">prevVote</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">v</span> <span class="o">=&gt;</span> <span class="nx">v</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">?</span> <span class="s2">`Already voted for </span><span class="p">${</span><span class="nx">Options</span><span class="p">[</span><span class="nx">v</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">option</span><span class="p">]}</span><span class="s2">`</span> <span class="p">:</span> <span class="s1">''</span><span class="p">)}</span>
+<span class="o">&lt;</span><span class="sr">/Rspan</span><span class="err">&gt;
+</span></code></pre>
+<p>With that, we can readily see the message in action:</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/24864358/426e94a0-1e04-11e7-9253-8e3423268892.png" alt="image" /></p>
+
+<p>This account voted green...</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/24864365/47c02b30-1e04-11e7-88c6-79f5ef31d4f4.png" alt="image" /></p>
+
+<p>...whereas Parity Common voted Red.</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/24864351/3a4fbb28-1e04-11e7-8879-6f1538af2cb8.png" alt="image" /></p>
+
+<p>This one has not yet cast a vote.</p>
+<h3 id='2-chalking-39-em-up'>2. Chalking &#39;em up</h3>
+<p>This is great for figuring out which option we voted for if we only tend to use a single identity, but if we habitually use a few, then it&#39;s a bit of a pain to see that information. Nicer would be to display the icons of the our accounts that have voted right next to the row of the graph of the option that they voted. But how would we do this?</p>
+
+<p>The icon itself can be displayed through using another component from <code>parity-reactive-ui</code>, namely <code>AccountIcon</code>. You&#39;ll need to import it along with the progress badge:</p>
+<pre class="highlight javascript"><code><span class="kr">import</span> <span class="p">{</span><span class="nx">InputBond</span><span class="p">,</span> <span class="nx">HashBond</span><span class="p">,</span> <span class="nx">BButton</span><span class="p">,</span> <span class="nx">TransactionProgressLabel</span><span class="p">,</span> <span class="nx">AccountIcon</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">'parity-reactive-ui'</span><span class="p">;</span>
+</code></pre>
+<p>This gives us a react component <code>AccountIcon</code> that accepts props <code>address</code> (the address of the account to display), <code>style</code> and <code>className</code> which can be used to manage the appearance of the component; we&#39;ll use it to add a margin and change the size.</p>
+
+<p>In order to figure out which of our accounts voted for which option, we&#39;ll need to grab all events involving our accounts voting. Happily, we are able to provide the event filter an array of alternatives of which only one needs to match for any given log. Particularly conveniently, there is a bond containing the array of all of our accounts: <code>bonds.accounts</code>. We&#39;ll place the new bond in <code>this.prevVotes</code>, so the following line is added to our constructor:</p>
+<pre class="highlight javascript"><code><span class="k">this</span><span class="p">.</span><span class="nx">prevVotes</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">counter</span><span class="p">.</span><span class="nx">Voted</span><span class="p">({</span> <span class="na">who</span><span class="p">:</span> <span class="nx">bonds</span><span class="p">.</span><span class="nx">accounts</span> <span class="p">});</span>
+</code></pre>
+<p>Next up, we will need to partition those events by the option on which they voted. Since we are already looping through the options during render, it makes sense to apply a filter there (<code>.filter(x =&gt; x.option == i)</code>). Once filtered, we can discard the extended event information and keep only the address: (<code>.map(x =&gt; x.who)</code>). We will pass this find bond, which represents the array of addresses voting for this option, through to the <code>VoteOption</code> component with a new prop called <code>already</code>.</p>
+
+<p>The final prop assignment and transformation comes out as:</p>
+<pre class="highlight javascript"><code><span class="nx">already</span><span class="o">=</span><span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">prevVotes</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">a</span> <span class="o">=&gt;</span> <span class="nx">a</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">x</span> <span class="o">=&gt;</span> <span class="nx">x</span><span class="p">.</span><span class="nx">option</span> <span class="o">==</span> <span class="nx">i</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="nx">x</span> <span class="o">=&gt;</span> <span class="nx">x</span><span class="p">.</span><span class="nx">who</span><span class="p">))}</span>
+</code></pre>
+<p>This should be added to the props of the <code>VoteOption</code> tag.</p>
+
+<p>To finsh up, we&#39;ll need to actually display them in the row by changing <code>VoteOption</code> component. The first thing to do here is add the new prop to the <code>super</code> initialiser&#39;s <code>Bond</code> props list, since we expect it to be a <code>Bond</code>:</p>
+<pre class="highlight javascript"><code><span class="kr">super</span><span class="p">([</span><span class="s1">'votes'</span><span class="p">,</span> <span class="s1">'enabled'</span><span class="p">,</span> <span class="s1">'already'</span><span class="p">]);</span>
+</code></pre>
+<p>So now we know that <code>this.state.already</code> will contain an array of addresses. The final thing to do is to transform this into an array of properly styled <code>AccountIcon</code>s. To do this, we simply <code>.map</code> the value:</p>
+
+<p>{% raw %}
+<code>js
+{this.state.already.map(a =&gt; (&lt;AccountIcon
+    style={{width: &#39;1.2em&#39;, verticalAlign: &#39;bottom&#39;, marginLeft: &#39;1ex&#39;}}
+    key={a}
+    address={a}
+/&gt;))}
+</code>
+{% endraw %}</p>
+
+<p>This goes before the final closing <code>span</code> tag.</p>
+
+<p>Notice we are aligning the icon at the bottom of the text field (rather than baseline) in order to ensure it appears well centred. All in, we now see this:</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/24864065/5e3644ae-1e03-11e7-9046-80d58a84bdb3.png" alt="image" /></p>
+
+<p>Since nobody but me has been voting here, it&#39;s perhaps no surprise that the number of account icons exactly matches the width of the graph!</p>
+
+<p>Next, we&#39;ll look into managing the deployment of contracts.</p>
+
+<hr>
+
+<p><a href="Tutorial-Part-9.md">9th Part ⟶</a></p>

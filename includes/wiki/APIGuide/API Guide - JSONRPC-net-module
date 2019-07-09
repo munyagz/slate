@@ -1,0 +1,76 @@
+<h2 id='json-rpc-methods'>JSON-RPC methods</h2>
+<ul>
+<li><a href="#net_listening">net_listening</a></li>
+<li><a href="#net_peercount">net_peerCount</a></li>
+<li><a href="#net_version">net_version</a></li>
+</ul>
+<h2 id='json-rpc-api-reference'>JSON-RPC API Reference</h2><h3 id='net_listening'>net_listening</h3>
+<p>Returns <code>true</code> if client is actively listening for network connections.</p>
+<h4 id='parameters'>Parameters</h4>
+<p>None</p>
+<h4 id='returns'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - <code>true</code> when listening, otherwise <code>false</code>.</li>
+</ul>
+<h4 id='example'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;net_listening&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='net_peercount'>net_peerCount</h3>
+<p>Returns number of peers currenly connected to the client.</p>
+<h4 id='parameters-2'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-2'>Returns</h4>
+<ul>
+<li><code>Quantity</code> - Integer of the number of connected peers</li>
+</ul>
+<h4 id='example-2'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;net_peerCount&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0x2&quot; // 2
+}
+</code></p>
+
+<hr>
+<h3 id='net_version'>net_version</h3>
+<p>Returns the current network protocol version.</p>
+<h4 id='parameters-3'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-3'>Returns</h4>
+<ul>
+<li><code>String</code> - The current network protocol version</li>
+</ul>
+<h4 id='example-3'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;net_version&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;8995&quot;
+}
+</code></p>

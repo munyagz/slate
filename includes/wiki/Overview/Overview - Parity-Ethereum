@@ -1,0 +1,25 @@
+<p><img src="/images/logo-parity-ethereum.jpg" alt="Parity Ethereum" /></p>
+<h2 id='the-fastest-and-most-advanced-ethereum-client'>The fastest and most advanced Ethereum client.</h2>
+<p><a href="https://github.com/paritytech/parity-ethereum/releases/latest">Download the latest release</a></p>
+
+<p><strong>Built for mission-critical use</strong>: Miners, service providers, and exchanges need fast synchronisation and maximum uptime. Parity Ethereum provides the core infrastructure essential for speedy and reliable services.</p>
+
+<ul>
+<li>Clean, modular codebase for easy customisation</li>
+<li>Advanced CLI-based client</li>
+<li>Minimal memory and storage footprint</li>
+<li>Synchronise in hours, not days with Warp Sync</li>
+<li>Modular for light integration into your service or product</li>
+</ul>
+<h2 id='technical-overview'>Technical Overview</h2>
+<p>Parity Ethereum&#39;s goal is to be the fastest, lightest, and most secure Ethereum client. We are developing Parity Ethereum using the sophisticated and cutting-edge <strong>Rust programming language</strong>. Parity Ethereum is licensed under the GPLv3 and can be used for all your Ethereum needs.</p>
+
+<p>By default, Parity Ethereum runs a JSON-RPC HTTP server on port <code>:8545</code> and a Web-Sockets server on port <code>:8546</code>. This is fully configurable and supports a number of APIs.</p>
+
+<p>Some help:
+- If you want to get a node up and running with Parity Ethereum, see the <a href="Setup">Setup</a> guide.
+- Frequently asked questions are answered on the <a href="FAQ">FAQ</a>.
+- If you&#39;re interested in mining with Parity Ethereum, see the <a href="Mining">Mining</a> guide.
+- If you&#39;d like to use the JSON-RPC interface with Parity, see the <a href="JSONRPC">JSON-RPC</a> guide.
+- For <a href="Private-chains">Private chains</a> and <a href="Proof-of-Authority-Chains">Proof of Authority Chains</a>, you might find the <a href="Chain-specification">Chain specification</a> useful.
+- If you&#39;re interested in hacking on the Parity code base see the <a href="Parity-Ethereum-Style-Guide">Parity Ethereum Style Guide</a>.</p>

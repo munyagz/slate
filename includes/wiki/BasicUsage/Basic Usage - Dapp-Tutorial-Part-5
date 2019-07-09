@@ -1,0 +1,167 @@
+<p><strong>This is the fifth part of the Dapp Tutorial.</strong> We assume you&#39;re familiar with the content of the past chapters.</p>
+
+<p><a href="Tutorial-Part-4.md">⟵ 4th Part</a> | <a href="Tutorial-Part-6.md">6th Part ⟶</a></p>
+
+<hr>
+<h2 id='posting-transactions'>Posting Transactions</h2>
+<p>So far we&#39;ve learned how to inspect much of the information associated with the blockchain either through calling into contracts or through Parity&#39;s own APIs. We have seen how the Bond framework have made those tasks very easy. However, we have not yet had any impact on the blockchain&#39;s state---we have not yet sent a transaction.</p>
+
+<p>Sending a transaction in Ethereum is a multi-stage process. The transaction is initially submitted to Parity for signing. During this stage, Parity it free to consult the user to ensure that they authorise this transaction to happen. While in some instances this may be instantaneous, this can also be a long process taking upwards of 60 seconds: depending on the type of account, password or passwords may need to be entered, a 2-factor authentication process may need to occur or the secret key required for signing may be on a different device.</p>
+
+<p>The authorisation stage ends when either the user has decided to approve the transaction (and done all necessary steps to physically create the signature) or when the user has refused the request. Assuming they approved the transaction, it must now be sent to the network for finalisation (also known as &quot;mining&quot; or &quot;confirming&quot;). This is the process of burying the transaction into the blockchain such that it can be considered final. Different consensus mechanisms have different means of determining finality. E.g. proof-of-work chains can never achieve true finality and rather rely on the increasingly small chance than an attacker can secretly create a longer chain buoyed by greater proof of &quot;work&quot;. Conversely, some consensus algorithms are able to provide &quot;finality&quot; after only a single block.</p>
+
+<p>Once the first block has been received in which the transaction appears, we consider the transaction to be &quot;confirmed&quot;; successive blocks may reveal further confirmations. For the present purposes, we consider only the first confirmation to be &quot;important&quot;.</p>
+
+<p>To create a new transaction in Parity, we require only a single new API: the <code>bonds.post</code> function. The function returns a type of <code>Bond</code>. Constructing it creates a new transaction for the user to approve and which can be pushed out on to the network. The value to which the Bond evaluates reflects the ongoing status of the transaction as it moves through the process of getting finalised. It is always an object with a single key/value. It can be:</p>
+
+<ul>
+<li><code>{&quot;estimating&quot;: null}</code> The amount of gas required for this transaction to execute is being determined.</li>
+<li><code>{&quot;estimated&quot;: value}</code> The amount of gas required for this transaction to execute has been determined as <code>value</code>; the user is about to be asked.</li>
+<li><code>{&quot;requested&quot;: id}</code> The user has been asked for approval of the transaction; <code>id</code> is the (numeric) identity of the request.</li>
+<li><code>{&quot;signed&quot;: hash}</code> The user has approved the transaction and the transaction has been signed to form a final transaction hash of <code>hash</code>. It is now ready to be sent to the network for inclusion in a new block.</li>
+<li><code>{&quot;confirmed&quot;: receipt}</code> The transaction has been confirmed into a block. The receipt of the transaction is provided as <code>receipt</code>, giving information concerning its operation, including any logs.</li>
+<li><code>{&quot;failed&quot;: error}</code> The transaction has failed. Generally this is because the user did not approve the transaction or otherwise signing could not take place. <code>error</code> is a string which contains any details regarding the situation.</li>
+</ul>
+
+<p>Creating a new transaction is a simple affair. The function of <code>bonds.post</code> takes a single argument: an object describing the transaction. There are several keys it may contain:</p>
+
+<ul>
+<li><code>to</code> The recipient of the transaction; undefined or <code>null</code> indicates this is a contract-creation transaction.</li>
+<li><code>from</code> The sender of the transaction; must be an account which the user controls. Will default to <code>bonds.me</code>.</li>
+<li><code>value</code> The amount of ether to send to the recipient or endow any created contract.</li>
+<li><code>condition</code> A condition on which to predicate the distribution, but not the approval/signing, of the transaction. This is an object which contains one of two keys: <code>block</code> (which dictates the minimum block number before distribution) and <code>time</code> (the same but for block timestamp).</li>
+<li><code>gas</code> The amount of gas to supply with the transaction. By default, it will attempt to estimate the amount of gas to supply. Such that the transaction succeeds without exception/error.</li>
+<li><code>gasPrice</code> The price (in Wei) per unit of gas. Will default to something sensible (in Parity&#39;s case, this is the median of the distribution formed from the last several hundred transactions).</li>
+<li><code>nonce</code> The sender nonce of the transaction. Will default to the latest known value.</li>
+</ul>
+<h3 id='1-giveth-to-gavofyork'>1. Giveth to gavofyork</h3>
+<p>Let&#39;s start simple. A button to give 100 Finney (around $10 at current prices) to me. Since we want to include a button, we&#39;ll need the appropriate import for that:</p>
+<pre class="highlight jsx tab-jsx"><code><span class="kr">import</span> <span class="p">{</span><span class="nx">InputBond</span><span class="p">,</span> <span class="nx">HashBond</span><span class="p">,</span> <span class="nx">BButton</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">'parity-reactive-ui'</span><span class="p">;</span>
+</code></pre>
+<p>Next, in our class, we&#39;ll maintain the address of &#39;gavofyork&#39; for efficiency and brevity:</p>
+<pre class="highlight jsx tab-jsx"><code><span class="nx">constructor</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kr">super</span><span class="p">();</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">gavofyork</span> <span class="o">=</span> <span class="nx">bonds</span><span class="p">.</span><span class="nx">registry</span><span class="p">.</span><span class="nx">lookupAddress</span><span class="p">(</span><span class="s1">'gavofyork'</span><span class="p">,</span> <span class="s1">'A'</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre>
+<p>There should be nothing surprising there.</p>
+
+<p>Next for the HTML, we&#39;ll have two elements: the balance of our default account (so that we can watch it go down once the payment goes out) and the button to make a payment:</p>
+<pre class="highlight jsx tab-jsx"><code><span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+    <span class="nx">My</span> <span class="nx">balance</span><span class="p">:</span> <span class="o">&lt;</span><span class="nx">Rspan</span><span class="o">&gt;</span>
+        <span class="p">{</span><span class="nx">bonds</span><span class="p">.</span><span class="nx">balance</span><span class="p">(</span><span class="nx">bonds</span><span class="p">.</span><span class="nx">me</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="nx">formatBalance</span><span class="p">)}</span>
+    <span class="p">&lt;</span><span class="err">/</span><span class="nc">Rspan</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;</span><span class="nc">BButton</span>
+        <span class="na">content=</span><span class="s1">'Give gavofyork 100 Finney'</span>
+        <span class="na">onClick=</span><span class="si">{</span><span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">bonds</span><span class="p">.</span><span class="nx">post</span><span class="p">({</span><span class="na">to</span><span class="p">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">gavofyork</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="mi">100</span> <span class="o">*</span> <span class="mi">1</span><span class="nx">e15</span><span class="p">})</span><span class="si">}</span>
+    <span class="p">/&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</code></pre>
+<p>The balance is nothing that we haven&#39;t seen before. The button&#39;s <code>onClick</code> prop creates our new transaction. We wish to have the user send <code>gavofyork</code> (whose &quot;current&quot; address is expressed by <code>this.gavofyork</code>) 100 Finney (one Finney being equivalent to 10**15 Wei). The <code>bonds.post</code> creates our transaction; our given options of <code>to</code> and <code>value</code> reflect the attributes we wish our transaction to take.</p>
+
+<p>Refresh your browser and click the button! You&#39;ll see the signer window pop up asking you for approval (and maybe a password) to send the funds.</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/22750413/badb3b72-edfe-11e6-810b-9bcdb47a20a8.png" alt="image" /></p>
+
+<p>Once done, give it a few seconds and you should see you balance reduce by around 0.1 Ether.</p>
+<h3 id='2-giveth-to-anyone'>2. Giveth to anyone</h3>
+<p>Let&#39;s quickly alter the dapp so we can accept any name when we give our 100 Finney. Ensure you have the utility function <code>isNullData</code>:</p>
+<pre class="highlight jsx tab-jsx"><code><span class="kr">import</span> <span class="p">{</span><span class="nx">bonds</span><span class="p">,</span> <span class="nx">formatBalance</span><span class="p">,</span> <span class="nx">isNullData</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">'oo7-parity'</span><span class="p">;</span>
+</code></pre>
+<p>Change the constructor so we have a bond for the recipient&#39;s name:</p>
+<pre class="highlight jsx tab-jsx"><code><span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Bond</span><span class="p">;</span>
+<span class="k">this</span><span class="p">.</span><span class="nx">recipient</span> <span class="o">=</span> <span class="nx">bonds</span><span class="p">.</span><span class="nx">registry</span><span class="p">.</span><span class="nx">lookupAddress</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="s1">'A'</span><span class="p">);</span>
+</code></pre>
+<p>And the part of your <code>render()</code> HTML that follows the <code>br</code> element to:</p>
+<pre class="highlight jsx tab-jsx"><code><span class="o">&lt;</span><span class="nx">InputBond</span> <span class="nx">bond</span><span class="o">=</span><span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span> <span class="nx">placeholder</span><span class="o">=</span><span class="s1">'Name of recipient'</span> <span class="o">/&gt;</span>
+<span class="p">&lt;</span><span class="nc">BButton</span>
+    <span class="na">content=</span><span class="si">{</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">n</span> <span class="o">=&gt;</span> <span class="s2">`Give ${n} 100 Finney`</span><span class="p">)</span><span class="si">}</span>
+    <span class="na">disabled=</span><span class="si">{</span><span class="k">this</span><span class="p">.</span><span class="nx">recipient</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">isNullData</span><span class="p">)</span><span class="si">}</span>
+    <span class="na">onClick=</span><span class="si">{</span><span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">bonds</span><span class="p">.</span><span class="nx">post</span><span class="p">({</span><span class="na">to</span><span class="p">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">recipient</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="mi">100</span> <span class="o">*</span> <span class="mi">1</span><span class="nx">e15</span><span class="p">})</span><span class="si">}</span>
+<span class="p">/&gt;</span>
+</code></pre>
+<p>This should be fairly clear from the previous tutorial; note that because we&#39;re using the Bond-enabled &quot;reactive&quot; variant of <code>RaisedButton</code>, our <code>disabled</code> and <code>label</code> props can be <code>Bonds</code>. The end result is to get a button which is only enabled when the name of the recipient is valid:</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/22752491/b99eb7e0-ee06-11e6-85c7-c11c8a2b99c1.png" alt="image" /></p>
+
+<p>Jutta didn&#39;t yet register...</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/22752481/acdecc3e-ee06-11e6-8e74-600cfe813521.png" alt="image" /></p>
+
+<p>...however Nicholas did.</p>
+<h3 id='3-track-the-transaction'>3. Track the transaction</h3>
+<p>Seeing nothing for those several seconds is a little disconcerting. It would be nicer to actually track the state of the transaction so that we know everything is in order. This is fairly simple since we already have the information we need in the <code>Bond</code> which is given by <code>bonds.post</code>. The problem is that we&#39;re discarding it; in fact we need to keep it around and use it as a reactive display element.</p>
+
+<p>First, we&#39;ll introduce some state to our React class. Place this at the bottom of the <code>constructor</code>:</p>
+<pre class="highlight plaintext"><code>this.state = { current: null };
+</code></pre>
+<p>Next, we&#39;ll introduce a function which looks after the creation of the new transaction and its assignment into the state. Enter this new function in the class:</p>
+<pre class="highlight plaintext"><code>give () {
+    this.setState({
+        current: bonds.post({
+            to: this.recipient,
+            value: 100 * 1e15
+        })
+    })
+}
+</code></pre>
+<p>Next we&#39;ll use that function rather than calling the <code>bonds.post</code> directly. the <code>onClick</code> line becomes:</p>
+<pre class="highlight plaintext"><code>onClick={this.give.bind(this)}
+</code></pre>
+<p>Finally, we&#39;ll actually display the transaction status in an <code>Rspan</code> element. Add this extra line to the end of the element&#39;s HTML, right before the final <code>&lt;/div&gt;</code>:</p>
+<pre class="highlight plaintext"><code>&lt;Rspan&gt;{this.state.current &amp;&amp; this.state.current.map(JSON.stringify)}&lt;/Rspan&gt;
+</code></pre>
+<p>And that&#39;s it. Once you click the &quot;send&quot; button, you&#39;ll see the &quot;current&quot; transaction changes to <code>{&quot;request&quot;:...}</code>:</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/24324260/8d166a56-1183-11e7-8c5f-98db20bfe232.png" alt="image" /></p>
+
+<p>The value of this <code>request</code> key is simply the internal identifier given to this particular request. Approving the transaction will lead to it being <code>{&quot;signed&quot;:...}</code>:</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/24324265/a612047a-1183-11e7-9536-83324ad97465.png" alt="image" /></p>
+
+<p>The value of the <code>signed</code> key here is the hash of the transaction, its unique identifier which stays with it throughout. Under normal circumstances, it will be published to the network and eventually finalised into a block. And after it has been finalised by the network, <code>this.state.current</code> will mutate to <code>{&quot;confirmed&quot;:...}</code>:</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/24324263/9f3918fa-1183-11e7-8cbd-d04527addcd1.png" alt="image" /></p>
+
+<p>The value of the <code>confirmed</code> key is the receipt of the transaction which gives you a lot of information on its specific execution, including what gas it used and logs/events left by it.</p>
+
+<p>If you reject the transaction rather than approving it, you&#39;ll see that reflected in the value of <code>this.state.current</code>, too:</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/24324268/b1a21bcc-1183-11e7-9154-5d2a90c69334.png" alt="image" /></p>
+<h3 id='4-consolidate'>4. Consolidate</h3>
+<p>While working with the JSON is fairly easy, it&#39;s hardly pretty. There are existing Bond-oriented reactive components that can do this for you, such as <code>TransactionProgressLabel</code> found in <code>parity-reactive-ui</code> module. Let&#39;s use it.</p>
+
+<p>Start by importing the component:</p>
+<pre class="highlight javascript"><code><span class="kr">import</span> <span class="p">{</span><span class="nx">InputBond</span><span class="p">,</span> <span class="nx">HashBond</span><span class="p">,</span> <span class="nx">BButton</span><span class="p">,</span> <span class="nx">TransactionProgressLabel</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">'parity-reactive-ui'</span><span class="p">;</span>
+</code></pre>
+<p>And then just replace your bottom <code>Rspan</code> line with that component, feeding in the current transaction as its <code>value</code> prop:</p>
+<pre class="highlight jsx tab-jsx"><code><span class="o">&lt;</span><span class="nx">TransactionProgressLabel</span> <span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nx">current</span><span class="p">}</span><span class="sr">/</span><span class="err">&gt;
+</span></code></pre>
+<p>You&#39;ll see a pretty semantic-ui badge rather than ugly JSON.</p>
+
+<p>The same module also provides a button component which merges all of this together into one: <code>TransactButton</code>. If we use that we can remove much of our logic. First remove the <code>give</code> function and the <code>this.state =</code> line in the constructor.</p>
+
+<p>Next, remove everything below the <code>InputBond</code> until the final <code>&lt;/div&gt;</code> and replace it with:</p>
+
+<p>{% raw %}
+<code>jsx
+&lt;TransactButton
+    content={this.name.map(n =&gt; `Give ${n} 100 Finney`)}
+    disabled={this.recipient.map(isNullData)}
+    tx={{
+        to: this.recipient,
+        value: 100 * 1e15
+    }}
+/&gt;
+</code>
+{% endraw %}</p>
+
+<p>Finally, don&#39;t forget to import the component:</p>
+<pre class="highlight javascript"><code><span class="kr">import</span> <span class="p">{</span><span class="nx">InputBond</span><span class="p">,</span> <span class="nx">HashBond</span><span class="p">,</span> <span class="nx">BButton</span><span class="p">,</span> <span class="nx">TransactButton</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">'parity-reactive-ui'</span><span class="p">;</span>
+</code></pre>
+<p>You can configure the button to use whatever colour scheme you prefer, but that&#39;s out of scope for the present tutorial.</p>
+
+<hr>
+
+<p><a href="Tutorial-Part-6.md">6th Part ⟶</a></p>

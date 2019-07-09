@@ -1,0 +1,80 @@
+<p>This page explains how to register your DAPP to let Parity UI discover it, load it from the network and display it.</p>
+
+<p>We will be using the following Dapps/Contracts:
+ - <a href="Parity-Github-Hint">GitHubHint (GHH)</a>
+ - <a href="Parity-dapp-registry">DappReg</a></p>
+<h2 id='check-your-assets'>Check your assets</h2>
+<p>Before we get started, let´s check that you have everything we need at hand:</p>
+
+<ul>
+<li>an ID for our DAPP (the <code>id</code> field in your <code>manifest.json</code>)</li>
+<li>1 ETH to register it (this amount will be lost and not recoverable)</li>
+<li>a <code>manifest.json</code> file</li>
+<li>a logo image</li>
+<li>a bundle located on GitHub</li>
+</ul>
+<h2 id='preparation'>Preparation</h2><h3 id='generate-a-uid'>Generate a UID</h3>
+<p>We will first generate a unique ID for our DAPP. Calculate the a sha3 checksum as:</p>
+<pre class="highlight plaintext"><code>web3.sha3('&lt;DappId&gt; v&lt;DappVersion&gt; from &lt;yourName&gt;')
+</code></pre>
+<p>Replace <code>DappId</code>, <code>DappVersion</code> and <code>YourName</code> by the appropriate values.
+This will produce our <code>UID</code>.</p>
+<h3 id='register-watch-the-dappreg-contract'>Register/Watch the DappReg contract</h3>
+<p>In Parity UI, navigate to the <em>&#39;Develop Contracts&#39;</em> dapp and click <em>&#39;Watch&#39;</em>. Select the <em>&#39;custom&#39;</em> option.</p>
+
+<p>Provide the contract&#39;s address:</p>
+
+<ul>
+<li>Homestead: <code>0xD70994d7020DF8052A1124561ff548f3b88744d8</code></li>
+<li>Ropsten: <code>0x724A8602fc0C2b346f8eC56Df2913710742d3fD0</code></li>
+<li>Kovan: <code>0xD36d48C274af1a169857C9721e122aa023A0eE01</code></li>
+<li>Morden: <code>0x11e869F9094a1101B4C60201d6Cf894AfC7EadBB</code></li>
+</ul>
+
+<p>The ABI can be <a href="https://etherscan.io/address/0xD70994d7020DF8052A1124561ff548f3b88744d8#code">found on etherscan</a>.</p>
+
+<p>It is:</p>
+
+<p>[{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_id&quot;,&quot;type&quot;:&quot;bytes32&quot;},{&quot;name&quot;:&quot;_key&quot;,&quot;type&quot;:&quot;bytes32&quot;}],&quot;name&quot;:&quot;meta&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;bytes32&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;count&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_new&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;setOwner&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_id&quot;,&quot;type&quot;:&quot;bytes32&quot;}],&quot;name&quot;:&quot;unregister&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_fee&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;setFee&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;owner&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_id&quot;,&quot;type&quot;:&quot;bytes32&quot;}],&quot;name&quot;:&quot;get&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;id&quot;,&quot;type&quot;:&quot;bytes32&quot;},{&quot;name&quot;:&quot;owner&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_id&quot;,&quot;type&quot;:&quot;bytes32&quot;},{&quot;name&quot;:&quot;_key&quot;,&quot;type&quot;:&quot;bytes32&quot;},{&quot;name&quot;:&quot;_value&quot;,&quot;type&quot;:&quot;bytes32&quot;}],&quot;name&quot;:&quot;setMeta&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;drain&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_id&quot;,&quot;type&quot;:&quot;bytes32&quot;},{&quot;name&quot;:&quot;_owner&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;setDappOwner&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[],&quot;name&quot;:&quot;fee&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_index&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;at&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;id&quot;,&quot;type&quot;:&quot;bytes32&quot;},{&quot;name&quot;:&quot;owner&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;payable&quot;:false,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;_id&quot;,&quot;type&quot;:&quot;bytes32&quot;}],&quot;name&quot;:&quot;register&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:true,&quot;type&quot;:&quot;function&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:true,&quot;name&quot;:&quot;id&quot;,&quot;type&quot;:&quot;bytes32&quot;},{&quot;indexed&quot;:true,&quot;name&quot;:&quot;key&quot;,&quot;type&quot;:&quot;bytes32&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;value&quot;,&quot;type&quot;:&quot;bytes32&quot;}],&quot;name&quot;:&quot;MetaChanged&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:true,&quot;name&quot;:&quot;id&quot;,&quot;type&quot;:&quot;bytes32&quot;},{&quot;indexed&quot;:true,&quot;name&quot;:&quot;owner&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;OwnerChanged&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:true,&quot;name&quot;:&quot;id&quot;,&quot;type&quot;:&quot;bytes32&quot;},{&quot;indexed&quot;:true,&quot;name&quot;:&quot;owner&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;Registered&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:true,&quot;name&quot;:&quot;id&quot;,&quot;type&quot;:&quot;bytes32&quot;}],&quot;name&quot;:&quot;Unregistered&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:true,&quot;name&quot;:&quot;old&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:true,&quot;name&quot;:&quot;current&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;NewOwner&quot;,&quot;type&quot;:&quot;event&quot;}]</p>
+
+<p>Confirm to add this contract to your list.</p>
+<h2 id='githubhint'>GitHubHint</h2>
+<p>Navigate to the <em>&#39;GitHub Hint&#39;</em> dapp in Parity UI.</p>
+
+<p>First, ensure that the right account is selected. For each of the following, provide the path and register it to get a hash:</p>
+
+<ul>
+<li>image (your DAPP logo)</li>
+<li>manifest.json</li>
+<li>content</li>
+</ul>
+
+<p>After confirming those transactions, the hashes will disappear. To recall them, paste your links again. This time the hashes will appears in orange, confirming their registration.</p>
+
+<p>Take note of the 3 hashes.</p>
+<h2 id='dappreg'>DappReg</h2>
+<p>Here are the instructions to interact with the DappReg contract manually using the <em>&#39;Develop Contracts</em>&#39; dapp in Parity UI. More information on the <code>DappReg</code> smart contract can be found <a href="Parity-dapp-registry">here</a>. It is also possible to use the <em>&#39;Dapp Registration&#39;</em> dapp instead.</p>
+
+<p>Click on the DappReg contract in <em>&#39;Develop Contracts</em>&#39;, then <em>&#39;Execute&#39;</em> the <code>register</code> function and make sure to:</p>
+
+<ul>
+<li>select the right <em>&#39;owner&#39;</em> account. This is the only account allowed to make changes later</li>
+<li>provide the <code>UID</code> we got from the sha3 call at the beginning</li>
+<li>send 1 ETH while calling this function</li>
+</ul>
+
+<p>Confirm your transaction and wait until it is processed.</p>
+
+<p>Once your <code>UID</code> has been registered, you can use the <code>setMeta</code> function on the following keys:</p>
+
+<ul>
+<li>IMG</li>
+<li>MANIFEST</li>
+<li>CONTENT</li>
+</ul>
+
+<p><strong>NOTE</strong>: Everything is uppercase.</p>
+
+<p>For each, you will pass the corresponding hash we got in the previous step.</p>
+
+<p>Once all the transactions are processed (this can take a few minutes), your DAPP will be registered and will appear in the Applications tab in Parity UI.</p>

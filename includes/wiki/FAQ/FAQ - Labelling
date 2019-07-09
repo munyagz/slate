@@ -1,0 +1,129 @@
+<p>This page is to explain the conventions over Parity&#39;s labeling system.</p>
+
+<p>Labels are split into several groups.</p>
+
+<ul>
+<li>&#39;A&#39; group is used for code-review status and are applicable only to Pull Requests.</li>
+<li>&#39;B&#39; group is used for pull requests for upcoming beta releases.</li>
+<li>&#39;F&#39; group is used to encode the type (and accordingly the severity) of issues; they are applicable only within the Issue Tracker.</li>
+<li>&#39;M&#39; group is to encode the affected component or sub-project.</li>
+<li>&#39;P&#39; group is to denote priority. They are generally relevant only to issues, though may in principle be used on pull-requests.</li>
+<li>&#39;Q&#39; group is to denote difficulty.</li>
+<li>&#39;Z&#39; group are reasons for why something is a non-issue. They are applicable only within the Issue Tracker.</li>
+</ul>
+
+<p>As such, a pull request must have a single label from the &#39;A&#39; group and may additionally have a single label from the &#39;P&#39; group (though typically will not).</p>
+
+<p>An valid issue must have a single label from the &#39;F&#39; group and may additionally have a single label from the &#39;P&#39; group. An invalid issue should be closed with a single label from the &#39;Z&#39; group.</p>
+<h3 id='39-a-39-group'>&#39;A&#39; group</h3>
+<p>All pull requests should start labeled with either &#39;A0-pleasereview&#39;, &#39;A3-inprogress&#39;, &#39;A8-backport&#39; (in the base of an already-reviewed back-port), or &#39;A2-insubstantial&#39; (should it be an alteration which requires no code review). After review it should be relabeled with another &#39;A&#39; group label.</p>
+
+<ul>
+<li><img src="http://i.imgur.com/8lr1M4r.png" alt="A0-pleasereview" /> Pull request needs code review.</li>
+<li><img src="http://i.imgur.com/xZ9YJvB.png" alt="A1-onice" /> Pull request is reviewed well, but should not yet be merged.</li>
+<li><img src="http://i.imgur.com/xPahkpz.png" alt="A2-insubstantial" /> Pull request requires no code review (e.g. a sub-repository hash update).</li>
+<li><img src="http://i.imgur.com/rQbszDc.png" alt="A3-inprogress" /> Pull request is in progress. No review needed at this stage.</li>
+<li><code>A3-stale</code> Pull request did not receive any updates in a long time. No review needed at this stage and should be closed if author does not indicate any further work is done.</li>
+<li><code>A4-awaitingci</code> Pull request is waiting for changes on the CI to complete tests before review/merge can begin.</li>
+<li><img src="http://i.imgur.com/QSNNtk0.png" alt="A4-clasignoffneeded" /> Pull request requires author to sign off on CLA before review/merge can begin.</li>
+<li><img src="http://i.imgur.com/fUyJ8PO.png" alt="A4-gotissues" /> Pull request is reviewed and has significant issues which must be addressed. Once addressed, author should relabel as <code>A0-pleasereview</code>.</li>
+<li><img src="http://i.imgur.com/fD1vO9N.png" alt="A5-grumble" /> Pull request has minor issues that must be addressed before merging. This may require only replying to comments. Pull request should be relabeled as <code>A0-pleasereview</code> to get a final sign-off from a reviewer.</li>
+<li><img src="http://i.imgur.com/hGDrT93.png" alt="A6-mustntgrumble" /> Pull request has areas for improvement. The author need not address them before merging.</li>
+<li><img src="http://i.imgur.com/0EILx22.png" alt="A6-revert" /> Pull request that reverts recent changes.</li>
+<li><img src="http://i.imgur.com/3yYImuZ.png" alt="A7-looksgoodcantmerge" /> Pull request is reviewed well, but cannot be merged due to conflicts.</li>
+<li><img src="http://i.imgur.com/4APg6fE.png" alt="A7-looksgoodtestsfail" /> Pull request is reviewed well, but cannot be merged due to tests failing.</li>
+<li><img src="http://i.imgur.com/VnFVyWk.png" alt="A8-backport" /> Pull request is already reviewed well in another branch.</li>
+<li><img src="http://i.imgur.com/XfRlSzA.png" alt="A8-looksgood" /> Pull request is reviewed well.</li>
+<li><img src="http://i.imgur.com/MycyedU.png" alt="A9-buythatmanabeer" /> Pull request is reviewed well and worth buying the author a beer.</li>
+<li><img src="http://i.imgur.com/HZQeL2M.png" alt="A9-FUCKYEAH!" /> Pull request is reviewed well and can not be compensated with any amount of beer in the galaxy ;)</li>
+</ul>
+<h3 id='39-b-39-group'>&#39;B&#39; group</h3>
+<p>Used on pull requests only. Denotes tasks for the next beta release.</p>
+
+<ul>
+<li><img src="http://i.imgur.com/WVij4kk.png" alt="B0-patch" /> Pull request should also be back-ported to the beta branch.</li>
+<li><img src="http://i.imgur.com/eFiTrqa.png" alt="B1-relnotes" /> Changes should be mentioned in the release notes of the next major version.</li>
+</ul>
+<h3 id='39-f-39-group'>&#39;F&#39; group</h3>
+<p>Issues should have only one of these. Do not combine; if multiple labels are equally applicable to an issue, use the one with the lowest number.</p>
+
+<ul>
+<li><img src="http://i.imgur.com/IiVrLJn.png" alt="F0-consensus" />  Issue can lead to a consensus failure.</li>
+<li><img src="http://i.imgur.com/PvDKeCe.png" alt="F1-panic" /> The client panics and exits without proper error handling.</li>
+<li><img src="http://i.imgur.com/0PrqmGX.png" alt="F1-security" /> The client fails to follow expected, security-sensitive, behaviour.</li>
+<li><img src="http://i.imgur.com/EJhD1MQ.png" alt="F2-bug" /> The client fails to follow expected behavior.</li>
+<li><img src="http://i.imgur.com/Zsd8zxB.png" alt="F3-annoyance" /> The client behaves within expectations, however this &quot;expected behaviour&quot; itself is at issue. Annoyances are small enhancements which dramatically improve the usability of the client.</li>
+<li><img src="http://i.imgur.com/jFiH84M.png" alt="F4-tests" /> Tests need fixing, improving or augmenting.</li>
+<li><img src="http://i.imgur.com/iYgnzcd.png" alt="F5-documentation" /> Documentation needs fixing, improving or augmenting.</li>
+<li><img src="http://i.imgur.com/HCloAwV.png" alt="F6-refactor" /> Code needs refactoring.</li>
+<li><img src="http://i.imgur.com/lE1ESzo.png" alt="F7-footprint" /> An enhancement to provide a smaller (system load, memory, network or disk) footprint.</li>
+<li><img src="http://i.imgur.com/DNym8en.png" alt="F7-optimisation" /> An enhancement to provide better overall performance in terms of time-to-completion for a task.</li>
+<li><img src="http://i.imgur.com/ziRfEiW.png" alt="F8-enhancement" /> An additional feature.</li>
+<li><code>F9-meta</code> A specific issue for grouping tasks or bugs of a specific category.</li>
+<li><img src="http://i.imgur.com/zl4BiqW.png" alt="F9-release" /> A specific release. All such issues should be templated on <a href="https://github.com/paritytech/parity-ethereum/issues/1387">1387</a>.</li>
+</ul>
+<h3 id='39-m-39-group'>&#39;M&#39; group</h3>
+<p>Used to denote the affected component or sub-project. Each issue and pull request should have (at least) one.</p>
+
+<ul>
+<li><img src="http://i.imgur.com/vGzi4al.png" alt="M0-build" /> Building and build system</li>
+<li><img src="http://i.imgur.com/KzZMc2p.png" alt="M1-ci" /> Continuous integration</li>
+<li><code>M2-config</code> Chain specifications and node configurations</li>
+<li><img src="http://i.imgur.com/9nEQ4RW.png" alt="M2-installer" /> Installers for MacOS and Windows</li>
+<li><img src="http://i.imgur.com/Pf9himB.png" alt="M4-core" /> Core client</li>
+<li><img src="http://i.imgur.com/W5ECLIM.png" alt="M5-binaries" /> External binaries (ethkey, ethstore, ethvm, etc.)</li>
+<li><img src="http://i.imgur.com/kZGX67C.png" alt="M6-rpcapi" /> RPC API</li>
+<li><img src="http://i.imgur.com/FlogNRD.png" alt="M7-signer" /> Trusted signer</li>
+<li><img src="http://i.imgur.com/bTvS99W.png" alt="M7-ui" /> User Interface and wallet</li>
+<li><code>M8-contracts</code> Solidity smart contracts</li>
+<li><img src="http://i.imgur.com/LgIN8xw.png" alt="M8-dapp" /> Decentralized applications</li>
+<li><img src="http://i.imgur.com/C2GsjWb.png" alt="M9-deploy" /> Deployment and registration</li>
+</ul>
+<h3 id='39-p-39-group'>&#39;P&#39; group</h3>
+<p>Typically used only to annotate issues, however P0 and P2 may reasonably be used on PRs in exceptional circumstances.</p>
+
+<ul>
+<li><img src="http://i.imgur.com/GW63MgN.png" alt="P0-dropeverything" /> Everyone should address the issue/PR now.</li>
+<li><img src="http://i.imgur.com/Lqi1wHj.png" alt="P2-asap" /> No need to stop dead in your tracks, however issue/PR should be addressed as soon as possible.</li>
+<li><img src="http://i.imgur.com/HI0gW9B.png" alt="P5-sometimesoon" /> Issue is worth doing soon.</li>
+<li><img src="http://i.imgur.com/WlcjjSv.png" alt="P7-nicetohave" /> Issue is worth doing eventually.</li>
+<li><img src="http://i.imgur.com/r9qQFId.png" alt="P9-somedaymaybe" /> Issue might be worth doing eventually.</li>
+</ul>
+<h3 id='39-q-39-group'>&#39;Q&#39; group</h3>
+<p>Is used to annotate difficulty of issues.</p>
+
+<ul>
+<li><img src="http://i.imgur.com/K8BWrSm.png" alt="Q0-trivial" /> Can be fixed by anyone with access to a computer.</li>
+<li><code>Q1-mentor</code> An easy task were a mentor is available. Please indicate in the issue who the mentor could be.</li>
+<li><img src="http://i.imgur.com/CTJ9eVc.png" alt="Q2-easy" /> Can be fixed by copy and pasting from StackOverflow.</li>
+<li><img src="http://i.imgur.com/HdotN9f.png" alt="Q5-substantial" /> Can be fixed by a developer with decent experience.</li>
+<li><img src="http://i.imgur.com/OSQ0tc6.png" alt="Q7-involved" /> Can be fixed by a team of developers and probably takes some time.</li>
+<li><img src="http://i.imgur.com/Q3mBYJy.png" alt="Q9-epic" /> Can only be fixed by John Skeet.</li>
+</ul>
+<h3 id='39-z-39-group'>&#39;Z&#39; group</h3>
+<p>Used only on issues which will (or <em>may</em>, in the case of Z5) be closed immediately.</p>
+
+<ul>
+<li><img src="http://i.imgur.com/SBxVhGd.png" alt="Z0-duplicate" /> Issue is a duplicate. Closer should comment with a link to the duplicate.</li>
+<li><img src="http://i.imgur.com/qbfIlvR.png" alt="Z0-intended" /> Issue describes a behavior which turns out to work as intended. Closer should explain why.</li>
+<li><img src="http://i.imgur.com/dOX7QyV.png" alt="Z0-invalid" /> Issue is invalid. Closer should comment why.</li>
+<li><img src="http://i.imgur.com/EN3xLJn.png" alt="Z0-question" /> Issue is a question. Closer should answer.</li>
+<li><img src="http://i.imgur.com/Ds2ZUIl.png" alt="Z0-stale" /> Issue is in principle valid, but it is not relevant anymore or can not reproduced.</li>
+<li><img src="http://i.imgur.com/pPJTV2h.png" alt="Z0-wontfix" /> Issue is in principle valid, but this project will not address it. Closer should explain why.</li>
+<li><img src="http://i.imgur.com/X747d5L.png" alt="Z5-unconfirmed" /> Issue might be valid, but it&#39;s not yet known.</li>
+</ul>
+<h3 id='issue-checklist'>Issue-Checklist</h3>
+<ol>
+<li>Have you tried turning it off and on again?</li>
+<li>Are you fully synchronized?</li>
+<li>Which version of Parity are you running? (&quot;master&quot; or &quot;git&quot; is not a version)</li>
+<li>Which operating system are you running?</li>
+<li>How did you install Parity? (binary, installer, from source, which branch?)</li>
+<li>What flags are you running Parity with?</li>
+<li>Do you use any config file?</li>
+<li>Please, share the exact error message!</li>
+<li>Is there anything in the logs?</li>
+<li>Are you connected to any peers?</li>
+<li>What&#39;s your time? Is it synchronized? <a href="https://time.is">time.is</a></li>
+<li>Did you answer all my questions yet?</li>
+</ol>

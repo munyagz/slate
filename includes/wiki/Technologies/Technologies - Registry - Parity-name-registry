@@ -1,0 +1,25 @@
+<p>The Parity name registry is an easy way to look up an address using a human-readable key. It is the only contract address that is hardcoded in Parity UI per network.</p>
+
+<p><strong>WARNING</strong> There is a non-refundable fee associated with registering a name. Dropping a name will not return this fee. Only interact with the dapp and contract if you are certain you know what you are doing and understand the risks.</p>
+<h2 id='background'>Background</h2>
+<p>Internally, the <a href="https://github.com/parity-contracts/name-registry/blob/master/contracts/Registry.sol">Registry contract</a> names are stored as sha3 hashes of the name registered, this name mapping directly to an address. This approach is very beneficial to dapp and contract developers, because by doing a name lookup on the Registry, the correct address for the name in this network can be returned without having to hard-code the address for each network.</p>
+
+<p>An example of this would be a dapp <strong>bob&#39;s amazin stuff</strong> that has contracts on both Homestead and Morden. Before, a dapp developer needed to hardcode the contract addresses for each network and update them each time a new version is deployed. By using the Registry, a name can be reserved <code>bobsamazinstuff</code> that will resolve to the correct addresses irrespective of the network.</p>
+<h2 id='name-registration'>Name registration</h2>
+<p>Name registration can be done easily using the dapp <em>&#39;Registry&#39;</em> in Parity UI. Simply specify the name and associate it with an address and it will be available.</p>
+<h2 id='name-lookup'>Name lookup</h2>
+<p>Parity has a namespaced API that will return the registry address for a specific network. Using the <code>parity.js</code> interface, a name lookup for <code>gavcoin</code> would be:</p>
+<pre class="highlight javascript"><code>  <span class="nx">api</span><span class="p">.</span><span class="nx">parity</span>
+    <span class="p">.</span><span class="nx">registryAddress</span><span class="p">()</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">registryAddress</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`the registry was found at </span><span class="p">${</span><span class="nx">registryAddress</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+
+      <span class="kr">const</span> <span class="nx">registry</span> <span class="o">=</span> <span class="nx">api</span><span class="p">.</span><span class="nx">newContract</span><span class="p">(</span><span class="nx">registryAbi</span><span class="p">,</span> <span class="nx">registryAddress</span><span class="p">).</span><span class="nx">instance</span><span class="p">;</span>
+
+      <span class="k">return</span> <span class="nx">registry</span><span class="p">.</span><span class="nx">getAddress</span><span class="p">.</span><span class="nx">call</span><span class="p">({},</span> <span class="p">[</span><span class="nx">api</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">sha3</span><span class="p">(</span><span class="s1">'gavcoin'</span><span class="p">),</span> <span class="s1">'A'</span><span class="p">]);</span>
+    <span class="p">})</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">contactAddress</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`gavcoin was found at </span><span class="p">${</span><span class="nx">contactAddress</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+    <span class="p">});</span>
+</code></pre><h2 id='future-work'>Future work</h2>
+<p>Parity is looking into supporting transfers to names that can be found in the Registry. As an example, instead of saying &quot;send me 1 ETH to <code>0x012345...abcde</code>&quot; you will be able to say &quot;send me 1 ETH to <code>joeyswallet</code>&quot;.</p>

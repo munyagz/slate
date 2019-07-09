@@ -1,0 +1,112 @@
+<h2 id='json-rpc-methods'>JSON-RPC methods</h2>
+<ul>
+<li><a href="#eth_subscribe">eth_subscribe</a></li>
+<li><a href="#eth_unsubscribe">eth_unsubscribe</a></li>
+</ul>
+<h2 id='json-rpc-api-reference'>JSON-RPC API Reference</h2><h3 id='eth_subscribe'>eth_subscribe</h3>
+<p>Starts a subscription (on WebSockets / IPC / TCP transports) to a particular event. For every event that
+matches the subscription a JSON-RPC notification with event details and subscription ID will be sent to a client.</p>
+
+<p>Below examples use <code>wscat</code>, a simple command line WebSockets client. Find out how to install and use it by visiting <a href="https://github.com/websockets/wscat">wscat GitHub repository</a>.</p>
+
+<p>An example notification received by subscribing to <code>newHeads</code> event:
+<code>js
+{
+    &quot;jsonrpc&quot;: &quot;2.0&quot;,
+    &quot;method&quot;: &quot;eth_subscription&quot;,
+    &quot;params&quot;: {
+        &quot;result&quot;: {
+            &quot;author&quot;: &quot;0xea674fdde714fd979de3edf0f56aa9716b898ec8&quot;,
+            &quot;difficulty&quot;: &quot;0xb33e1bf54955f&quot;,
+            &quot;extraData&quot;: &quot;0x65746865726d696e652d6177732d61736961312d32&quot;,
+            &quot;gasLimit&quot;: &quot;0x7a121d&quot;,
+            &quot;gasUsed&quot;: &quot;0x79c602&quot;,
+            &quot;hash&quot;: &quot;0x86436b61e0f54c404fff92909d1d2f881a476f0982ff6fc5b3141c90226d6ad1&quot;,
+            &quot;logsBloom&quot;: &quot;0x5a4380886d4448b03805022082080d920020c0010c0d004010c70d0d80a8d56a187cb81800004004099032e042426b2007c2c10244300ab822b84204486008d010188c44808c005f00d2c9eb620c1081601861039129202884a14200410606000420002066b240500042a44002000d18008e021a0a0d04800008201f10002ca52029c104202310405591e500008a5008812290101083101c00428005002c03130a1e0402407260180644140618c08080832c5d89000080914228844180392c020c1058c3040c21220510010023202c040c4082c442e818022145a02a4208200101d48955099089bec4c08080c006831440200300000108cf8a00440520800390&quot;,
+            &quot;miner&quot;: &quot;0xea674fdde714fd979de3edf0f56aa9716b898ec8&quot;,
+            &quot;mixHash&quot;: &quot;0x084b405b7d0ff080c1fbf23ab27a4431aaf9c986c1bd959695993d957eaf81f7&quot;,
+            &quot;nonce&quot;: &quot;0xa527ccd80dd16040&quot;,
+            &quot;number&quot;: &quot;0x5682c7&quot;,
+            &quot;parentHash&quot;: &quot;0xc8e5713f1d7136f02062e840f825f033af00e2adfac1b6dd7c71d146fcd60d4a&quot;,
+            &quot;receiptsRoot&quot;: &quot;0x4852c35a8adb6720e380d8c79a2bb9050fa131b0b53194f56a61982fe6db1059&quot;,
+            &quot;sealFields&quot;: [&quot;0x084b405b7d0ff080c1fbf23ab27a4431aaf9c986c1bd959695993d957eaf81f7&quot;, &quot;0xa527ccd80dd16040&quot;],
+            &quot;sha3Uncles&quot;: &quot;0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347&quot;,
+            &quot;size&quot;: &quot;0x219&quot;,
+            &quot;stateRoot&quot;: &quot;0xf4fee9cf65ed10b1020810c305023dc51e4db4dbdcc9c8f3ae2b6e9334c07087&quot;,
+            &quot;timestamp&quot;: &quot;0x5b06e6c8&quot;,
+            &quot;transactionsRoot&quot;: &quot;0xbc3af100baf8e088f703a1d357375c34e1f0b69176550e10240cc71e702b09ab&quot;
+        },
+        &quot;subscription&quot;: &quot;0xb53c4832f1dca4a5&quot;
+    }
+}
+</code></p>
+
+<p>You can unsubscribe using <code>eth_unsubscribe</code> RPC method. Subscriptions are also tied to a transport
+connection, disconnecting causes all subscriptions to be canceled.</p>
+<h4 id='parameters'>Parameters</h4>
+<ol>
+<li><code>String</code> - Subscription type: one of <code>newHeads</code>, <code>logs</code></li>
+<li><code>Object</code> - 
+Subscription type-specific parameters. It must be left empty for
+<code>newHeads</code> and must contain filter object for <code>logs</code>.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"logs"</span><span class="p">,</span>
+  <span class="p">{</span>
+    <span class="s2">"fromBlock"</span><span class="p">:</span> <span class="s2">"latest"</span><span class="p">,</span>
+    <span class="s2">"toBlock"</span><span class="p">:</span> <span class="s2">"latest"</span>
+  <span class="p">}</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns'>Returns</h4>
+<ul>
+<li><code>String</code> - Assigned subscription ID</li>
+</ul>
+<h4 id='example'>Example</h4>
+<p>Request
+```bash
+wscat -c localhost:8546</p>
+
+<blockquote>
+<p>{&quot;method&quot;:&quot;eth_subscribe&quot;,&quot;params&quot;:[&quot;logs&quot;,{&quot;fromBlock&quot;:&quot;latest&quot;,&quot;toBlock&quot;:&quot;latest&quot;}],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}
+```</p>
+</blockquote>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0xb53c4832f1dca4a5&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='eth_unsubscribe'>eth_unsubscribe</h3>
+<p>Unsubscribes from a subscription.</p>
+<h4 id='parameters-2'>Parameters</h4>
+<ol>
+<li><code>String</code> - Subscription ID</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span><span class="s2">"0xb53c4832f1dca4a5"</span><span class="p">]</span>
+</code></pre><h4 id='returns-2'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - whether the call was successful</li>
+</ul>
+<h4 id='example-2'>Example</h4>
+<p>Request
+```bash
+wscat -c localhost:8546</p>
+
+<blockquote>
+<p>{&quot;method&quot;:&quot;eth_unsubscribe&quot;,&quot;params&quot;:[&quot;0xb53c4832f1dca4a5&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}
+```</p>
+</blockquote>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>

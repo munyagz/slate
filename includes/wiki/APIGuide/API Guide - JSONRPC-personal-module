@@ -1,0 +1,467 @@
+<h2 id='json-rpc-methods'>JSON-RPC methods</h2>
+<ul>
+<li><a href="#personal_ecrecover">personal_ecRecover</a></li>
+<li><a href="#personal_listaccounts">personal_listAccounts</a></li>
+<li><a href="#personal_newaccount">personal_newAccount</a></li>
+<li><a href="#personal_sendtransaction">personal_sendTransaction</a></li>
+<li><a href="#personal_sign">personal_sign</a></li>
+<li><a href="#personal_sign191">personal_sign191</a></li>
+<li><a href="#personal_signtransaction">personal_signTransaction</a></li>
+<li><a href="#personal_signtypeddata">personal_signTypedData</a></li>
+<li><a href="#personal_unlockaccount">personal_unlockAccount</a></li>
+</ul>
+<h2 id='json-rpc-api-reference'>JSON-RPC API Reference</h2><h3 id='personal_ecrecover'>personal_ecRecover</h3>
+<p>Returns the address associated with the private key that was used to calculate the signature in <code>personal_sign</code>.</p>
+<h4 id='parameters'>Parameters</h4>
+<ol>
+<li><code>Data</code> - The data which hash was signed.</li>
+<li><code>Data</code> - Signed data.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675"</span><span class="p">,</span>
+  <span class="s2">"0xe7225f986f192f859a9bf84e34b2b7001dfa11aeb5c7164f81a2bee0d79943e2587be1faa11502eba0f803bb0ee071a082b6fe40fba025f3309263a1eef52c711c"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns'>Returns</h4>
+<ul>
+<li><code>Address</code> - Address of the signer of the message.</li>
+</ul>
+<h4 id='example'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;personal_ecRecover&quot;,&quot;params&quot;:[&quot;0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675&quot;,&quot;0xe7225f986f192f859a9bf84e34b2b7001dfa11aeb5c7164f81a2bee0d79943e2587be1faa11502eba0f803bb0ee071a082b6fe40fba025f3309263a1eef52c711c&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0xb60e8dd61c5d32be8058bb8eb970870f07233155&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='personal_listaccounts'>personal_listAccounts</h3>
+<p>Lists all stored accounts.</p>
+<h4 id='parameters-2'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-2'>Returns</h4>
+<ul>
+<li><code>Array</code> - A list of 20 byte account identifiers.</li>
+</ul>
+<h4 id='example-2'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;personal_listAccounts&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: [
+    &quot;0x7bf87721a96849d168de02fd6ea5986a3a147383&quot;,
+    &quot;0xca807a90fd64deed760fb98bf0869b475c469348&quot;
+  ]
+}
+</code></p>
+
+<hr>
+<h3 id='personal_newaccount'>personal_newAccount</h3>
+<p>Creates new account.</p>
+
+<p><strong>Note:</strong> it becomes the new current unlocked account. There can only be one unlocked account at a time.</p>
+<h4 id='parameters-3'>Parameters</h4>
+<ol>
+<li><code>String</code> - Password for the new account.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span><span class="s2">"hunter2"</span><span class="p">]</span>
+</code></pre><h4 id='returns-3'>Returns</h4>
+<ul>
+<li><code>Address</code> - 20 Bytes - The identifier of the new account.</li>
+</ul>
+<h4 id='example-3'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;personal_newAccount&quot;,&quot;params&quot;:[&quot;hunter2&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0x8f0227d45853a50eefd48dd4fec25d5b3fd2295e&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='personal_sendtransaction'>personal_sendTransaction</h3>
+<p>Sends transaction and signs it in a single call. The account does not need to be unlocked to make this call, and will not be left unlocked after.</p>
+<h4 id='parameters-4'>Parameters</h4>
+<ol>
+<li><code>Object</code> - The transaction object
+
+<ul>
+<li><code>from</code>:   <code>Address</code> - 20 Bytes - The address the transaction is send from.</li>
+<li><code>to</code>:   <code>Address</code> - (optional) 20 Bytes - The address the transaction is directed to.</li>
+<li><code>gas</code>:   <code>Quantity</code> - (optional) Integer of the gas provided for the transaction execution. eth_call consumes zero gas, but this parameter may be needed by some executions.</li>
+<li><code>gasPrice</code>:   <code>Quantity</code> - (optional) Integer of the gas price used for each paid gas.</li>
+<li><code>value</code>:   <code>Quantity</code> - (optional) Integer of the value sent with this transaction.</li>
+<li><code>data</code>:   <code>Data</code> - (optional) 4 byte hash of the method signature followed by encoded parameters. For details see <a href="https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI">Ethereum Contract ABI</a>.</li>
+<li><code>nonce</code>:   <code>Quantity</code> - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.</li>
+<li><code>condition</code>:   <code>Object</code> - (optional) Conditional submission of the transaction. Can be either an integer block number <code>{ block: 1 }</code> or UTC timestamp (in seconds) <code>{ time: 1491290692 }</code> or <code>null</code>.</li>
+</ul></li>
+<li><code>String</code> - Passphrase to unlock the <code>from</code> account.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="p">{</span>
+    <span class="s2">"from"</span><span class="p">:</span> <span class="s2">"0x407d73d8a49eeb85d32cf465507dd71d507100c1"</span><span class="p">,</span>
+    <span class="s2">"to"</span><span class="p">:</span> <span class="s2">"0xa94f5374fce5edbc8e2a8697c15331677e6ebf0b"</span><span class="p">,</span>
+    <span class="s2">"data"</span><span class="p">:</span> <span class="s2">"0x41cd5add4fd13aedd64521e363ea279923575ff39718065d38bd46f0e6632e8e"</span><span class="p">,</span>
+    <span class="s2">"value"</span><span class="p">:</span> <span class="s2">"0x186a0"</span>
+  <span class="p">},</span>
+  <span class="s2">"hunter2"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-4'>Returns</h4>
+<ul>
+<li><code>Data</code> - 32 Bytes - the transaction hash, or the zero hash if the transaction is not yet available</li>
+</ul>
+<h4 id='example-4'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;personal_sendTransaction&quot;,&quot;params&quot;:[{&quot;from&quot;:&quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;,&quot;to&quot;:&quot;0xa94f5374fce5edbc8e2a8697c15331677e6ebf0b&quot;,&quot;data&quot;:&quot;0x41cd5add4fd13aedd64521e363ea279923575ff39718065d38bd46f0e6632e8e&quot;,&quot;value&quot;:&quot;0x186a0&quot;},&quot;hunter2&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0x62e05075829655752e146a129a044ad72e95ce33e48ff48118b697e15e7b41e4&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='personal_sign'>personal_sign</h3>
+<p>Calculates an Ethereum specific signature with: <code>sign(keccak256(&quot;Ethereum Signed Message: &quot; + len(message) + message)))</code>.</p>
+<h4 id='parameters-5'>Parameters</h4>
+<ol>
+<li><code>Data</code> - The data to sign</li>
+<li><code>Address</code> - 20 Bytes - The address of the account to sign with</li>
+<li><code>String</code> - Passphrase to unlock the <code>from</code> account.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675"</span><span class="p">,</span>
+  <span class="s2">"0xb60e8dd61c5d32be8058bb8eb970870f07233155"</span><span class="p">,</span>
+  <span class="s2">"hunter"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-5'>Returns</h4>
+<ul>
+<li><code>Data</code> - Signed data.</li>
+</ul>
+<h4 id='example-5'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;personal_sign&quot;,&quot;params&quot;:[&quot;0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675&quot;,&quot;0xb60e8dd61c5d32be8058bb8eb970870f07233155&quot;,&quot;hunter&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0xe7225f986f192f859a9bf84e34b2b7001dfa11aeb5c7164f81a2bee0d79943e2587be1faa11502eba0f803bb0ee071a082b6fe40fba025f3309263a1eef52c711c&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='personal_sign191'>personal_sign191</h3>
+<p>EIP-191 compliant signing, allows signing of different data formats depending on the version specifier</p>
+<h4 id='parameters-6'>Parameters</h4>
+<ol>
+<li><code>String</code> - EIP-191 version specifier, <code>0x00</code> for pre-signed transactions, <code>0x01</code> for structured data(EIP712), <code>0x45</code> for personal messages</li>
+<li><code>EIP712</code> or <code>Data</code> or <code>PresignedTransaction</code> - Data to be signed, depending on the version specified in the first argument. <code>PresignedTransaction</code>, <code>EIP712</code> or <code>Data</code>
+
+<ul>
+<li><code>EIP712</code>:   <code>Object</code> - EIP-712 compliant data structure, if version specified is <code>0x01</code>
+
+<ul>
+<li><code>primaryType</code>:   <code>String</code> - name of the struct defined in <code>types</code> that is the same type as <code>message</code></li>
+<li><code>domain</code>:   <code>Object</code> - EIP712Domain
+
+<ul>
+<li><code>name</code>:   <code>String</code> - User readable name of signing domain, i.e. the name of the Dapp or the protocol</li>
+<li><code>verifyingContract</code>:   <code>Address</code> - Address of the contract that verifies the signed message</li>
+<li><code>chainId</code>:   <code>Integer</code> - chain id this signature is valid for to prevent chain replay attacks</li>
+<li><code>version</code>:   <code>Integer</code> - The current major version of the signing domain. Signatures from different versions are not compatible.</li>
+<li><code>salt</code>:   <code>Data</code> - Should be used as a last resort domain seperator</li>
+</ul></li>
+<li><code>message</code>:   <code>Object</code> - Structured message to be signed</li>
+<li><code>types</code>:   <code>Object</code> - type definitions for the <code>EIP712Domain</code> and the &#39;primaryType&#39; as well as it&#39;s dependent types</li>
+</ul></li>
+<li><code>Data</code>:   <code>Data</code> - hashed message to sign, if version specified is <code>0x45</code></li>
+<li><code>PresignedTransaction</code>:   <code>Object</code> - presigned transaction data, if version specified is <code>0x00</code>
+
+<ul>
+<li><code>data</code>:   <code>Data</code> - Presigned Transaction data</li>
+<li><code>validator</code>:   <code>Address</code> - address of the contract that validates the presigned transaction</li>
+</ul></li>
+</ul></li>
+<li><code>Address</code> - 20 Bytes - The address of the account to sign with</li>
+<li><code>String</code> - The account password</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x00"</span><span class="p">,</span>
+  <span class="p">{</span>
+    <span class="s2">"validator"</span><span class="p">:</span> <span class="s2">"0xb60e8dd61c5d32be8058bb8eb970870f07233155"</span><span class="p">,</span>
+    <span class="s2">"data"</span><span class="p">:</span> <span class="s2">"0xe7225f986f192f859a9bf84e34b2b7001dfa11aeb5c7164f81a2bee0d79943e2587be1faa11502eba0f803bb0ee071a082b6fe40fba025f3309263a1eef52c711c"</span>
+  <span class="p">},</span>
+  <span class="s2">"0xb60e8dd61c5d32be8058bb8eb970870f07233155"</span><span class="p">,</span>
+  <span class="s2">"password"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-6'>Returns</h4>
+<ul>
+<li><code>Data</code> - Signed data.</li>
+</ul>
+<h4 id='example-6'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;personal_sign191&quot;,&quot;params&quot;:[&quot;0x00&quot;,{&quot;validator&quot;:&quot;0xb60e8dd61c5d32be8058bb8eb970870f07233155&quot;,&quot;data&quot;:&quot;0xe7225f986f192f859a9bf84e34b2b7001dfa11aeb5c7164f81a2bee0d79943e2587be1faa11502eba0f803bb0ee071a082b6fe40fba025f3309263a1eef52c711c&quot;},&quot;0xb60e8dd61c5d32be8058bb8eb970870f07233155&quot;,&quot;password&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0xe7225f986f192f859a9bf84e34b2b7001dfa11aeb5c7164f81a2bee0d79943e2587be1faa11502eba0f803bb0ee071a082b6fe40fba025f3309263a1eef52c711c&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='personal_signtransaction'>personal_signTransaction</h3>
+<p>Signs a transaction without dispatching it to the network. It can later be submitted using <code>eth_sendRawTransaction</code>. The account does not need to be unlocked to make this call, and will not be left unlocked after.</p>
+<h4 id='parameters-7'>Parameters</h4>
+<ol>
+<li><code>Object</code> - The transaction object
+
+<ul>
+<li><code>from</code>:   <code>Address</code> - 20 Bytes - The address the transaction is send from.</li>
+<li><code>to</code>:   <code>Address</code> - (optional) 20 Bytes - The address the transaction is directed to.</li>
+<li><code>gas</code>:   <code>Quantity</code> - (optional) Integer of the gas provided for the transaction execution. eth_call consumes zero gas, but this parameter may be needed by some executions.</li>
+<li><code>gasPrice</code>:   <code>Quantity</code> - (optional) Integer of the gas price used for each paid gas.</li>
+<li><code>value</code>:   <code>Quantity</code> - (optional) Integer of the value sent with this transaction.</li>
+<li><code>data</code>:   <code>Data</code> - (optional) 4 byte hash of the method signature followed by encoded parameters. For details see <a href="https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI">Ethereum Contract ABI</a>.</li>
+<li><code>nonce</code>:   <code>Quantity</code> - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.</li>
+<li><code>condition</code>:   <code>Object</code> - (optional) Conditional submission of the transaction. Can be either an integer block number <code>{ block: 1 }</code> or UTC timestamp (in seconds) <code>{ time: 1491290692 }</code> or <code>null</code>.</li>
+</ul></li>
+<li><code>String</code> - Passphrase to unlock the <code>from</code> account.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="p">{</span>
+    <span class="s2">"from"</span><span class="p">:</span> <span class="s2">"0x407d73d8a49eeb85d32cf465507dd71d507100c1"</span><span class="p">,</span>
+    <span class="s2">"to"</span><span class="p">:</span> <span class="s2">"0xa94f5374fce5edbc8e2a8697c15331677e6ebf0b"</span><span class="p">,</span>
+    <span class="s2">"data"</span><span class="p">:</span> <span class="s2">"0x41cd5add4fd13aedd64521e363ea279923575ff39718065d38bd46f0e6632e8e"</span><span class="p">,</span>
+    <span class="s2">"value"</span><span class="p">:</span> <span class="s2">"0x186a0"</span>
+  <span class="p">},</span>
+  <span class="s2">"hunter2"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-7'>Returns</h4>
+<ul>
+<li><code>Object</code> - Signed transaction and its details:
+
+<ul>
+<li><code>raw</code>:   <code>Data</code> - The signed, RLP encoded transaction.</li>
+<li><code>tx</code>:   <code>Object</code> - Transaction object.
+
+<ul>
+<li><code>from</code>:   <code>Address</code> - 20 Bytes - The address the transaction is send from.</li>
+<li><code>to</code>:   <code>Address</code> - (optional) 20 Bytes - The address the transaction is directed to.</li>
+<li><code>gas</code>:   <code>Quantity</code> - (optional) Integer of the gas provided for the transaction execution. eth_call consumes zero gas, but this parameter may be needed by some executions.</li>
+<li><code>gasPrice</code>:   <code>Quantity</code> - (optional) Integer of the gas price used for each paid gas.</li>
+<li><code>value</code>:   <code>Quantity</code> - (optional) Integer of the value sent with this transaction.</li>
+<li><code>data</code>:   <code>Data</code> - (optional) 4 byte hash of the method signature followed by encoded parameters. For details see <a href="https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI">Ethereum Contract ABI</a>.</li>
+<li><code>nonce</code>:   <code>Quantity</code> - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.</li>
+<li><code>condition</code>:   <code>Object</code> - (optional) Conditional submission of the transaction. Can be either an integer block number <code>{ block: 1 }</code> or UTC timestamp (in seconds) <code>{ time: 1491290692 }</code> or <code>null</code>.</li>
+</ul></li>
+</ul></li>
+</ul>
+<h4 id='example-7'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;personal_signTransaction&quot;,&quot;params&quot;:[{&quot;from&quot;:&quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;,&quot;to&quot;:&quot;0xa94f5374fce5edbc8e2a8697c15331677e6ebf0b&quot;,&quot;data&quot;:&quot;0x41cd5add4fd13aedd64521e363ea279923575ff39718065d38bd46f0e6632e8e&quot;,&quot;value&quot;:&quot;0x186a0&quot;},&quot;hunter2&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: {
+    &quot;raw&quot;: &quot;0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675&quot;,
+    &quot;tx&quot;: {
+      &quot;hash&quot;: &quot;0xc6ef2fc5426d6ad6fd9e2a26abeab0aa2411b7ab17f30a99d3cb96aed1d1055b&quot;,
+      &quot;nonce&quot;: &quot;0x0&quot;,
+      &quot;blockHash&quot;: &quot;0xbeab0aa2411b7ab17f30a99d3cb9c6ef2fc5426d6ad6fd9e2a26a6aed1d1055b&quot;,
+      &quot;blockNumber&quot;: &quot;0x15df&quot;,
+      &quot;transactionIndex&quot;: &quot;0x1&quot;,
+      &quot;from&quot;: &quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;,
+      &quot;to&quot;: &quot;0x853f43d8a49eeb85d32cf465507dd71d507100c1&quot;,
+      &quot;value&quot;: &quot;0x7f110&quot;,
+      &quot;gas&quot;: &quot;0x7f110&quot;,
+      &quot;gasPrice&quot;: &quot;0x09184e72a000&quot;,
+      &quot;input&quot;: &quot;0x603880600c6000396000f300603880600c6000396000f3603880600c6000396000f360&quot;
+    }
+  }
+}
+</code></p>
+
+<hr>
+<h3 id='personal_signtypeddata'>personal_signTypedData</h3>
+<p>Hashes and signs typed structured data</p>
+<h4 id='parameters-8'>Parameters</h4>
+<ol>
+<li><code>Object</code> - EIP-712 compliant data structure to be signed
+
+<ul>
+<li><code>primaryType</code>:   <code>String</code> - name of the struct defined in <code>types</code> that is the same type as <code>message</code></li>
+<li><code>domain</code>:   <code>Object</code> - EIP712Domain
+
+<ul>
+<li><code>name</code>:   <code>String</code> - User readable name of signing domain, i.e. the name of the Dapp or the protocol</li>
+<li><code>verifyingContract</code>:   <code>Address</code> - Address of the contract that verifies the signed message</li>
+<li><code>chainId</code>:   <code>Integer</code> - chain id this signature is valid for to prevent chain replay attacks</li>
+<li><code>version</code>:   <code>Integer</code> - The current major version of the signing domain. Signatures from different versions are not compatible.</li>
+<li><code>salt</code>:   <code>Data</code> - Should be used as a last resort domain seperator</li>
+</ul></li>
+<li><code>message</code>:   <code>Object</code> - Structured message to be signed</li>
+<li><code>types</code>:   <code>Object</code> - type definitions for the <code>EIP712Domain</code> and the &#39;primaryType&#39; as well as it&#39;s dependent types</li>
+</ul></li>
+<li><code>Address</code> - 20 Bytes - The address of the account to sign with</li>
+<li><code>String</code> - The account password</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="p">{</span>
+    <span class="s2">"types"</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">"EIP712Domain"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"name"</span><span class="p">,</span>
+          <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"string"</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+          <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"version"</span><span class="p">,</span>
+          <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"string"</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+          <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"chainId"</span><span class="p">,</span>
+          <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"uint256"</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+          <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"verifyingContract"</span><span class="p">,</span>
+          <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"address"</span>
+        <span class="p">}</span>
+      <span class="p">],</span>
+      <span class="s2">"Person"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"name"</span><span class="p">,</span>
+          <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"string"</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+          <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"wallet"</span><span class="p">,</span>
+          <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"address"</span>
+        <span class="p">}</span>
+      <span class="p">],</span>
+      <span class="s2">"Mail"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"from"</span><span class="p">,</span>
+          <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"Person"</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+          <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"to"</span><span class="p">,</span>
+          <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"Person"</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+          <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"contents"</span><span class="p">,</span>
+          <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"string"</span>
+        <span class="p">}</span>
+      <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="s2">"primaryType"</span><span class="p">:</span> <span class="s2">"Mail"</span><span class="p">,</span>
+    <span class="s2">"domain"</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"Ether Mail"</span><span class="p">,</span>
+      <span class="s2">"version"</span><span class="p">:</span> <span class="s2">"1"</span><span class="p">,</span>
+      <span class="s2">"chainId"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s2">"verifyingContract"</span><span class="p">:</span> <span class="s2">"0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"</span>
+    <span class="p">},</span>
+    <span class="s2">"message"</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">"from"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"Cow"</span><span class="p">,</span>
+        <span class="s2">"wallet"</span><span class="p">:</span> <span class="s2">"0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"</span>
+      <span class="p">},</span>
+      <span class="s2">"to"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"Bob"</span><span class="p">,</span>
+        <span class="s2">"wallet"</span><span class="p">:</span> <span class="s2">"0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"</span>
+      <span class="p">},</span>
+      <span class="s2">"contents"</span><span class="p">:</span> <span class="s2">"Hello, Bob!"</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="s2">"0xb60e8dd61c5d32be8058bb8eb970870f07233155"</span><span class="p">,</span>
+  <span class="s2">"password"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-8'>Returns</h4>
+<ul>
+<li><code>Data</code> - Signed data.</li>
+</ul>
+<h4 id='example-8'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;personal_signTypedData&quot;,&quot;params&quot;:[{&quot;types&quot;:{&quot;EIP712Domain&quot;:[{&quot;name&quot;:&quot;name&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;name&quot;:&quot;version&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;name&quot;:&quot;chainId&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;name&quot;:&quot;verifyingContract&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;Person&quot;:[{&quot;name&quot;:&quot;name&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;name&quot;:&quot;wallet&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;Mail&quot;:[{&quot;name&quot;:&quot;from&quot;,&quot;type&quot;:&quot;Person&quot;},{&quot;name&quot;:&quot;to&quot;,&quot;type&quot;:&quot;Person&quot;},{&quot;name&quot;:&quot;contents&quot;,&quot;type&quot;:&quot;string&quot;}]},&quot;primaryType&quot;:&quot;Mail&quot;,&quot;domain&quot;:{&quot;name&quot;:&quot;Ether Mail&quot;,&quot;version&quot;:&quot;1&quot;,&quot;chainId&quot;:1,&quot;verifyingContract&quot;:&quot;0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC&quot;},&quot;message&quot;:{&quot;from&quot;:{&quot;name&quot;:&quot;Cow&quot;,&quot;wallet&quot;:&quot;0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826&quot;},&quot;to&quot;:{&quot;name&quot;:&quot;Bob&quot;,&quot;wallet&quot;:&quot;0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB&quot;},&quot;contents&quot;:&quot;Hello, Bob!&quot;}},&quot;0xb60e8dd61c5d32be8058bb8eb970870f07233155&quot;,&quot;password&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0xe7225f986f192f859a9bf84e34b2b7001dfa11aeb5c7164f81a2bee0d79943e2587be1faa11502eba0f803bb0ee071a082b6fe40fba025f3309263a1eef52c711c&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='personal_unlockaccount'>personal_unlockAccount</h3>
+<p>Unlocks specified account for use.</p>
+
+<p>If permanent unlocking is disabled (the default) then the duration argument will be ignored, and the account will be unlocked for a single signing. With permanent locking enabled, the duration sets the number of seconds to hold the account open for. It will default to 300 seconds. Passing 0 unlocks the account indefinitely.</p>
+
+<p>There can only be one unlocked account at a time.</p>
+<h4 id='parameters-9'>Parameters</h4>
+<ol>
+<li><code>Address</code> - 20 Bytes - The address of the account to unlock.</li>
+<li><code>String</code> - Passphrase to unlock the account.</li>
+<li><code>Quantity</code> - (default: <code>300</code>) Integer or <code>null</code> - Duration in seconds how long the account should remain unlocked for.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x8f0227d45853a50eefd48dd4fec25d5b3fd2295e"</span><span class="p">,</span>
+  <span class="s2">"hunter2"</span><span class="p">,</span>
+  <span class="kc">null</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-9'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - whether the call was successful</li>
+</ul>
+<h4 id='example-9'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;personal_unlockAccount&quot;,&quot;params&quot;:[&quot;0x8f0227d45853a50eefd48dd4fec25d5b3fd2295e&quot;,&quot;hunter2&quot;,null],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>

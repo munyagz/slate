@@ -1,0 +1,516 @@
+<h2 id='json-rpc-methods'>JSON-RPC methods</h2>
+<ul>
+<li><a href="#parity_allaccountsinfo">parity_allAccountsInfo</a></li>
+<li><a href="#parity_changepassword">parity_changePassword</a></li>
+<li><a href="#parity_deriveaddresshash">parity_deriveAddressHash</a></li>
+<li><a href="#parity_deriveaddressindex">parity_deriveAddressIndex</a></li>
+<li><a href="#parity_exportaccount">parity_exportAccount</a></li>
+<li><a href="#parity_importgethaccounts">parity_importGethAccounts</a></li>
+<li><a href="#parity_killaccount">parity_killAccount</a></li>
+<li><a href="#parity_listgethaccounts">parity_listGethAccounts</a></li>
+<li><a href="#parity_newaccountfromphrase">parity_newAccountFromPhrase</a></li>
+<li><a href="#parity_newaccountfromsecret">parity_newAccountFromSecret</a></li>
+<li><a href="#parity_newaccountfromwallet">parity_newAccountFromWallet</a></li>
+<li><a href="#parity_removeaddress">parity_removeAddress</a></li>
+<li><a href="#parity_setaccountmeta">parity_setAccountMeta</a></li>
+<li><a href="#parity_setaccountname">parity_setAccountName</a></li>
+<li><a href="#parity_testpassword">parity_testPassword</a></li>
+</ul>
+<h2 id='json-rpc-api-reference'>JSON-RPC API Reference</h2><h3 id='parity_allaccountsinfo'>parity_allAccountsInfo</h3>
+<p>returns a map of accounts as an object.</p>
+<h4 id='parameters'>Parameters</h4>
+<p>None</p>
+<h4 id='returns'>Returns</h4>
+<ul>
+<li><code>Array</code> - Account metadata.
+
+<ul>
+<li><code>name</code>:   <code>String</code> - Account name.</li>
+<li><code>meta</code>:   <code>String</code> - Encoded JSON string the defines additional account metadata.</li>
+<li><code>uuid</code>:   <code>String</code> - The account Uuid, or <code>null</code> if not available/unknown/not applicable.</li>
+</ul></li>
+</ul>
+<h4 id='example'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_allAccountsInfo&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: {
+    &quot;0x00a289b43e1e4825dbedf2a78ba60a640634dc40&quot;: {
+      &quot;meta&quot;: &quot;{}&quot;,
+      &quot;name&quot;: &quot;Foobar&quot;,
+      &quot;uuid&quot;: &quot;0b9e70e6-235b-682d-a15c-2a98c71b3945&quot;
+    }
+  }
+}
+</code></p>
+
+<hr>
+<h3 id='parity_changepassword'>parity_changePassword</h3>
+<p>Change the password for a given account.</p>
+<h4 id='parameters-2'>Parameters</h4>
+<ol>
+<li><code>Address</code> - Address of the account.</li>
+<li><code>String</code> - Old password.</li>
+<li><code>String</code> - New password.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x407d73d8a49eeb85d32cf465507dd71d507100c1"</span><span class="p">,</span>
+  <span class="s2">"hunter2"</span><span class="p">,</span>
+  <span class="s2">"bazqux5"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-2'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - <code>true</code> if the call was successful.</li>
+</ul>
+<h4 id='example-2'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_changePassword&quot;,&quot;params&quot;:[&quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;,&quot;hunter2&quot;,&quot;bazqux5&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_deriveaddresshash'>parity_deriveAddressHash</h3>
+<p>Derive new address from given account address using specific hash.</p>
+<h4 id='parameters-3'>Parameters</h4>
+<ol>
+<li><code>Address</code> - Account address to derive from.</li>
+<li><code>String</code> - Password to the account.</li>
+<li><code>Object</code> - Derivation hash and type (<code>soft</code> or <code>hard</code>). E.g. <code>{ hash: &quot;0x123..123&quot;, type: &quot;hard&quot; }</code>.</li>
+<li><code>Boolean</code> - Flag indicating if the account should be saved.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x407d73d8a49eeb85d32cf465507dd71d507100c1"</span><span class="p">,</span>
+  <span class="s2">"hunter2"</span><span class="p">,</span>
+  <span class="p">{</span>
+    <span class="s2">"hash"</span><span class="p">:</span> <span class="s2">"0x2547ea3382099c7c76d33dd468063b32d41016aacb02cbd51ebc14ff5d2b6a43"</span><span class="p">,</span>
+    <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"hard"</span>
+  <span class="p">},</span>
+  <span class="kc">false</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-3'>Returns</h4>
+<ul>
+<li><code>Address</code> - 20 Bytes new derived address.</li>
+</ul>
+<h4 id='example-3'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_deriveAddressHash&quot;,&quot;params&quot;:[&quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;,&quot;hunter2&quot;,{&quot;hash&quot;:&quot;0x2547ea3382099c7c76d33dd468063b32d41016aacb02cbd51ebc14ff5d2b6a43&quot;,&quot;type&quot;:&quot;hard&quot;},false],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_deriveaddressindex'>parity_deriveAddressIndex</h3>
+<p>Derive new address from given account address using hierarchical derivation (sequence of 32-bit integer indices).</p>
+<h4 id='parameters-4'>Parameters</h4>
+<ol>
+<li><code>Address</code> - Account address to export.</li>
+<li><code>String</code> - Password to the account.</li>
+<li><code>Array</code> - Hierarchical derivation sequence of index and type (<code>soft</code> or <code>hard</code>). E.g. <code>[{index:1,type:&quot;hard&quot;},{index:2,type:&quot;soft&quot;}]</code>.</li>
+<li><code>Boolean</code> - Flag indicating if the account should be saved.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x407d73d8a49eeb85d32cf465507dd71d507100c1"</span><span class="p">,</span>
+  <span class="s2">"hunter2"</span><span class="p">,</span>
+  <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">"index"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"hard"</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">"index"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+      <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"soft"</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="kc">false</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-4'>Returns</h4>
+<ul>
+<li><code>Address</code> - 20 Bytes new derived address.</li>
+</ul>
+<h4 id='example-4'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_deriveAddressIndex&quot;,&quot;params&quot;:[&quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;,&quot;hunter2&quot;,[{&quot;index&quot;:1,&quot;type&quot;:&quot;hard&quot;},{&quot;index&quot;:2,&quot;type&quot;:&quot;soft&quot;}],false],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_exportaccount'>parity_exportAccount</h3>
+<p>Returns a standard wallet file for given account if password matches.</p>
+<h4 id='parameters-5'>Parameters</h4>
+<ol>
+<li><code>Address</code> - Account address to export.</li>
+<li><code>String</code> - Password to the account.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x407d73d8a49eeb85d32cf465507dd71d507100c1"</span><span class="p">,</span>
+  <span class="s2">"hunter2"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-5'>Returns</h4>
+<ul>
+<li><code>Object</code> - Standard wallet JSON.</li>
+</ul>
+<h4 id='example-5'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_exportAccount&quot;,&quot;params&quot;:[&quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;,&quot;hunter2&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: {
+    &quot;address&quot;: &quot;0042e5d2a662eeaca8a7e828c174f98f35d8925b&quot;,
+    &quot;crypto&quot;: {
+      &quot;cipher&quot;: &quot;aes-128-ctr&quot;,
+      &quot;cipherparams&quot;: {
+        &quot;iv&quot;: &quot;a1c6ff99070f8032ca1c4e8add006373&quot;
+      },
+      &quot;ciphertext&quot;: &quot;df27e3db64aa18d984b6439443f73660643c2d119a6f0fa2fa9a6456fc802d75&quot;,
+      &quot;kdf&quot;: &quot;pbkdf2&quot;,
+      &quot;kdfparams&quot;: {
+        &quot;c&quot;: 10240,
+        &quot;dklen&quot;: 32,
+        &quot;prf&quot;: &quot;hmac-sha256&quot;,
+        &quot;salt&quot;: &quot;ddc325335cda5567a1719313e73b4842511f3e4a837c9658eeb78e51ebe8c815&quot;
+      },
+      &quot;mac&quot;: &quot;3dc888ae79cbb226ff9c455669f6cf2d79be72120f2298f6cb0d444fddc0aa3d&quot;
+    },
+    &quot;id&quot;: &quot;6a186c80-7797-cff2-bc2e-7c1d6a6cc76e&quot;,
+    &quot;meta&quot;: &quot;{\&quot;passwordHint\&quot;:\&quot;parity-export-test\&quot;,\&quot;timestamp\&quot;:1490017814987}&quot;,
+    &quot;name&quot;: &quot;parity-export-test&quot;,
+    &quot;version&quot;: 3
+  }
+}
+</code></p>
+
+<hr>
+<h3 id='parity_importgethaccounts'>parity_importGethAccounts</h3>
+<p>Imports a list of accounts from Geth.</p>
+<h4 id='parameters-6'>Parameters</h4>
+<ol>
+<li><code>Array</code> - List of the Geth addresses to import.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="p">[</span><span class="s2">"0x407d73d8a49eeb85d32cf465507dd71d507100c1"</span><span class="p">]</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-6'>Returns</h4>
+<ul>
+<li><code>Array</code> - Array of the imported addresses.</li>
+</ul>
+<h4 id='example-6'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_importGethAccounts&quot;,&quot;params&quot;:[[&quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;]],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: [&quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;]
+}
+</code></p>
+
+<hr>
+<h3 id='parity_killaccount'>parity_killAccount</h3>
+<p>Deletes an account.</p>
+<h4 id='parameters-7'>Parameters</h4>
+<ol>
+<li><code>Address</code> - The account to remove.</li>
+<li><code>String</code> - Account password.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x407d73d8a49eeb85d32cf465507dd71d507100c1"</span><span class="p">,</span>
+  <span class="s2">"hunter2"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-7'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - <code>true</code> if the call was successful.</li>
+</ul>
+<h4 id='example-7'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_killAccount&quot;,&quot;params&quot;:[&quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;,&quot;hunter2&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_listgethaccounts'>parity_listGethAccounts</h3>
+<p>Returns a list of the accounts available from Geth.</p>
+<h4 id='parameters-8'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-8'>Returns</h4>
+<ul>
+<li><code>Array</code> - 20 Bytes addresses owned by the client.</li>
+</ul>
+<h4 id='example-8'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_listGethAccounts&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: [&quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;]
+}
+</code></p>
+
+<hr>
+<h3 id='parity_newaccountfromphrase'>parity_newAccountFromPhrase</h3>
+<p>Creates a new account from a recovery phrase.</p>
+<h4 id='parameters-9'>Parameters</h4>
+<ol>
+<li><code>String</code> - Recovery phrase.</li>
+<li><code>String</code> - Password.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"stylus outing overhand dime radial seducing harmless uselessly evasive tastiness eradicate imperfect"</span><span class="p">,</span>
+  <span class="s2">"hunter2"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-9'>Returns</h4>
+<ul>
+<li><code>Address</code> - The created address.</li>
+</ul>
+<h4 id='example-9'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_newAccountFromPhrase&quot;,&quot;params&quot;:[&quot;stylus outing overhand dime radial seducing harmless uselessly evasive tastiness eradicate imperfect&quot;,&quot;hunter2&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_newaccountfromsecret'>parity_newAccountFromSecret</h3>
+<p>Creates a new account from a private ethstore secret key.</p>
+<h4 id='parameters-10'>Parameters</h4>
+<ol>
+<li><code>Data</code> - Secret, 32-byte hex</li>
+<li><code>String</code> - Password</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x1db2c0cf57505d0f4a3d589414f0a0025ca97421d2cd596a9486bc7e2cd2bf8b"</span><span class="p">,</span>
+  <span class="s2">"hunter2"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-10'>Returns</h4>
+<ul>
+<li><code>Address</code> - The created address.</li>
+</ul>
+<h4 id='example-10'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_newAccountFromSecret&quot;,&quot;params&quot;:[&quot;0x1db2c0cf57505d0f4a3d589414f0a0025ca97421d2cd596a9486bc7e2cd2bf8b&quot;,&quot;hunter2&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_newaccountfromwallet'>parity_newAccountFromWallet</h3>
+<p>Creates a new account from a JSON import</p>
+<h4 id='parameters-11'>Parameters</h4>
+<ol>
+<li><code>String</code> - Wallet JSON encoded to a string.</li>
+<li><code>String</code> - Password.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"{\"id\": \"9c62e86b-3cf9...\", ...}"</span><span class="p">,</span>
+  <span class="s2">"hunter2"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-11'>Returns</h4>
+<ul>
+<li><code>Address</code> - The created address</li>
+</ul>
+<h4 id='example-11'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_newAccountFromWallet&quot;,&quot;params&quot;:[&quot;{\&quot;id\&quot;: \&quot;9c62e86b-3cf9...\&quot;, ...}&quot;,&quot;hunter2&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_removeaddress'>parity_removeAddress</h3>
+<p>Removes an address from the addressbook.</p>
+<h4 id='parameters-12'>Parameters</h4>
+<ol>
+<li><code>Address</code> - The address to remove.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span><span class="s2">"0x407d73d8a49eeb85d32cf465507dd71d507100c1"</span><span class="p">]</span>
+</code></pre><h4 id='returns-12'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - <code>true</code>if the call was successful.</li>
+</ul>
+<h4 id='example-12'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_removeAddress&quot;,&quot;params&quot;:[&quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_setaccountmeta'>parity_setAccountMeta</h3>
+<p>Sets metadata for the account</p>
+<h4 id='parameters-13'>Parameters</h4>
+<ol>
+<li><code>Address</code> - Address</li>
+<li><code>String</code> - Metadata (JSON encoded)</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x407d73d8a49eeb85d32cf465507dd71d507100c1"</span><span class="p">,</span>
+  <span class="s2">"{\"foo\":\"bar\"}"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-13'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - <code>true</code> if the call was successful.</li>
+</ul>
+<h4 id='example-13'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_setAccountMeta&quot;,&quot;params&quot;:[&quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;,&quot;{\&quot;foo\&quot;:\&quot;bar\&quot;}&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_setaccountname'>parity_setAccountName</h3>
+<p>Sets a name for the account</p>
+<h4 id='parameters-14'>Parameters</h4>
+<ol>
+<li><code>Address</code> - Address</li>
+<li><code>String</code> - Name</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x407d73d8a49eeb85d32cf465507dd71d507100c1"</span><span class="p">,</span>
+  <span class="s2">"Foobar"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-14'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - <code>true</code> if the call was successful.</li>
+</ul>
+<h4 id='example-14'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_setAccountName&quot;,&quot;params&quot;:[&quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;,&quot;Foobar&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_testpassword'>parity_testPassword</h3>
+<p>Checks if a given password can unlock a given account, without actually unlocking it.</p>
+<h4 id='parameters-15'>Parameters</h4>
+<ol>
+<li><code>Address</code> - Account to test.</li>
+<li><code>String</code> - Password to test.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x407d73d8a49eeb85d32cf465507dd71d507100c1"</span><span class="p">,</span>
+  <span class="s2">"hunter2"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-15'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - <code>true</code> if the account and password are valid.</li>
+</ul>
+<h4 id='example-15'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_testPassword&quot;,&quot;params&quot;:[&quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;,&quot;hunter2&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>

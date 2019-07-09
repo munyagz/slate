@@ -1,0 +1,19 @@
+<p>The Parity Ethereum wallet supports any ERC20-compliant <a href="Tokens.md">token</a> by displaying balances and enabling transfers to be as simple as Ether transactions. The <a href="https://github.com/ethereum/EIPs/issues/20">ERC20-token standard</a> basically describes which standard functions each token contract should implement to be ERC20-compliant. Those will allow DApps and wallets to handle tokens across multiple interfaces. The most important here are <code>transfer</code>, <code>balanceOf</code> and the <code>Transfer</code> event.</p>
+
+<p>Parity Ethereum enables you to configure and deploy your own token via the <strong>Token Deployment</strong> DApp. Navigate to Applications in your wallet and find the Token Deployment tool. If it&#39;s not displayed by default, use the <em>Edit</em> button on top to toggle visibility of displayed DApps.</p>
+
+<p><img src="/images/./images/dapps-tokendeploy-0.png" alt="dapps-tokendeploy-0" />
+<em>Figure: Transfer or deploy tokens with the <strong>Token Deployment</strong> DApp found in the built-in Parity applications.</em></p>
+
+<p><img src="/images/./images/dapps-tokendeploy-1.png" alt="dapps-tokendeploy-1" />
+<em>Figure: Let&#39;s create our own token, Teh Coin (TEH), with an initial supply of 100.</em></p>
+
+<p><img src="/images/./images/dapps-tokendeploy-2.png" alt="dapps-tokendeploy-2" />
+<em>Figure: And deploy it to the Ethereum blockchain.</em></p>
+
+<p><img src="/images/./images/dapps-tokendeploy-4.png" alt="dapps-tokendeploy-4" />
+<em>Figure: Once deployed, watch it on the Contracts tab.</em></p>
+
+<p>Deploying a new token is straight-forward with the Parity Ethereum wallet user interface. If you wish to deploy a token via RPC, grab the <code>BasicCoin.sol</code> <a href="https://github.com/parity-contracts/token-registry/blob/master/contracts/BasicCoin.sol">contract source code from GitHub</a>, compile and deploy it via the <strong>Contracts</strong> tab.</p>
+
+<p>Now, creating your own token is a nice thing to do. However, it would be nice if <em>all</em> Parity Ethereum users could see and use your token in the wallet by default. Therefore, we need to register our token with the <a href="Token-Registry.md">Token Registry</a> DApp.</p>

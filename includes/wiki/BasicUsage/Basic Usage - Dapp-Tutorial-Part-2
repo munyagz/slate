@@ -1,0 +1,183 @@
+<p>title: DApp Tutorial</p>
+
+<p><strong>This is the second part of the Dapp Tutorial.</strong> We assume you&#39;re familiar with the content of the past chapter.</p>
+
+<p><a href="Tutorial-Part-1.md">⟵ 1st Part</a> | <a href="Tutorial-Part-3.md">3rd Part ⟶</a></p>
+<h2 id='oo7-bonds'>oo7 Bonds</h2>
+<p>Now we have our basic dapp harness, we can start introducing more interesting functionality. Without too much ado, let&#39;s get started. Head in to <code>src/client/scripts/app.jsx</code>. You&#39;ll see our basic file:</p>
+<pre class="highlight jsx tab-jsx"><code><span class="kr">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s1">'react'</span><span class="p">;</span>
+
+<span class="kr">export</span> <span class="kr">class</span> <span class="nx">App</span> <span class="kr">extends</span> <span class="nx">React</span><span class="p">.</span><span class="nx">Component</span> <span class="p">{</span>
+    <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>Hello world!<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+<p>This is a <a href="https://facebook.github.io/jsx/">JSX</a> file. Basically, that means it can handle embedded HTML (well, a dialect of XHTML, to be more exact) when describing how React components should be rendered. If this is all new to you, you might want to <a href="http://www.hackingwithreact.com/read/1/3/introduction-to-jsx">familiarise yourself with the technology</a>. For now, I&#39;ll assume you either know or don&#39;t care.</p>
+<h3 id='1-your-first-bond'>1. Your first <code>Bond</code></h3>
+<p>The first thing we&#39;ll do is introduce the <a href="https://github.com/paritytech/oo7">oo7 library</a>. This introduces into Javascript the notion of reactive values known as &quot;bonds&quot;. <a href="https://en.wikipedia.org/wiki/Reactive_programming">Reactive values</a> are similar to normal &quot;variables&quot;, except that any places in which they are used will automatically update themselves as the value changes. They can be <code>map</code>ped and composed into arbitrarily complex expressions and then placed in UI components to create an effortlessly dynamic UI.</p>
+
+<p>The oo7 package is still very much in development, as such there might be one or two rough edges in this tutorial. Mea culpa. Ensure you are running with the very latest packages. If you still have trouble, come find me <a href="https://gitter.im/paritytech/parity">on gitter</a> :-)</p>
+
+<p><strong>Our first example will just demonstrate how <code>Bond</code>s can introduce effortless reactivity by dynamically replicating the contents of an editable text field into a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span"><code>&lt;span&gt;</code></a>.</strong></p>
+
+<p>Import the needed components by placing three lines at the top of <code>app.jsx</code>:</p>
+<pre class="highlight jsx tab-jsx"><code><span class="kr">import</span> <span class="p">{</span><span class="nx">Bond</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">'oo7'</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">Rspan</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">'oo7-react'</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">InputBond</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">'parity-reactive-ui'</span><span class="p">;</span>
+</code></pre>
+<p>Next, we need to introduce a new instance of a <code>Bond</code>. It will represent the current contents of a text field. We will initialise it in our class&#39;s constructor. Insert these lines directly into the <code>App</code> class declaration.</p>
+<pre class="highlight jsx tab-jsx"><code><span class="nx">constructor</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kr">super</span><span class="p">();</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">bond</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Bond</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre>
+<p>Your code should now look like this:</p>
+<pre class="highlight jsx tab-jsx"><code><span class="kr">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s1">'react'</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">Bond</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">'oo7'</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">Rspan</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">'oo7-react'</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">InputBond</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">'parity-reactive-ui'</span><span class="p">;</span>
+
+<span class="kr">export</span> <span class="kr">class</span> <span class="nx">App</span> <span class="kr">extends</span> <span class="nx">React</span><span class="p">.</span><span class="nx">Component</span> <span class="p">{</span>
+    <span class="nx">constructor</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kr">super</span><span class="p">();</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">bond</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Bond</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>Hello world!<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+<p>Next we need to create the text entry field and the  <code>&lt;span&gt;</code> element (in which the text field&#39;s contents will be reflected). We will use a version of Semantic UI&#39;s <code>Input</code> element which has been specially modified to propagate the value into a named <code>Bond</code>. This is called <code>InputBond</code>. Similarly, for the <code>&lt;span&gt;</code>, we&#39;ll use a special &quot;reactive&quot; version of the <code>span</code> element which is able to accept <code>Bond</code>s as children and values of certain properties; this is known as <code>Rspan</code>. We imported both before.</p>
+
+<p>Change the <code>&lt;div&gt;Hello world&lt;/div&gt;</code> line to:</p>
+<pre class="highlight jsx tab-jsx"><code><span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+    <span class="p">&lt;</span><span class="nc">InputBond</span> <span class="na">bond=</span><span class="si">{</span><span class="k">this</span><span class="p">.</span><span class="nx">bond</span><span class="si">}</span> <span class="na">placeholder=</span><span class="s2">"Go ahead and type some text"</span><span class="p">/&gt;</span>
+    <span class="p">&lt;</span><span class="nc">Rspan</span><span class="p">&gt;</span><span class="si">{</span><span class="k">this</span><span class="p">.</span><span class="nx">bond</span><span class="si">}</span><span class="p">&lt;/</span><span class="nc">Rspan</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="err">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</code></pre>
+<p>As you see there&#39;s not all that much here. We just tell the text field input <code>InputBond</code> to place its value into <code>this.bond</code> and conversely tell <code>Rspan</code> to display that value from <code>this.bond</code>.</p>
+
+<p>Run Webpack and let it watch your files to ensure your dapp is continuously rebuilt. We have defined an alias for you to do this:</p>
+<pre class="highlight sh tab-shell"><code>npm start
+</code></pre>
+<p>If that doesn&#39;t work due to port conflicts try:</p>
+<pre class="highlight sh tab-shell"><code>webpack --watch
+</code></pre>
+<p>Reloading our dapp page in the Parity Wallet will give a simple form; select the text field and type something. Whatever you type, you will see it reflected in the <code>&lt;Rspan&gt;</code> element next door:</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/22694357/e9eae790-ed14-11e6-898b-932b56847a18.png" alt="image" /></p>
+<h3 id='2-transforming-bonds'>2. Transforming <code>Bond</code>s</h3>
+<p><strong><code>Bond</code>s don&#39;t just have to pass on data; they can also represent transformations on the data.</strong> One example of a transform on text would be simple upper-casing. A function to upper-case text would be <code>text =&gt; text.toUpperCase()</code>. We can <code>map</code> our Bond with this function, making the <code>&lt;Rspan&gt;</code> display the upper case of whatever we type into the field:</p>
+<pre class="highlight jsx tab-jsx"><code><span class="o">&lt;</span><span class="nx">Rspan</span><span class="o">&gt;</span><span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">bond</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">t</span> <span class="o">=&gt;</span> <span class="nx">t</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">())}&lt;</span><span class="err">/</span><span class="nc">Rspan</span><span class="p">&gt;</span>
+</code></pre>
+<p>Reload and play around:</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/22694526/9f1bf442-ed15-11e6-9e46-f3752f479b76.png" alt="image" /></p>
+<h3 id='3-reusing-bonds'>3. Reusing <code>Bond</code>s</h3>
+<p>Right now we just have a single &quot;user&quot; of our <code>this.bond</code>, but actually <code>Bond</code>s can be used and reused as much as you want. Let&#39;s use <code>this.bond</code> to create a style for our <code>&lt;Rspan&gt;</code> in order to introduce colour depending on the text we have entered. Our <code>&lt;Rspan&gt;</code> will have a red colour if we have entered a simple number, and black in all other cases.</p>
+
+<p>Replace your <code>&lt;Rspan&gt;</code> line with:</p>
+<pre class="highlight jsx tab-jsx"><code><span class="o">&lt;</span><span class="nx">Rspan</span> <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">bond</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">t</span> <span class="o">=&gt;</span> <span class="nx">t</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/^</span><span class="se">[</span><span class="sr">0-9</span><span class="se">]</span><span class="sr">+$/</span><span class="p">)</span> <span class="p">?</span> <span class="p">{</span><span class="na">color</span><span class="p">:</span> <span class="s1">'red'</span><span class="p">}</span> <span class="p">:</span> <span class="p">{</span><span class="na">color</span><span class="p">:</span> <span class="s1">'black'</span><span class="p">})}</span><span class="o">&gt;</span>
+    <span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">bond</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">t</span> <span class="o">=&gt;</span> <span class="nx">t</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">())}</span>
+<span class="p">&lt;</span><span class="err">/</span><span class="nc">Rspan</span><span class="p">&gt;</span>
+</code></pre>
+<p>The code is fairly simple: To get the <code>style</code> of the <code>&lt;Rspan&gt;</code>, we <code>map</code> our <code>this.bond</code> to one of <code>{color: &#39;red&#39;}</code> or <code>{color: &#39;black&#39;}</code> depending on whether it matches the regular expression <code>/^[0-9]+$/</code>.</p>
+
+<p>Our bond is now being used twice in two different mappings, but all works as you would expect:</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/22694918/fa77761c-ed16-11e6-9d18-7431c79eceb3.png" alt="image" /></p>
+
+<p>While the above might have been clear <em>enough</em>, the astute reader might have wondered if perhaps there was a way of <a href="https://en.wikipedia.org/wiki/Don%27t_repeat_yourself">DRY</a>ing the <code>{color: ...}</code>, changing this:</p>
+<pre class="highlight javascript"><code><span class="k">this</span><span class="p">.</span><span class="nx">bond</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">t</span> <span class="o">=&gt;</span> <span class="nx">t</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/^</span><span class="se">[</span><span class="sr">0-9</span><span class="se">]</span><span class="sr">+$/</span><span class="p">)</span> <span class="p">?</span> <span class="p">{</span><span class="na">color</span><span class="p">:</span> <span class="s1">'red'</span><span class="p">}</span> <span class="p">:</span> <span class="p">{</span><span class="na">color</span><span class="p">:</span> <span class="s1">'black'</span><span class="p">})</span>
+</code></pre>
+<p>...into this:</p>
+<pre class="highlight javascript"><code><span class="p">{</span><span class="nl">color</span><span class="p">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">bond</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">t</span> <span class="o">=&gt;</span> <span class="nx">t</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/^</span><span class="se">[</span><span class="sr">0-9</span><span class="se">]</span><span class="sr">+$/</span><span class="p">)</span> <span class="p">?</span> <span class="s1">'red'</span> <span class="p">:</span> <span class="s1">'black'</span><span class="p">)}</span>
+</code></pre>
+<p>The two are rather different, of course. Whereas the former is undeniably a <code>Bond</code>, the latter is a simple object which happens to have a <code>Bond</code> as one of its values. In fact, the latter does work. <strong>For convenience, reactive values are able to be recognised not just directly, but also when they are within Arrays or the values of Object fields.</strong> For efficiency, this only work up to one level deep. Any which are further into the object structure will be ignored (however there are APIs for altering how deep you wish <code>Bond</code>s to be recognised).</p>
+<h3 id='4-combining-bonds'>4. Combining <code>Bond</code>s</h3>
+<p>So far we have only used a single <code>Bond</code> for marking up our <code>&lt;Rspan&gt;</code>. What if we want to use several? That works, too.</p>
+
+<p>We could initialise another <code>Bond</code> in the constructor, make another <code>InputBond</code> input field and use them both in the <code>span</code> contents, but that would be a bit samey. Instead, we&#39;ll use one of the built-in <code>Bond</code>s: the <code>TimeBond</code>.</p>
+
+<p>To begin, import <code>TimeBond</code> from <code>oo7</code>, alongside <code>Bond</code>:</p>
+<pre class="highlight jsx tab-jsx"><code><span class="kr">import</span> <span class="p">{</span><span class="nx">Bond</span><span class="p">,</span> <span class="nx">TimeBond</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">'oo7'</span><span class="p">;</span>
+</code></pre>
+<p>Then introduce it in the constructor:</p>
+<pre class="highlight jsx tab-jsx"><code><span class="nx">constructor</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kr">super</span><span class="p">();</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">bond</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Bond</span><span class="p">();</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">time</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TimeBond</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre>
+<p>Finally, let&#39;s use it in our <code>&lt;Rspan&gt;</code>. There are several ways of combining the values of multiple <code>Bond</code>s into a single expression. For now we&#39;ll use the simplest: <code>Bond.all</code>. This function allows you to provide a number of expressions and will evaluate to an array of all such expressions. This means that <code>Bond.all([this.bond, this.time])</code> will be a <em>composite</em> <code>Bond</code>, whose value is a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/array">JS array</a>, the first item being the contents of our text field and the second being the time (as a number).</p>
+
+<p>Try it. Replace the <code>&lt;Rspan&gt;</code> with this new one:</p>
+
+<p>{% raw %}
+<code>jsx
+&lt;Rspan style={{ color: this.bond.map(t =&gt; t.match(/^[0-9]+$/) ? &#39;red&#39; : &#39;black&#39;) }}&gt;
+    {Bond.all([this.bond, this.time])}
+&lt;/Rspan&gt;
+</code>
+{% endraw %}</p>
+
+<p>Type an appropriate message and you&#39;ll end up with:</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/22697591/e779b292-ed1f-11e6-8beb-2ff654e6ac02.png" alt="image" /></p>
+
+<p>It will automatically update as the time changes. Since time changes infinitely fast, a speed which would be expensive to try to process, we take a pragmatic solution and only update the <code>TimeBond</code> once per second.</p>
+
+<p>We can make it slightly nicer by first formatting the time:</p>
+
+<p>{% raw %}
+<code>jsx
+&lt;Rspan style={{ color: this.bond.map(t =&gt; t.match(/^[0-9]+$/) ? &#39;red&#39; : &#39;black&#39;) }}&gt;
+    {Bond.all([this.bond, this.time]).map(([msg, t]) =&gt; `${new Date(t)}: ${msg}`)}
+&lt;/Rspan&gt;
+</code>
+{% endraw %}</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/22697729/62243e2c-ed20-11e6-931a-1693dd865837.png" alt="image" /></p>
+
+<p>In order to make the code more readable, we&#39;re going to pull out the color processing and the time formatting into separate functions. Our code looks like this now:</p>
+<pre class="highlight javascript"><code><span class="kr">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s1">'react'</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">Bond</span><span class="p">,</span> <span class="nx">TimeBond</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">'oo7'</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">Rspan</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">'oo7-react'</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">InputBond</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">'parity-reactive-ui'</span><span class="p">;</span>
+
+<span class="kr">const</span> <span class="nx">computeColor</span> <span class="o">=</span> <span class="nx">t</span> <span class="o">=&gt;</span> <span class="nx">t</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/^</span><span class="se">[</span><span class="sr">0-9</span><span class="se">]</span><span class="sr">+$/</span><span class="p">)</span> <span class="p">?</span> <span class="p">{</span><span class="na">color</span><span class="p">:</span> <span class="s1">'red'</span><span class="p">}</span> <span class="p">:</span> <span class="p">{</span><span class="na">color</span><span class="p">:</span> <span class="s1">'black'</span><span class="p">}</span>
+<span class="kr">const</span> <span class="nx">format</span> <span class="o">=</span> <span class="p">([</span><span class="nx">msg</span><span class="p">,</span> <span class="nx">t</span><span class="p">])</span> <span class="o">=&gt;</span> <span class="s2">`</span><span class="p">${</span><span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="nx">t</span><span class="p">)}</span><span class="s2">: </span><span class="p">${</span><span class="nx">msg</span><span class="p">}</span><span class="s2">`</span>
+
+<span class="kr">export</span> <span class="kr">class</span> <span class="nx">App</span> <span class="kr">extends</span> <span class="nx">React</span><span class="p">.</span><span class="nx">Component</span> <span class="p">{</span>
+    <span class="nx">constructor</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kr">super</span><span class="p">();</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">bond</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Bond</span><span class="p">();</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">time</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TimeBond</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+                <span class="o">&lt;</span><span class="nx">InputBond</span>
+                    <span class="nx">bond</span><span class="o">=</span><span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">bond</span><span class="p">}</span>
+                    <span class="nx">placeholder</span><span class="o">=</span><span class="s2">"Go ahead and type some text"</span>
+                <span class="sr">/</span><span class="err">&gt;
+</span>                <span class="o">&lt;</span><span class="nx">Rspan</span>
+                    <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">bond</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">computeColor</span><span class="p">)}</span>
+                <span class="o">&gt;</span>
+                    <span class="p">{</span><span class="nx">Bond</span><span class="p">.</span><span class="nx">all</span><span class="p">([</span><span class="k">this</span><span class="p">.</span><span class="nx">bond</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">time</span><span class="p">]).</span><span class="nx">map</span><span class="p">(</span><span class="nx">format</span><span class="p">)}</span>
+                <span class="o">&lt;</span><span class="sr">/Rspan</span><span class="err">&gt;
+</span>            <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>        <span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+<p>That should have given you a good introduction to the concept of the <code>Bond</code> and how it can be used within simple React objects. Next up we&#39;ll look at the Parity Universal Bond API.</p>
+
+<hr>
+
+<p><a href="Tutorial-Part-3.md">3rd Part ⟶</a></p>

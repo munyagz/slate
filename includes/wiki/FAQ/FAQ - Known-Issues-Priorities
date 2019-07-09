@@ -1,0 +1,51 @@
+<h1 id='faq'>FAQ</h1>
+<p>This could become some kind of a rough roadmap document if well discussed and continuously maintained. If not stated otherwise, everything is sorted by priority in this document (descending). </p>
+
+<ul>
+<li>If this list is ever exhausted, there is also the automatically generated priority list here: <a href="https://5chdn.co/parity/priority.html">5chdn.co/parity</a>. </li>
+<li>The 1.11 release tracker issue can be found here: <a href="https://github.com/paritytech/parity-ethereum/issues/8190">#8190</a>.</li>
+</ul>
+<h2 id='painful-bugs-and-real-annoyances'>Painful Bugs and Real Annoyances</h2>
+<p>Trying to prioritize stuff here. While bridging the gap to a stable light client, we should definitely look into <em>low-hanging</em> fruits to optimize snapshot- and even full-synchronization.</p>
+<h3 id='1-warp-sync-snapshotting'>1. Warp Sync / Snapshotting</h3>
+<ul>
+<li>[ ] 1. <a href="https://github.com/paritytech/parity-ethereum/issues/6350">#6350</a> A warp-restore should not reset the database. Keep blocks that are in DB already. Re-downloading them is a huge, unnecessary overhead for nodes and bandwidth. After warp sync, the ancient block download should check the DB for existing blocks, not only <em>ancient</em> blocks. </li>
+<li>[ ] 2. <a href="https://github.com/paritytech/parity-ethereum/issues/7862">#7862</a> In addition to blockchain synchronization, the Parity client should also synchronize snapshots. Clients that are still able to generate snapshots should tell other nodes about their snapshot (height, size, etc.) and encourage them to store a copy of the snapshot along with the blockchain. This will help with snapshot distribution in the network.</li>
+<li>[ ] 3. <a href="https://github.com/paritytech/parity-ethereum/issues/7863">#7863</a> Fast-pruned nodes should be able to generate snapshots before the history required for the snapshot is pruned away. One idea would be to disable the pruning during snapshotting and continue pruning once the snapshot is available.</li>
+<li>[x] 4. <a href="https://github.com/paritytech/parity-ethereum/issues/6415">#6415</a> Try not to abort a snapshot sync if the client restarts. After a restart, try to see if a warp was in progress and if the partial snapshot is reusable and if there are still clients available serving this snapshot.</li>
+<li>[ ] 5. <a href="https://github.com/paritytech/parity-ethereum/issues/7436">#7436</a> Look into why snapshotting fails on nodes with low memory. We won&#39;t be able to produce snapshots with OverlayRecent pruning; we should look into enabling a different pruning algorithm that does not require keeping recent states in memory.</li>
+<li>[ ] 6. <a href="https://github.com/paritytech/parity-ethereum/issues/7177">#7177</a> Figure out why fast sync sometimes just stops in the middle. This is probably obsolete if we address the first 3 points in this list.</li>
+<li>[ ] 7. <a href="https://github.com/paritytech/parity-ethereum/issues/7008">#7008</a> Figure out why ancient-blocks download sometimes stalls. Ancient blocks are important to serve the network as a full node.</li>
+<li>[ ] 8. <a href="https://github.com/paritytech/parity-ethereum/issues/8565">#8565</a> We want to investigate new snapshot formats.</li>
+<li>[ ] 9. <a href="https://github.com/paritytech/parity-ethereum/issues/6956">#6956</a> Provide RPC health status indicator for ancient blocks in addition to sync status.</li>
+</ul>
+<h3 id='2-full-sync-full-node-performance'>2. Full Sync / Full Node Performance</h3>
+<ul>
+<li>[ ] 0. <a href="https://github.com/paritytech/parity-ethereum/issues/7967">#7967</a> Significantly reduce Archive Node size.</li>
+<li>[x] 1. <a href="https://github.com/paritytech/parity-ethereum/issues/7272">#7272</a> Auto-update should be randomly delayed. This is a critical issue because this could cause the whole network (esp. Kovan) to go down once the update was triggered.</li>
+<li>[ ] 2. <a href="https://github.com/paritytech/parity-ethereum/issues/7865">#7865</a> Let&#39;s get ParityDB integration done.</li>
+<li>[ ] 3. <a href="https://github.com/paritytech/parity-ethereum/issues/6593">#6593</a> Synchronization should never get stuck.</li>
+<li>[ ] 4. <a href="https://github.com/paritytech/parity-ethereum/issues/7114">#7114</a> Figure out why sync sometimes stalls.</li>
+<li>[ ] 5. <a href="https://github.com/paritytech/parity-ethereum/issues/3081">#3081</a> Fix this archive-node memory leak.</li>
+</ul>
+<h3 id='3-light-sync-light-client'>3. Light Sync / Light Client</h3>
+<ul>
+<li>[ ] 1. <a href="https://github.com/paritytech/parity-ethereum/issues/6319">#6319</a> It&#39;s currently close to impossible to synchronize a light client. We need to figure out why this happens and fix this.</li>
+<li>[x] 2. <a href="https://github.com/paritytech/parity-ethereum/issues/5642">#5642</a> Allow light-sync for Kovan/PoA networks.</li>
+<li>[ ] 3. <a href="https://github.com/paritytech/parity-ethereum/issues/6202">#6202</a> Enable RPCs for light clients similar to those available in a full node. This will be the ground-work for the light wallet (new UI).</li>
+<li>[ ] 4. <a href="https://github.com/paritytech/parity-ethereum/issues/6010">#6010</a> Allow warp-syncing of light clients.</li>
+<li>[x] 5. <a href="https://github.com/paritytech/parity-ethereum/issues/7263">#7263</a> Allow syncing the light client from a trusted block hash.</li>
+<li>[x] 6. <a href="https://github.com/paritytech/parity-ethereum/issues/6402">#6402</a> Light sync issue with stage-3 block verification failed (InvalidDifficulty).</li>
+<li>[ ] 7. <a href="https://github.com/paritytech/parity-ethereum/issues/7116">#7116</a> Consider allowing to fetch full-blocks on demand.</li>
+<li>[ ] 8. <a href="https://github.com/paritytech/parity-ethereum/issues/6155">#6155</a> Differentiate between manual throw and natural gas exhaustion.</li>
+<li>[ ] 9. Consider serving LES peers. Also, discuss if LES light-serving peers (Geth) provide any useful data for PIP light clients (Parity). In general, we should discuss and use similarities between LES and PIP to strengthen the light network.</li>
+<li>See also <a href="https://github.com/paritytech/parity-ethereum/projects/2">Light Client Board</a>.</li>
+</ul>
+<h2 id='long-overdue-features'>Long Overdue Features</h2>
+<ul>
+<li>[ ] 0. <a href="https://github.com/paritytech/parity-ethereum/issues/8649">#8649</a> Make Parity a node-only client.</li>
+<li>[ ] 1. <a href="https://github.com/paritytech/parity-ethereum/issues/7531">#7531</a> Fix the damn peering issues once and for all.</li>
+<li>[ ] 2. <a href="https://github.com/paritytech/parity-ethereum/issues/7162">#7162</a> Casper FFG proof-of-stake engine and testnet support.</li>
+<li>[ ] 3. A basic light wallet for users to send and receive tokens.</li>
+<li>[x] 4. <a href="https://github.com/paritytech/parity-ethereum/issues/4228">#4228</a> <em>A modern Parity.</em> :)</li>
+</ul>

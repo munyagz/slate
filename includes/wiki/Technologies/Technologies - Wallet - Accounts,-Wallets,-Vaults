@@ -1,0 +1,52 @@
+<p>The parity wallet offers multiple options to store tokens and Ether.</p>
+<h3 id='accounts'>Accounts</h3>
+<p>Accounts are the most <strong>basic way to store assets</strong>. They consist of simple public/private key-pairs, which are used to sign transactions, enable authentication, and prove ownership.</p>
+
+<p><img src="/images/accounts-0.png" alt="accounts-0" /></p>
+
+<p>To create an account with the <a href="Parity-Wallet">Parity Wallet</a>, open the <em>Accounts</em> tab, click the <code>+ACCOUNT</code> button, and follow the instructions. Make sure to write down your recovery phrase in a secure location and to create <a href="Backing-up-&amp;-Restoring">backups</a> of your private key after account creation.</p>
+<h3 id='wallets'>Wallets</h3>
+<p>Wallets are smart contracts which manage assets and can be owned by multiple accounts. Unlike accounts, contract wallets are controlled by code, which means that it is possible to customize their behavior. The most common use-case are <strong>multi-signature wallets</strong>, that allow for transaction logging, withdrawal limits, and rule-sets for signatures required.</p>
+
+<p>Parity only allows to watch wallets and interract with them (view and sign transactions, send funds..). It does not allow to create multi-sig wallets.
+To watch a multi-sig wallet within Parity UI, open the <em>Accounts</em> tab, click on the <code>+WALLET</code> button and select <em>Watch a Wallet</em>.</p>
+
+<p><img src="/images/account-wallet-0.jpg" alt="accounts-watch-wallet-0" /></p>
+
+<p>In a supplemental step, enter the wallet address provided upon deployement on the blockchain, you should chose a name and description.</p>
+
+<p><img src="/images/account-wallet-1.jpg" alt="accounts-watch-wallet-1" /></p>
+
+<p>The next step will show you an overview of the wallet parameters such as the owners, the numbre of needed signatures and the funds it contains. </p>
+
+<p><img src="/images/account-wallet-2.jpg" alt="accounts-watch-wallet-2" /></p>
+
+<p>Once done, the wallet will be visible in your accounts list on top of your normal accounts.</p>
+
+<p><img src="/images/account-wallet-3.jpg" alt="accounts-watch-wallet-3" /></p>
+
+<p>Opening the wallet reveals details about available balances and transactions, as well as pending confirmations for the multi-signature transactions.</p>
+
+<p><img src="/images/account-wallet-4.jpg" alt="accounts-watch-wallet-4" /></p>
+<h3 id='vaults'>Vaults</h3>
+<p>Vaults are an additional privacy feature to lock away your accounts behind a second layer of encryption. While your normal accounts are encrypted with your pass-phrase, their meta-data is accessible for all applications interacting with your wallet. Creating <strong>a vault encrypts the meta-data</strong> (e.g., the public address) and therefore hides the accounts until you unlock the vault.</p>
+
+<p><img src="/images/accounts-vault-0.png" alt="accounts-vault-0" /></p>
+
+<p>To create a new vault with the <a href="Parity-Wallet">Parity Wallet</a>, open the <em>Accounts</em> tab, click the <code>VAULT</code> button, click <code>+CREATE VAULT</code>, and follow the instructions.</p>
+
+<p><img src="/images/accounts-vault-1.png" alt="accounts-vault-1" /></p>
+
+<p>After creating a vault, click open it, click on <em>Accounts</em>, select the accounts which should be moved into the vault, and confirm with <em>Set</em>.</p>
+
+<p><img src="/images/accounts-vault-2.png" alt="accounts-vault-2" /></p>
+
+<p>Once moved into the vault, the addresses are encrypted and not stored as plain text on your disk anymore.</p>
+
+<p><img src="/images/accounts-vault-3.png" alt="accounts-vault-3" /></p>
+
+<p><img src="/images/accounts-vault-4.png" alt="accounts-vault-4" /></p>
+
+<p>Closing a vault hides all accounts from your public accounts tab.</p>
+
+<p><img src="/images/accounts-9.png" alt="accounts-9" /></p>

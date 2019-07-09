@@ -1,0 +1,91 @@
+<p><strong>This is the sixth part of the Dapp Tutorial.</strong> We assume you&#39;re familiar with the content of the past chapters.</p>
+
+<p><a href="Tutorial-Part-5.md">⟵ 5th Part</a> | <a href="Tutorial-Part-7.md">7th Part ⟶</a></p>
+
+<hr>
+<h2 id='a-new-contract'>A New Contract</h2>
+<p>So far we have inspected with the Parity Registry contract by calling some of its constant functions, but we haven&#39;t really explored the realm of contracts in general. In this tutorial, we will create an entirely new contract, deploy it and interact with it.</p>
+
+<p>In Ethereum, contracts are computer programs which live on the blockchain. By sending a transaction to an address of a deployed contract, you cause the contract (or some portion thereof) to execute. Contracts are allowed to store data between successive transactions, allowing you to integrate more or less any logic you can imagine into a trust-free environment.</p>
+
+<p>We will start with a very basic contract. It will count votes over a number of options (which we will just identify with numbers). It will avoid double-counting by allowing each Ethereum identity to vote at most once.</p>
+
+<p>Here is the contract code, written in Solidity:</p>
+<pre class="highlight plaintext"><code>contract Counter {
+    event Voted(address indexed who, uint indexed option);
+
+    function vote(uint _option) {
+        if (hasVoted[msg.sender]) throw;
+        votes[_option]++;
+        hasVoted[msg.sender] = true;
+        Voted(msg.sender, _option);
+    }
+
+    mapping (uint =&gt; uint) public votes;
+    mapping (address =&gt; bool) public hasVoted;
+}
+</code></pre>
+<p>You can compile it within Parity UI by going to the <em>&#39;Develop Contracts&#39;</em> dapp and navigating to the <em>&#39;Develop&#39;</em> tab. After compiling your contract, you&#39;ll end up with two things: the EVM initialisation byte-code and the contract&#39;s ABI. For now we will assume the contract is already deployed: this can be done on that same dapp by using the &quot;Deploy&quot; function.</p>
+
+<p>Once you&#39;ve deployed the contract, you&#39;ll be given an address for where the contract resides on the blockchain. In my case, it&#39;s at <code>0x7aC77Cb854E064f22E747F40b90FE6D6Bc1e3197</code> and looks like this:</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/24465867/014d519a-14af-11e7-83f1-f39fa46a898a.png" alt="image" /></p>
+
+<p>In order to use the contract from our Javascript-based dapp, we&#39;ll need its interface. This is given in a piece of JSON known as the ABI definition, and is spat out by the compiler. Here is our contract&#39;s ABI definition:</p>
+<pre class="highlight javascript"><code><span class="p">[</span>
+    <span class="p">{</span><span class="s2">"constant"</span><span class="p">:</span><span class="kc">false</span><span class="p">,</span><span class="s2">"inputs"</span><span class="p">:[{</span><span class="s2">"name"</span><span class="p">:</span><span class="s2">"_option"</span><span class="p">,</span><span class="s2">"type"</span><span class="p">:</span><span class="s2">"uint256"</span><span class="p">}],</span><span class="s2">"name"</span><span class="p">:</span><span class="s2">"vote"</span><span class="p">,</span><span class="s2">"outputs"</span><span class="p">:[],</span><span class="s2">"payable"</span><span class="p">:</span><span class="kc">false</span><span class="p">,</span><span class="s2">"type"</span><span class="p">:</span><span class="s2">"function"</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">"constant"</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span><span class="s2">"inputs"</span><span class="p">:[{</span><span class="s2">"name"</span><span class="p">:</span><span class="s2">""</span><span class="p">,</span><span class="s2">"type"</span><span class="p">:</span><span class="s2">"address"</span><span class="p">}],</span><span class="s2">"name"</span><span class="p">:</span><span class="s2">"hasVoted"</span><span class="p">,</span><span class="s2">"outputs"</span><span class="p">:[{</span><span class="s2">"name"</span><span class="p">:</span><span class="s2">""</span><span class="p">,</span><span class="s2">"type"</span><span class="p">:</span><span class="s2">"bool"</span><span class="p">}],</span><span class="s2">"payable"</span><span class="p">:</span><span class="kc">false</span><span class="p">,</span><span class="s2">"type"</span><span class="p">:</span><span class="s2">"function"</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">"constant"</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span><span class="s2">"inputs"</span><span class="p">:[{</span><span class="s2">"name"</span><span class="p">:</span><span class="s2">""</span><span class="p">,</span><span class="s2">"type"</span><span class="p">:</span><span class="s2">"uint256"</span><span class="p">}],</span><span class="s2">"name"</span><span class="p">:</span><span class="s2">"votes"</span><span class="p">,</span><span class="s2">"outputs"</span><span class="p">:[{</span><span class="s2">"name"</span><span class="p">:</span><span class="s2">""</span><span class="p">,</span><span class="s2">"type"</span><span class="p">:</span><span class="s2">"uint256"</span><span class="p">}],</span><span class="s2">"payable"</span><span class="p">:</span><span class="kc">false</span><span class="p">,</span><span class="s2">"type"</span><span class="p">:</span><span class="s2">"function"</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">"anonymous"</span><span class="p">:</span><span class="kc">false</span><span class="p">,</span><span class="s2">"inputs"</span><span class="p">:[{</span><span class="s2">"indexed"</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span><span class="s2">"name"</span><span class="p">:</span><span class="s2">"who"</span><span class="p">,</span><span class="s2">"type"</span><span class="p">:</span><span class="s2">"address"</span><span class="p">},{</span><span class="s2">"indexed"</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span><span class="s2">"name"</span><span class="p">:</span><span class="s2">"option"</span><span class="p">,</span><span class="s2">"type"</span><span class="p">:</span><span class="s2">"uint256"</span><span class="p">}],</span><span class="s2">"name"</span><span class="p">:</span><span class="s2">"Voted"</span><span class="p">,</span><span class="s2">"type"</span><span class="p">:</span><span class="s2">"event"</span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre>
+<p>Together with the address of where it is deployed, this will allow us to interact with it.</p>
+<h3 id='1-back-to-dapp'>1. Back to Dapp</h3>
+<p>In order to interact with a deployed contract, we first need to create a local Javascript object which represents that contract. This will let us inspect it (much like we did the registry previously) and also interact in a way that actually changes its state. We have the <code>bonds.makeContract</code> function in <code>bonds</code>, which takes the address and ABI definition and returns the corresponding <code>Bond</code>-based contract object.</p>
+
+<p>First we will place our ABI definition in a constant:</p>
+<pre class="highlight javascript"><code><span class="kr">const</span> <span class="nx">CounterABI</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">"constant"</span><span class="p">:</span><span class="kc">false</span><span class="p">,</span><span class="cm">/*...*/</span><span class="p">,</span><span class="s2">"type"</span><span class="p">:</span><span class="s2">"event"</span><span class="p">}];</span>
+</code></pre>
+<p>(I elided most of it for brevity; you&#39;ll need to actually put the full JSON object there.)</p>
+
+<p>Within the context of voting, we will dictate that there are three useful options, signifying the options red, green and blue:</p>
+<pre class="highlight javascript"><code><span class="kr">const</span> <span class="nx">Options</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'Red'</span><span class="p">,</span> <span class="s1">'Green'</span><span class="p">,</span> <span class="s1">'Blue'</span><span class="p">];</span>
+</code></pre>
+<p>Next we&#39;ll create a <code>Counter</code> object from this ABI and the address where we can find it deployed. Clear out your constructor and ensure that (aside from <code>super();</code>) this is the only line there:</p>
+<pre class="highlight javascript"><code><span class="k">this</span><span class="p">.</span><span class="nx">counter</span> <span class="o">=</span> <span class="nx">bonds</span><span class="p">.</span><span class="nx">makeContract</span><span class="p">(</span><span class="s1">'0x7aC77Cb854E064f22E747F40b90FE6D6Bc1e3197'</span><span class="p">,</span> <span class="nx">CounterABI</span><span class="p">);</span>
+</code></pre>
+<p><code>this.counter</code> is a Javascript object that includes four functions corresponding to the four linguistic items in our contract: the <code>vote</code> function, the <code>Voted</code> event and the two fields <code>votes</code> and <code>hasVoted</code>.</p>
+
+<p>Our render function will just use three <code>&lt;div&gt;</code>s of different width to display the number of votes:</p>
+
+<p>{% raw %}
+<code>
+render () {
+    return (&lt;div&gt;
+        {Options.map((n, i) =&gt; (&lt;div key={i}&gt;
+            &lt;Rspan style={{
+                borderLeft: this.counter
+                    .votes(i)
+                    .map(v =&gt; `${1 + v * 10}px black solid`)
+            }}&gt;
+                &lt;span style={{float: &#39;left&#39;, minWidth: &#39;3em&#39;}}&gt;
+                    {n}
+                &lt;/span&gt;
+            &lt;/Rspan&gt;
+        &lt;/div&gt;))}
+    &lt;/div&gt;);
+}
+</code>
+{% endraw %}</p>
+
+<p>The only interesting code there is <code>this.counter.votes(i)</code>, which we map into a style string allowing us to generate a black bar of the according length.</p>
+
+<p>If you are using your own address, you won&#39;t see much other than the labels. If you&#39;re using mine (deployed on the Kovan testnet), then you&#39;ll probably see something like:</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/24588110/807cec58-17c2-11e7-8e08-610f972c63ed.png" alt="image" /></p>
+
+<p>Not exactly great, but it&#39;s a start. In the next part we&#39;ll implement the action of voting.</p>
+
+<hr>
+
+<p><a href="Tutorial-Part-7.md">7th Part ⟶</a></p>

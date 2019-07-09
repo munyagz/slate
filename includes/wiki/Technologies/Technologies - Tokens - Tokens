@@ -1,0 +1,23 @@
+<p>The native token of the Ethereum blockchain is called <em>Ether</em> (ETH). In addition to Ether, additional assets and tokens can be handled by the Ethereum blockchain. The Parity Ethereum wallet supports any <a href="https://github.com/ethereum/EIPs/issues/20">ERC20</a>-compliant token by displaying balances and enabling transfers to be as simple as Ether transactions.</p>
+
+<p>To get your first tokens, and learn how to use them, you can use the <strong>GavCoin</strong> DApp. Open the <strong>Applications</strong> tab, enable the network applications, and open GavCoin. If it&#39;s not displayed by default, make sure to confirm the usage warning for community DApps and use the <em>Edit</em> button on top to toggle visibility of displayed DApps.</p>
+
+<p><img src="/images/./images/dapps-gavcoin-0.png" alt="dapps-gavcoin-0" />
+<em>Figure: The GavCoin DApp provides you with GAV, a playful ERC20-compliant token.</em></p>
+
+<p><img src="/images/./images/dapps-gavcoin-2.png" alt="dapps-gavcoin-2" />
+<em>Figure: Let&#39;s buy 1 GAV with our account, and confirm the contract execution with your password.</em></p>
+
+<p><img src="/images/./images/dapps-gavcoin-4.png" alt="dapps-gavcoin-4" />
+<em>Figure: The GavCoin DApp will now recognize you as a GAV holder and display your balance.</em></p>
+
+<p><img src="/images/./images/accounts-overview-3.png" alt="accounts-overview-3" />
+<em>Figure: Tokens are also displayed in your accounts view next to your Ether balance.</em></p>
+
+<p><img src="/images/./images/accounts-token-0.png" alt="accounts-token-0" />
+<em>Figure: To transfer tokens instead of Ether, simply switch the type of token transfer from ETH to GAV, select the available balance, ...</em></p>
+
+<p><img src="/images/./images/accounts-token-2.png" alt="accounts-token-2" />
+<em>Figure: ... and confirm with your password.</em></p>
+
+<p>All ERC20-Tokens are also fully supported by <a href="https://wiki.parity.io/Accounts%2C-Wallets%2C-Vaults">multi-signature</a> and <a href="Ledger-Nano-S.md">hardware</a> wallets. Now, you probably want to read more about <a href="Token-Deployment.md">Token Deployment</a> and the Parity <a href="Token-Registry.md">Token Registry</a>.</p>

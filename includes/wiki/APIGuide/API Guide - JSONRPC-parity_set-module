@@ -1,0 +1,497 @@
+<h2 id='json-rpc-methods'>JSON-RPC methods</h2>
+<ul>
+<li><a href="#parity_acceptnonreservedpeers">parity_acceptNonReservedPeers</a></li>
+<li><a href="#parity_addreservedpeer">parity_addReservedPeer</a></li>
+<li><a href="#parity_dropnonreservedpeers">parity_dropNonReservedPeers</a></li>
+<li><a href="#parity_executeupgrade">parity_executeUpgrade</a></li>
+<li><a href="#parity_hashcontent">parity_hashContent</a></li>
+<li><a href="#parity_removereservedpeer">parity_removeReservedPeer</a></li>
+<li><a href="#parity_setauthor">parity_setAuthor</a></li>
+<li><a href="#parity_setchain">parity_setChain</a></li>
+<li><a href="#parity_setenginesigner">parity_setEngineSigner</a></li>
+<li><a href="#parity_setextradata">parity_setExtraData</a></li>
+<li><a href="#parity_setgasceiltarget">parity_setGasCeilTarget</a></li>
+<li><a href="#parity_setgasfloortarget">parity_setGasFloorTarget</a></li>
+<li><a href="#parity_setmaxtransactiongas">parity_setMaxTransactionGas</a></li>
+<li><a href="#parity_setmingasprice">parity_setMinGasPrice</a></li>
+<li><a href="#parity_setmode">parity_setMode</a></li>
+<li><a href="#parity_settransactionslimit">parity_setTransactionsLimit</a></li>
+<li><a href="#parity_upgradeready">parity_upgradeReady</a></li>
+</ul>
+<h2 id='json-rpc-api-reference'>JSON-RPC API Reference</h2><h3 id='parity_acceptnonreservedpeers'>parity_acceptNonReservedPeers</h3>
+<p>Set Parity to accept non-reserved peers (default behavior).</p>
+<h4 id='parameters'>Parameters</h4>
+<p>None</p>
+<h4 id='returns'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - <code>true</code> if successful.</li>
+</ul>
+<h4 id='example'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_acceptNonReservedPeers&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_addreservedpeer'>parity_addReservedPeer</h3>
+<p>Add a reserved peer.</p>
+<h4 id='parameters-2'>Parameters</h4>
+<ol>
+<li><code>String</code> - Enode address</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span><span class="s2">"enode://a979fb575495b8d6db44f750317d0f4622bf4c2aa3365d6af7c284339968eef29b69ad0dce72a4d8db5ebb4968de0e3bec910127f134779fbcb0cb6d3331163c@22.99.55.44:7770"</span><span class="p">]</span>
+</code></pre><h4 id='returns-2'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - <code>true</code> if successful.</li>
+</ul>
+<h4 id='example-2'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_addReservedPeer&quot;,&quot;params&quot;:[&quot;enode://a979fb575495b8d6db44f750317d0f4622bf4c2aa3365d6af7c284339968eef29b69ad0dce72a4d8db5ebb4968de0e3bec910127f134779fbcb0cb6d3331163c@22.99.55.44:7770&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_dropnonreservedpeers'>parity_dropNonReservedPeers</h3>
+<p>Set Parity to drop all non-reserved peers. To restore default behavior call <a href="#parity_acceptnonreservedpeers">parity_acceptNonReservedPeers</a>.</p>
+<h4 id='parameters-3'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-3'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - <code>true</code> if successful.</li>
+</ul>
+<h4 id='example-3'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_dropNonReservedPeers&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_executeupgrade'>parity_executeUpgrade</h3>
+<p>Attempts to upgrade Parity to the version specified in <a href="#parity_upgradeready">parity_upgradeReady</a>.</p>
+<h4 id='parameters-4'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-4'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - returns <code>true</code> if the upgrade to the new release was successfully executed, <code>false</code> if not.</li>
+</ul>
+<h4 id='example-4'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_executeUpgrade&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_hashcontent'>parity_hashContent</h3>
+<p>Creates a hash of a file at a given URL.</p>
+<h4 id='parameters-5'>Parameters</h4>
+<ol>
+<li><code>String</code> - The url of the content.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span><span class="s2">"https://raw.githubusercontent.com/paritytech/parity-ethereum/master/README.md"</span><span class="p">]</span>
+</code></pre><h4 id='returns-5'>Returns</h4>
+<ul>
+<li><code>Hash</code> - The SHA-3 hash of the content.</li>
+</ul>
+<h4 id='example-5'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_hashContent&quot;,&quot;params&quot;:[&quot;https://raw.githubusercontent.com/paritytech/parity-ethereum/master/README.md&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: &quot;0x2547ea3382099c7c76d33dd468063b32d41016aacb02cbd51ebc14ff5d2b6a43&quot;
+}
+</code></p>
+
+<hr>
+<h3 id='parity_removereservedpeer'>parity_removeReservedPeer</h3>
+<p>Remove a reserved peer.</p>
+<h4 id='parameters-6'>Parameters</h4>
+<ol>
+<li><code>String</code> - Encode address</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span><span class="s2">"enode://a979fb575495b8d6db44f750317d0f4622bf4c2aa3365d6af7c284339968eef29b69ad0dce72a4d8db5ebb4968de0e3bec910127f134779fbcb0cb6d3331163c@22.99.55.44:7770"</span><span class="p">]</span>
+</code></pre><h4 id='returns-6'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - <code>true</code> if successful.</li>
+</ul>
+<h4 id='example-6'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_removeReservedPeer&quot;,&quot;params&quot;:[&quot;enode://a979fb575495b8d6db44f750317d0f4622bf4c2aa3365d6af7c284339968eef29b69ad0dce72a4d8db5ebb4968de0e3bec910127f134779fbcb0cb6d3331163c@22.99.55.44:7770&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_setauthor'>parity_setAuthor</h3>
+<p>Changes author (coinbase) for mined blocks.</p>
+<h4 id='parameters-7'>Parameters</h4>
+<ol>
+<li><code>Address</code> - 20 Bytes - Address</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span><span class="s2">"0x407d73d8a49eeb85d32cf465507dd71d507100c1"</span><span class="p">]</span>
+</code></pre><h4 id='returns-7'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - <code>true</code> if the call was successful.</li>
+</ul>
+<h4 id='example-7'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_setAuthor&quot;,&quot;params&quot;:[&quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_setchain'>parity_setChain</h3>
+<p>Sets the network spec file Parity is using.</p>
+<h4 id='parameters-8'>Parameters</h4>
+<ol>
+<li><code>String</code> - Chain spec name, one of: &quot;foundation&quot;, &quot;ropsten&quot;, &quot;morden&quot;, &quot;kovan&quot;, &quot;classic&quot;, &quot;dev&quot;, &quot;expanse&quot;, &quot;musicoin&quot; or a filename.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span><span class="s2">"foundation"</span><span class="p">]</span>
+</code></pre><h4 id='returns-8'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - <code>true</code> if the call succeeded.</li>
+</ul>
+<h4 id='example-8'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_setChain&quot;,&quot;params&quot;:[&quot;foundation&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_setenginesigner'>parity_setEngineSigner</h3>
+<p>Sets an authority account for signing consensus messages. For more information check the <a href="Proof-of-Authority-Chains.md">Proof of Authority Chains</a> page.</p>
+<h4 id='parameters-9'>Parameters</h4>
+<ol>
+<li><code>Address</code> - Identifier of a valid authority account.</li>
+<li><code>String</code> - Passphrase to unlock the account.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x407d73d8a49eeb85d32cf465507dd71d507100c1"</span><span class="p">,</span>
+  <span class="s2">"hunter2"</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-9'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - True if the call succeeded</li>
+</ul>
+<h4 id='example-9'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_setEngineSigner&quot;,&quot;params&quot;:[&quot;0x407d73d8a49eeb85d32cf465507dd71d507100c1&quot;,&quot;hunter2&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_setextradata'>parity_setExtraData</h3>
+<p>Changes extra data for newly mined blocks</p>
+<h4 id='parameters-10'>Parameters</h4>
+<ol>
+<li><code>Data</code> - Extra Data</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span><span class="s2">"0x"</span><span class="p">]</span>
+</code></pre><h4 id='returns-10'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - whether the call was successful</li>
+</ul>
+<h4 id='example-10'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_setExtraData&quot;,&quot;params&quot;:[&quot;0x&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_setgasceiltarget'>parity_setGasCeilTarget</h3>
+<p>Sets new gas ceiling target for mined blocks.</p>
+<h4 id='parameters-11'>Parameters</h4>
+<ol>
+<li><code>Quantity</code> - (default: <code>0x0</code>) Gas ceiling target.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x2540be400"</span> <span class="c1">// 10000000000</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-11'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - <code>true</code> if the call was successful.</li>
+</ul>
+<h4 id='example-11'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_setGasCeilTarget&quot;,&quot;params&quot;:[&quot;0x2540be400&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_setgasfloortarget'>parity_setGasFloorTarget</h3>
+<p>Sets a new gas floor target for mined blocks..</p>
+<h4 id='parameters-12'>Parameters</h4>
+<ol>
+<li><code>Quantity</code> - (default: <code>0x0</code>) Gas floor target.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x3e8"</span> <span class="c1">// 1000</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-12'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - <code>true</code> if the call was successful.</li>
+</ul>
+<h4 id='example-12'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_setGasFloorTarget&quot;,&quot;params&quot;:[&quot;0x3e8&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_setmaxtransactiongas'>parity_setMaxTransactionGas</h3>
+<p>Sets the maximum amount of gas a single transaction may consume.</p>
+<h4 id='parameters-13'>Parameters</h4>
+<ol>
+<li><code>Quantity</code> - Gas amount</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x186a0"</span> <span class="c1">// 100000</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-13'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - <code>true</code> if the call was successful.</li>
+</ul>
+<h4 id='example-13'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_setMaxTransactionGas&quot;,&quot;params&quot;:[&quot;0x186a0&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_setmingasprice'>parity_setMinGasPrice</h3>
+<p>Changes minimal gas price for transaction to be accepted to the queue.</p>
+<h4 id='parameters-14'>Parameters</h4>
+<ol>
+<li><code>Quantity</code> - Minimal gas price</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x3e8"</span> <span class="c1">// 1000</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-14'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - whether the call was successful</li>
+</ul>
+<h4 id='example-14'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_setMinGasPrice&quot;,&quot;params&quot;:[&quot;0x3e8&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_setmode'>parity_setMode</h3>
+<p>Changes the operating mode of Parity.</p>
+<h4 id='parameters-15'>Parameters</h4>
+<ol>
+<li><code>String</code> - The mode to set, one of:
+
+<ul>
+<li><code>&quot;active&quot;</code> - Parity continuously syncs the chain.</li>
+<li><code>&quot;passive&quot;</code> - Parity syncs initially, then sleeps and wakes regularly to resync.</li>
+<li><code>&quot;dark&quot;</code> - Parity syncs only when the RPC is active.</li>
+<li><code>&quot;offline&quot;</code> - Parity doesn&#39;t sync.</li>
+</ul></li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span><span class="s2">"passive"</span><span class="p">]</span>
+</code></pre><h4 id='returns-15'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - <code>true</code> if the call succeeded.</li>
+</ul>
+<h4 id='example-15'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_setMode&quot;,&quot;params&quot;:[&quot;passive&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_settransactionslimit'>parity_setTransactionsLimit</h3>
+<blockquote>
+<p>This method is currently deprecated due to significant changes in the txqueue</p>
+</blockquote>
+
+<p>Changes limit for transactions in queue.</p>
+<h4 id='parameters-16'>Parameters</h4>
+<ol>
+<li><code>Quantity</code> - New Limit</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">"0x3e8"</span> <span class="c1">// 1000</span>
+<span class="p">]</span>
+</code></pre><h4 id='returns-16'>Returns</h4>
+<ul>
+<li><code>Boolean</code> - whether the call was successful</li>
+</ul>
+<h4 id='example-16'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_setTransactionsLimit&quot;,&quot;params&quot;:[&quot;0x3e8&quot;],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: true
+}
+</code></p>
+
+<hr>
+<h3 id='parity_upgradeready'>parity_upgradeReady</h3>
+<p>Returns a ReleaseInfo object describing the release which is available for upgrade or <code>null</code> if none is available.</p>
+<h4 id='parameters-17'>Parameters</h4>
+<p>None</p>
+<h4 id='returns-17'>Returns</h4>
+<ul>
+<li><code>Object</code> - Details or <code>null</code> if no new release is available.
+
+<ul>
+<li><code>version</code>:   <code>Object</code> - Information on the version.</li>
+<li><code>is_critical</code>:   <code>Boolean</code> - Does this release contain critical security updates?</li>
+<li><code>fork</code>:   <code>Quantity</code> - The latest fork that this release can handle.</li>
+<li><code>binary</code>:   <code>Data</code> - (optional) Keccak-256 checksum of the release parity binary, if known.</li>
+</ul></li>
+</ul>
+<h4 id='example-17'>Example</h4>
+<p>Request
+<code>bash
+curl --data &#39;{&quot;method&quot;:&quot;parity_upgradeReady&quot;,&quot;params&quot;:[],&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;}&#39; -H &quot;Content-Type: application/json&quot; -X POST localhost:8545
+</code></p>
+
+<p>Response
+<code>js
+{
+  &quot;id&quot;: 1,
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;result&quot;: null
+}
+</code></p>

@@ -1,0 +1,91 @@
+<p>This tutorial will walk you through setting up an account with the Parity Signer Android or iOS App and then use this account together with <a href="https://github.com/paritytech/fether">Parity Fether</a> to see your balance and transfer funds or ERC-20 tokens from this account.</p>
+<h2 id='summary'>Summary</h2>
+<ul>
+<li><a href="#1-get-parity-signer-mobile-application">1. Get Parity Signer mobile application</a></li>
+<li><a href="#2-setup-or-recover-an-account">2. Setup or recover an account</a>
+
+<ul>
+<li><a href="#create-an-account">Create an account</a></li>
+<li><a href="#recover-an-account-with-your-recovery-phrase">Recover an account with your recovery phrase</a></li>
+</ul></li>
+<li><a href="#3-add-parity-signers-account-to-fether">3. Add Parity Signer&#39;s account to Fether</a></li>
+<li><a href="#4-sign-a-transaction-using-parity-fether">4. Sign a transaction on Fether</a></li>
+</ul>
+<h2 id='1-get-parity-signer-mobile-application'>1. Get Parity Signer mobile application</h2><h3 id='device-security'>Device security</h3>
+<p>Parity Signer is meant to be used offline. The mobile device used to run Parity Signer will hold valuable information that needs to be kept securely stored. It is therefore advised to:
+- Get a separate mobile device.
+- Make a factory reset.
+- Enable full-disk encryption on the device, with a reasonable password (might not be on by default, for example for older Android devices).
+- Do not use any biometrics such as fingerprint or face recognition for device decryption/unlocking, as those may be less secure than regular passwords.
+- Once Parity Signer has been installed, enable airplane mode and make sure to switch off Wifi, Bluetooth or any connection ability of the device.
+- Only charge the phone using a power outlet that is never connected to the internet. Only charge the phone with the manufacturer&#39;s charging adapter. Do not charge the phone on public USB chargers.</p>
+
+<p>Please find more info <a href="Parity-Signer-Mobile-App">here</a> about the Parity Signer application.</p>
+<h3 id='install-parity-signer-mobile-application'>Install Parity Signer mobile application</h3>
+<p>Install Parity Signer making sure that it originated from <strong>Parity Technologies</strong>
+- <a href="https://play.google.com/store/apps/details?id=io.parity.signer">Android</a>
+- <a href="https://itunes.apple.com/us/app/parity-signer/id1218174838">iOS</a></p>
+<h2 id='2-setup-or-recover-an-account'>2. Setup or recover an account</h2>
+<p>When launching the app for the first time, no account has been set up yet. At this stage, you will either want to create an account directly from your mobile device or recover an account previously created with Parity Signer or <a href="https://wiki.parity.io/Parity-Wallet">Parity UI / Wallet</a> (Desktop)</p>
+<h3 id='create-an-account'>Create an account</h3>
+<p>Click on the <code>create new account</code> button.</p>
+
+<p>The next screen will allow you to select a network for your account between Ethereum mainnet, Kovan and Ropsten are supported.
+You can choose your account identicon and view the related address.
+Finally, you can define a name for this account.</p>
+
+<p>In the next step, your recovery phrase will be presented to you. Think of it as a master key. If you lose it, you lose your money.
+<strong>Write this recovery phrase down and store it in a safe place</strong>.
+If your phone gets stolen/broken/forgotten this will be the only way to <a href="#recover-an-account-with-your-recovery-phrase">recover your account</a>.</p>
+
+<p>You will then be asked to chose a pin code. This pin will be needed later on to unlock your account to sign a transaction.</p>
+
+<p><img src="/images/Parity-Signer-android-0.png" alt="create account" /></p>
+<h3 id='recover-an-account-with-your-recovery-phrase'>Recover an account with your recovery phrase</h3>
+<p>If you already have an account created with either Parity Signer or Parity UI, you can recover it by doing so:
+- Click on <code>Add account</code> &gt; <code>Recover account</code>.
+- Select the network you want to recover this account for.
+- Name this account.
+- Type in the recovery phrase, word suggestion helps you prevent any typo.
+- Tap <code>Next step</code>.
+- Select a PIN number and confirm it by typing it again.
+- Your recovered account will appear in the account list.</p>
+<h2 id='3-add-parity-signer-39-s-account-to-fether'>3. Add Parity Signer&#39;s account to Fether</h2>
+<p>To be able to follow this tutorial and send Ether from a freshly created account on Parity Signer mobile app, you will need to get some Ether on this account first. Parity Fether is a simple wallet based on a light client that will allow you to manage your Signer account seamlessly.</p>
+
+<ul>
+<li><a href="https://github.com/paritytech/fether/releases">Download</a>, install and launch Parity Fether.</li>
+<li>On Fether&#39;s first screen, click the + button and then <code>recover an account</code>.</li>
+<li>Click <code>Recover from Parity Signer</code>, it will show the image of the webcam for you to scan the Parity Signer&#39;s account QR code.</li>
+<li>On Parity Signer account list, select the account you want to copy the address of and tap <code>Show account QR code</code>.</li>
+<li>Scan the QR code displayed on your phone with your computer&#39;s webcam. Make sure the QR code is fully displayed on your mobile&#39;s screen.</li>
+<li>You can now name this account on Fether. Parity Signer&#39;s account will be recognizable thanks to the Parity Signer&#39;s logo next to the identicon.</li>
+</ul>
+
+<p><img src="/images/Parity-Signer-Fether-add-account.gif" alt="Add Parity Signer account Parity Fether" /></p>
+<h3 id='4-sign-a-transaction-using-parity-fether'>4. Sign a transaction using Parity Fether</h3>
+<p>Assuming that your Parity Signer account now has funds, you will be able to send some Ether securely to anyone, without transferring your private key, and without needing any internet connection on your mobile phone.</p>
+
+<ul>
+<li>On Fether, select the account added previously and click on either Ether or the Token you want to send funds from.</li>
+<li>On Fether, enter the address of the account you want to send Ether or Tokens to as well as the amount of gas. Make sure to try with a small amount of Ether first before sending larger amounts.</li>
+<li>Click on <code>Scan</code> when you&#39;re done.</li>
+</ul>
+
+<p><img src="/images/Parity-Signer-Fether-tx-workflow.jpg" alt="Parity Signer Fether send transaction" /></p>
+
+<p>You will now be presented with a QR code that represents the transaction. Since this transaction is sending funds from your Parity Signer mobile app account, only this account (sitting on your phone) can sign and authorise this transaction. This is what we&#39;ll do in the next steps:
+- From the Parity Signer mobile app, switch to the <code>Scanner</code> tab and scan the QR code presented by Fether.
+- Review the transaction addresses and the amount to send on your phone. The amount and addresses must match what you&#39;ve entered in Fether. If you got phished, this is where you can realise it and reject the transaction.
+- Once you&#39;re sure, scroll down and click <code>Sign Transaction</code> to enter your pin and get the QR code of the scanned transaction.</p>
+
+<p><img src="/images/Parity-Signer-Fether-android-1.png" alt="Sign Fether transaction" /></p>
+
+<p>Your phone has now <em>signed the transaction offline</em> using your Parity Signer account private key. The QR code that is now displayed on your phone represents a signed transaction that can be broadcasted. We will do this in the next steps:
+- On Fether, click on <code>Next step</code>, this will turn on your webcam.
+- Face your phone&#39;s display to your webcam for Fether to be able to read the signed transaction.
+- Verify one last time that the account addresses are correct as well as the amount to transfer on Fether.
+- Click <code>Send</code> on Fether.
+- Congrats you just sent Ether from an air-gapped account :)</p>
+
+<p><img src="/images/Fether-Parity-Signer-0.jpg" alt="Send transaction Fether Signer" /></p>

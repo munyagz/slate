@@ -1,0 +1,179 @@
+<p><strong>This is the third part of the Dapp Tutorial.</strong> We assume you&#39;re familiar with the content of the past chapters.</p>
+
+<p><a href="Tutorial-Part-2.md">⟵ 2nd Part</a> | <a href="Tutorial-Part-4.md">4th Part ⟶</a></p>
+
+<hr>
+<h2 id='parity-bonds'>Parity Bonds</h2>
+<p>So now we&#39;re fairly happy with the idea of <code>Bond</code>s in our reactive user interface, it&#39;s time to get down and dirty with the blockchain. For this we will introduce the <code>oo7-parity</code> package, which provides a high-level reactive <code>Bond</code> API (it uses our low-level library <em>parity.js</em> under the hood, but you need not care).</p>
+
+<p>To set this up, all we need do is import <code>bonds</code> from the <code>oo7-parity</code> module, so ensure you have this at the top of your file:</p>
+<pre class="highlight javascript"><code><span class="kr">import</span> <span class="p">{</span><span class="nx">bonds</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">'oo7-parity'</span><span class="p">;</span>
+</code></pre><h3 id='1-watch-the-block'>1. Watch the block</h3>
+<p>For our first trick, we will introduce the simplest of all bonds: <code>bonds.height</code>. This evaluates to <a href="JSONRPC-eth-module#eth_blocknumber">the number of the latest block</a>, expressed as a simple number.</p>
+
+<p>In <code>app.jsx</code>, remove the entire <code>App</code> class and the two <code>const</code>s and replace it with:</p>
+<pre class="highlight jsx tab-jsx"><code><span class="kr">export</span> <span class="kr">class</span> <span class="nx">App</span> <span class="kr">extends</span> <span class="nx">React</span><span class="p">.</span><span class="nx">Component</span> <span class="p">{</span>
+    <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="p">&lt;</span><span class="nc">Rspan</span><span class="p">&gt;</span><span class="si">{</span><span class="nx">bonds</span><span class="p">.</span><span class="nx">height</span><span class="si">}</span><span class="p">&lt;/</span><span class="nc">Rspan</span><span class="p">&gt;</span>
+        <span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+<p>You should already be familiar with the basic structure. If you try this, you&#39;ll see a single number tracking the latest height of your blockchain:</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/22700240/ee7d922c-ed27-11e6-8976-25acd1ffdecb.png" alt="image" /></p>
+
+<p>It&#39;s not especially pretty, but you get the idea. We can bling it up easily enough by changing our rendering expression to:</p>
+
+<p>{% raw %}
+<code>jsx
+&lt;div&gt;
+    Current block is:
+    &amp;nbsp;
+    &lt;Rspan style={{fontWeight: &#39;bold&#39;}}&gt;
+        {bonds.height.map(formatBlockNumber)}
+    &lt;/Rspan&gt;
+&lt;/div&gt;
+</code>
+{% endraw %}</p>
+
+<p>We&#39;ll also need to provide the <code>formatBlockNumber</code> function:</p>
+<pre class="highlight javascript"><code><span class="kr">const</span> <span class="nx">formatBlockNumber</span> <span class="o">=</span> <span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="s1">'#'</span> <span class="o">+</span> <span class="p">(</span><span class="s1">''</span> <span class="o">+</span> <span class="nx">n</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/</span><span class="se">(\d)(?=(\d{3})</span><span class="sr">+$</span><span class="se">)</span><span class="sr">/g</span><span class="p">,</span> <span class="s2">"$1,"</span><span class="p">);</span>
+</code></pre>
+<p>Happily this is provided by the <a href="https://github.com/paritytech/oo7-parity"><code>oo7-parity</code></a> package, so you can alternatively just import it:</p>
+<pre class="highlight javascript"><code><span class="kr">import</span> <span class="p">{</span><span class="nx">bonds</span><span class="p">,</span> <span class="nx">formatBlockNumber</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">'oo7-parity'</span><span class="p">;</span>
+</code></pre>
+<p>And hey presto:</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/22700625/44b820f2-ed29-11e6-8fae-125303b677ce.png" alt="image" /></p>
+<h3 id='2-blocks'>2. Blocks</h3>
+<p>The block number is great and all, but perhaps we&#39;re more interested in the latest block itself. Happily, Parity can help us there with the <code>bonds.blocks</code> object. This is a lazy-evaluated &quot;array&quot; of bonds which can subscribe to. To give yourself an idea of its capabilities, let&#39;s try it out in the console. First we&#39;ll expose the <code>bonds</code> object to the environment by adding this at the end of our object&#39;s constructor:</p>
+<pre class="highlight javascript"><code><span class="nb">window</span><span class="p">.</span><span class="nx">bonds</span> <span class="o">=</span> <span class="nx">bonds</span><span class="p">;</span>
+</code></pre>
+<p>Having reloaded, quickly open the Chrome JS console, alter the environment to 127.0.0.1 and evaluate the block at number 69 with <code>bonds.blocks[69].log()</code>:</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/22701287/41c6e4f8-ed2b-11e6-94d9-d6b5e58cb911.png" alt="image" /></p>
+
+<p>Notice that since it&#39;s all asynchronous, we must use the <code>.log()</code> trick to feed the result into the console (it&#39;s exactly equivalent to <code>.map(console.log)</code>). The result is, of course, the block object representing the 69th mined block on this chain.</p>
+
+<p>Naturally, <code>bonds.blocks</code> is able to accept any number, even a bond, as its subscript. Let&#39;s make our dapp always give us the timestamp of the latest block.</p>
+
+<p>{% raw %}
+<code>jsx
+&lt;div&gt;
+    Latest block&#39;s timestamp is:&amp;nbsp;
+    &lt;Rspan style={{fontWeight: &#39;bold&#39;}}&gt;
+        {bonds.blocks[bonds.height].map(b =&gt; b.timestamp).map(_ =&gt; _.toString())}
+    &lt;/Rspan&gt;
+&lt;/div&gt;
+</code>
+{% endraw %}</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/22701622/26a80d68-ed2c-11e6-8720-946e311a9b34.png" alt="image" /></p>
+
+<p>That <code>.map</code> is a bit cumbersome. Conveniently, the <code>Bond</code> API knows about subscripting, which means the <code>.timestamp</code> can be moved out of the <code>map</code>. (<code>toString</code> is a reserved expression, so it must remain <code>map</code>ped, however in general you will find that you rarely want to use such a blunt transformation anyway.)</p>
+
+<p>Furthermore, <code>bonds.blocks[bonds.height]</code> is a fairly common expression. So much so that it has a shorter alias: <code>bonds.head</code>, so in fact the simplest means of expressing this becomes:</p>
+<pre class="highlight javascript"><code><span class="p">{</span><span class="nx">bonds</span><span class="p">.</span><span class="nx">head</span><span class="p">.</span><span class="nx">timestamp</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">_</span><span class="o">=&gt;</span><span class="nx">_</span><span class="p">.</span><span class="nx">toString</span><span class="p">())}</span>
+</code></pre><h3 id='3-composing-expressions'>3. Composing expressions</h3>
+<p>These expressions are sometimes very useful, but often you want to do some blockchain based computation on this information. For example, getting the author (&quot;miner&quot;) of the most recent block is easy (<code>block.author</code>) but might be of limited use; in fact you might wish to know not just their identity but also their account balance.</p>
+
+<p>Parity puts various means at your disposal to help you here:</p>
+
+<ul>
+<li><code>bonds.balance(address)</code> evaluates to the current balance of account at <code>address</code>.</li>
+<li><code>bonds.transactionCount(address)</code> evaluates to the current transaction count (&quot;nonce&quot;) of account at <code>address</code>.</li>
+<li><code>bonds.code(address)</code> evaluates to the current &quot;contract&quot; code of account at <code>address</code>.</li>
+<li><code>bonds.storageAt(address, location)</code> evaluates to the value in storage <code>location</code> of account at <code>address</code>.</li>
+</ul>
+
+<p>We&#39;ll use the first in our dapp to display the account balance of the most recent block author (&quot;miner&quot;) - the expression we&#39;ll need is <code>bonds.balance(bonds.head.author)</code>. Left alone it&#39;s a bit ugly, so we&#39;ll prettify it a bit with the function <code>formatBalance</code> which is exposed by <code>oo7-parity</code>:</p>
+
+<p>{% raw %}
+<code>jsx
+&lt;div&gt;
+    Current block author&#39;s balance is:&amp;nbsp;
+    &lt;Rspan style={{fontWeight: &#39;bold&#39;}}&gt;
+        {bonds.balance(bonds.head.author).map(formatBalance)}
+    &lt;/Rspan&gt;
+&lt;/div&gt;
+</code>
+{% endraw %}</p>
+
+<p>Ensure you have <code>formatBalance</code> available by replacing the line <code>import {formatBlockNumber} from &#39;oo7-parity&#39;;</code> with:</p>
+<pre class="highlight javascript"><code><span class="kr">import</span> <span class="p">{</span><span class="nx">bonds</span><span class="p">,</span> <span class="nx">formatBlockNumber</span><span class="p">,</span> <span class="nx">formatBalance</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">'oo7-parity'</span><span class="p">;</span>
+</code></pre>
+<p><img src="https://cloud.githubusercontent.com/assets/138296/22704760/d7468bcc-ed36-11e6-8411-320791d107e8.png" alt="image" /></p>
+
+<p>You&#39;ll see it updating as the blocks go by.</p>
+<h3 id='4-our-balance'>4. Our balance</h3>
+<p>Parity can help us get information about our own accounts in a reactive manner. Several APIs are provided:</p>
+
+<ul>
+<li><code>bonds.coinbase</code> evaluates to the node&#39;s current block authoring address.</li>
+<li><code>bonds.accounts</code> evaluates to the list of accounts available for the dapp to use.</li>
+<li><code>bonds.me</code> evaluates to the preferred account for this dapp to use. In Parity, this is the account visible in the Parity Signer at the bottom right of the page.</li>
+<li><code>bonds.accountsInfo</code> evaluates to the mapping between dapp-visible addresses and account metadata.</li>
+</ul>
+
+<p>To see the list of accounts available, we can just grab the list of accounts and join them with <code>&#39;, &#39;</code>use:</p>
+<pre class="highlight jsx tab-jsx"><code><span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+    <span class="nx">Accounts</span> <span class="nx">available</span><span class="p">:</span><span class="o">&amp;</span><span class="nx">nbsp</span><span class="p">;</span>
+    <span class="p">&lt;</span><span class="nc">Rspan</span><span class="p">&gt;</span>
+        <span class="si">{</span><span class="nx">bonds</span><span class="p">.</span><span class="nx">accounts</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">_</span><span class="o">=&gt;</span><span class="nx">_</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">', '</span><span class="p">))</span><span class="si">}</span>
+    <span class="p">&lt;/</span><span class="nc">Rspan</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="err">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</code></pre>
+<p>Determining the address of the preferred account is just as easy: it&#39;s just <code>bonds.me</code>. Switch the <code>render</code> function to use it:</p>
+<pre class="highlight jsx tab-jsx"><code><span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+    <span class="nx">Default</span> <span class="nx">account</span><span class="p">:</span><span class="o">&amp;</span><span class="nx">nbsp</span><span class="p">;</span>
+    <span class="p">&lt;</span><span class="nc">Rspan</span><span class="p">&gt;</span><span class="si">{</span><span class="nx">bonds</span><span class="p">.</span><span class="nx">me</span><span class="si">}</span><span class="p">&lt;/</span><span class="nc">Rspan</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="err">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</code></pre>
+<p>Try this and use the Parity Signer&#39;s account selector to change accounts: you see the address change!</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/22710016/cad4cda0-ed49-11e6-9257-4dbd1885dc13.png" alt="image" /></p>
+
+<p>...then selecting a different account gives...</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/22710003/c4168634-ed49-11e6-94af-177683da719d.png" alt="image" /></p>
+
+<p>Maybe we&#39;d like to know how much we have in our selected account, too. This can be done easily enough:</p>
+<pre class="highlight jsx tab-jsx"><code><span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+    <span class="nx">Default</span> <span class="nx">account</span><span class="p">:</span><span class="o">&amp;</span><span class="nx">nbsp</span><span class="p">;</span>
+    <span class="p">&lt;</span><span class="nc">Rspan</span><span class="p">&gt;</span><span class="si">{</span><span class="nx">bonds</span><span class="p">.</span><span class="nx">me</span><span class="si">}</span><span class="p">&lt;/</span><span class="nc">Rspan</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span><span class="nx">With</span> <span class="nx">a</span> <span class="nx">balance</span> <span class="nx">of</span><span class="o">&amp;</span><span class="nx">nbsp</span><span class="p">;</span>
+    <span class="p">&lt;</span><span class="nc">Rspan</span><span class="p">&gt;</span>
+        <span class="si">{</span><span class="nx">bonds</span><span class="p">.</span><span class="nx">balance</span><span class="p">(</span><span class="nx">bonds</span><span class="p">.</span><span class="nx">me</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="nx">formatBalance</span><span class="p">)</span><span class="si">}</span>
+    <span class="p">&lt;/</span><span class="nc">Rspan</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="err">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</code></pre>
+<p><img src="https://cloud.githubusercontent.com/assets/138296/22710059/f1572b8a-ed49-11e6-874a-7de1ff2ca519.png" alt="image" /></p>
+
+<p>Maybe we would even like to understand what name we have given to the account (if any). We can ascertain this through the <code>bonds.accountsInfo</code> bond, which gives us a mapping between accounts and metadata. The expression which evaluates to the current account&#39;s name is therefore as simple as <code>bonds.accountsInfo[bonds.me].name</code>.</p>
+
+<p>Our rendering function would now be:</p>
+<pre class="highlight jsx tab-jsx"><code><span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+    <span class="nx">Default</span> <span class="nx">account</span><span class="p">:</span><span class="o">&amp;</span><span class="nx">nbsp</span><span class="p">;</span>
+    <span class="p">&lt;</span><span class="nc">Rspan</span><span class="p">&gt;</span><span class="si">{</span><span class="nx">bonds</span><span class="p">.</span><span class="nx">me</span><span class="si">}</span><span class="p">&lt;/</span><span class="nc">Rspan</span><span class="p">&gt;</span><span class="o">&amp;</span><span class="nx">nbsp</span><span class="p">;</span>
+    <span class="p">&lt;</span><span class="nt">br</span><span class="p">/&gt;</span><span class="nx">Given</span> <span class="nx">the</span> <span class="nx">name</span> <span class="nx">of</span><span class="o">&amp;</span><span class="nx">nbsp</span><span class="p">;&lt;</span><span class="nc">Rspan</span><span class="p">&gt;</span>
+        <span class="si">{</span><span class="nx">bonds</span><span class="p">.</span><span class="nx">accountsInfo</span><span class="p">[</span><span class="nx">bonds</span><span class="p">.</span><span class="nx">me</span><span class="p">].</span><span class="nx">name</span><span class="si">}</span>
+    <span class="p">&lt;/</span><span class="nc">Rspan</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">br</span><span class="p">/&gt;</span><span class="nx">With</span> <span class="nx">a</span> <span class="nx">balance</span> <span class="nx">of</span><span class="o">&amp;</span><span class="nx">nbsp</span><span class="p">;</span>
+    <span class="p">&lt;</span><span class="nc">Rspan</span><span class="p">&gt;</span>
+        <span class="si">{</span><span class="nx">bonds</span><span class="p">.</span><span class="nx">balance</span><span class="p">(</span><span class="nx">bonds</span><span class="p">.</span><span class="nx">me</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="nx">formatBalance</span><span class="p">)</span><span class="si">}</span>
+    <span class="p">&lt;/</span><span class="nc">Rspan</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="err">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</code></pre>
+<p>and should give something like:</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/138296/22709662/8e12672a-ed48-11e6-96a3-be0065ff8cbe.png" alt="image" /></p>
+
+<p>If you go ahead and either change the default account or even just edit its name else where in Parity Wallet, you&#39;ll see the page automatically track the changes, as you&#39;d expect.</p>
+
+<p>You should now be familiar with the core bonds in Parity and be happy to combine them into more complex expressions. Next up, we&#39;ll take a look at how we can use <code>Bond</code>s to interact with contracts that sit in the blockchain.</p>
+
+<hr>
+
+<p><a href="Tutorial-Part-4.md">4th Part ⟶</a></p>
